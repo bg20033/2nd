@@ -1,7 +1,7 @@
-<article class="diagnosis-entry grid min-w-0 gap-2" data-validation-card>
+<article class="diagnosis-entry grid min-w-0 gap-3" data-validation-card>
   @if (showHeader()) {
     <div class="flex items-start justify-between gap-4">
-      <h3 class="m-0 min-w-0 break-words text-[1.12rem] font-medium tracking-[-0.02em] text-[#1d1426]">
+      <h3 class="m-0 min-w-0 wrap-break-word text-[14px] font-normal leading-[1.2] tracking-normal text-[#050307]">
         {{ entryTitle() }}
       </h3>
       @if (canRemove()) {
@@ -15,8 +15,8 @@
   @if (variant() === 'operation') {
     <div class="grid gap-3 border-0 bg-transparent pt-[0.15rem]">
       <div>
-        <p class="mb-[0.45rem] text-[18px] font-bold leading-[1.2] text-[#050307]">Wenn ja, wurde Ihnen ein Implantat oder ein Fremdkörper eingesetzt?</p>
-        <p class="m-0 text-[16px] leading-[1.18] text-[#706876]">
+        <p class="mb-[0.45rem] text-[14px] font-normal leading-[1.2] text-[#050307]">Wenn ja, wurde Ihnen ein Implantat oder ein Fremdkörper eingesetzt?</p>
+        <p class="m-0 text-[12px] leading-[1.18] text-[#706876]">
           Platten, Schrauben, Prothesen, Brustimplantate, Gelenkersatz, Magenband, Stent etc.
         </p>
       </div>
@@ -35,13 +35,13 @@
       }
     </div>
 
-    <p class="mt-[0.1rem] mb-[0.2rem] text-[18px] font-bold leading-[1.2] text-[#050307]">1) Bitte geben Sie alle zu dieser Frage relevanten Diagnosen an:</p>
+    <p class="mt-[0.1rem] mb-[0.2rem] text-[14px] font-normal leading-[1.2] text-[#050307]">1) Bitte geben Sie alle zu dieser Frage relevanten Diagnosen an:</p>
   }
 
   @if (variant() === 'medication') {
     <div class="grid grid-cols-3 gap-3 border-0 bg-transparent pt-[0.15rem]">
       <div class="col-span-full">
-        <p class="mb-[0.2rem] text-[18px] font-bold leading-[1.2] text-[#050307]">1) Bitte geben Sie alle zu dieser Frage relevanten Medikamenten/Diagnosen an:</p>
+        <p class="mb-[0.2rem] text-[14px] font-normal leading-[1.2] text-[#050307]">1) Bitte geben Sie alle zu dieser Frage relevanten Medikamenten/Diagnosen an:</p>
       </div>
       <app-text-input [control]="entry().controls.name" label="Name" />
       <app-text-input [control]="entry().controls.amountPerDay" label="Anzahl/Tag" />
@@ -56,26 +56,26 @@
     [rows]="1"
   />
 
-  <div class="grid min-w-0 grid-cols-2 gap-[0.4rem]">
-    <app-month-input [control]="entry().controls.from" label="Beginn (Monat/Jahr)" />
-    <app-month-input [control]="entry().controls.to" label="Ende (Monat/Jahr)" />
+  <div class="grid min-w-0 grid-cols-2 gap-3">
+    <app-date-input [control]="entry().controls.from" label="Beginn (Monat/Jahr)" />
+    <app-date-input [control]="entry().controls.to" label="Ende (Monat/Jahr)" />
   </div>
   <app-yes-no-toggle class="grid w-full min-w-0 max-w-full content-start overflow-hidden" [control]="entry().controls.recovered" label="Vollständig geheilt?" />
 
   <fieldset class="grid min-w-0 gap-2 border-0 p-0">
-    <legend class="px-0 py-1 text-[16px] font-normal leading-[1.25] text-[#706876]">Behandelnde/r Arzt/Ärztin, Therapeut/in</legend>
-    <div class="grid min-w-0 grid-cols-12 items-start gap-[0.4rem] max-[760px]:gap-3">
-      <app-text-input class="col-span-6 min-w-0" [control]="entry().controls.doctorGivenNames" label="" />
-      <app-text-input class="col-span-6 min-w-0" [control]="entry().controls.doctorFamilyName" label="" />
-      <app-text-input class="col-span-8 min-w-0" [control]="entry().controls.doctorStreet" label="" />
-      <app-text-input class="col-span-4 min-w-0" [control]="entry().controls.doctorStreetNumber" label="" />
-      <app-text-input class="col-span-4 min-w-0" [control]="entry().controls.doctorPostalCode" label="" />
-      <app-text-input class="col-span-8 min-w-0" [control]="entry().controls.doctorCity" label="" />
+    <legend class="px-0 py-1 text-[12px] font-light leading-[1.18] text-[#706876]">Behandelnde/r Arzt/Ärztin, Therapeut/in</legend>
+    <div class="grid min-w-0 grid-cols-12 items-start gap-3">
+      <app-text-input class="col-span-6 min-w-0" [control]="entry().controls.doctorGivenNames" label="" placeholder="Dr.med.Johannes" />
+      <app-text-input class="col-span-6 min-w-0" [control]="entry().controls.doctorFamilyName" label="" placeholder="Doktormann" />
+      <app-text-input class="col-span-8 min-w-0" [control]="entry().controls.doctorStreet" label="" placeholder="Doktorstrasse" />
+      <app-text-input class="col-span-4 min-w-0" [control]="entry().controls.doctorStreetNumber" label="" placeholder="1" [digitsOnly]="true" />
+      <app-text-input class="col-span-4 min-w-0" [control]="entry().controls.doctorPostalCode" label="" placeholder="8001" [digitsOnly]="true" />
+      <app-text-input class="col-span-8 min-w-0" [control]="entry().controls.doctorCity" label="" placeholder="Zurich" />
     </div>
   </fieldset>
   <app-textarea [control]="entry().controls.notes" label="Besondere Bemerkungen:" [rows]="1" />
 
   @if (dateOrderError()) {
-    <p class="field-error block min-h-[1.1rem]" data-validation-anchor>End month must be after start month.</p>
+    <p class="field-error block min-h-[1.1rem]" data-validation-anchor>End date must be after start date.</p>
   }
 </article>

@@ -7,7 +7,7 @@ import { BaseFormControlComponent } from './base-form-control.component';
 const NATIVE_INPUT_TEMPLATE = `
   <div class="min-w-0 max-w-full space-y-1.5" [attr.data-validation-anchor]="validationAnchor()">
     @if (label()) {
-      <label [for]="controlId()" class="block min-w-0 max-w-full whitespace-normal wrap-break-wordword text-[16px] font-normal leading-[1.18] text-[#706876]">
+      <label [for]="controlId()" class="block min-w-0 max-w-full whitespace-normal wrap-break-word text-[12px] font-light leading-[1.18] text-[#706876]">
         {{ label() }}
       </label>
     }
@@ -19,14 +19,18 @@ const NATIVE_INPUT_TEMPLATE = `
       [placeholder]="placeholder()"
       [min]="min()"
       [max]="max()"
+      [attr.lang]="datePickerLang"
+      [attr.inputmode]="inputMode()"
+      [attr.pattern]="inputPattern()"
       [class]="inputClasses()"
       [attr.aria-invalid]="showError()"
       [attr.aria-describedby]="describedBy()"
+      (input)="filterDigits($event)"
       (blur)="markAsTouched()"
     />
 
     @if (showError()) {
-      <p [id]="errorId()" class="text-xs font-semibold text-[#d81837]">
+      <p [id]="errorId()" class="text-[12px] font-normal text-[#d81837]">
         {{ errors() | validationError: label() }}
       </p>
     }
@@ -41,26 +45,70 @@ const NATIVE_INPUT_TEMPLATE = `
 })
 export class TextInputComponent extends BaseFormControlComponent<string | null> {
   protected readonly nativeType = 'text';
+  protected readonly datePickerLang: string | null = null;
 }
 
 @Component({
   selector: 'app-date-input',
   standalone: true,
   imports: [ReactiveFormsModule, ValidationErrorPipe],
-  template: NATIVE_INPUT_TEMPLATE,
+  template: `
+    <div class="min-w-0 max-w-full space-y-1.5" [attr.data-validation-anchor]="validationAnchor()">
+      @if (label()) {
+        <label [for]="controlId()" class="block min-w-0 max-w-full whitespace-normal wrap-break-word text-[12px] font-light leading-[1.18] text-[#706876]">
+          {{ label() }}
+        </label>
+      }
+
+      <div class="date-picker-shell relative min-w-0">
+        <input
+          type="text"
+          tabindex="-1"
+          aria-hidden="true"
+          readonly
+          [value]="displayValue()"
+          placeholder="TT.MM.JJJJ"
+          [class]="dateDisplayClasses()"
+        />
+        <input
+          [id]="controlId()"
+          type="date"
+          lang="de-CH"
+          [formControl]="control()"
+          [min]="min()"
+          [max]="max()"
+          class="date-picker-native"
+          [attr.aria-invalid]="showError()"
+          [attr.aria-describedby]="describedBy()"
+          (blur)="markAsTouched()"
+        />
+      </div>
+
+      @if (showError()) {
+        <p [id]="errorId()" class="text-[12px] font-normal text-[#d81837]">
+          {{ errors() | validationError: label() }}
+        </p>
+      }
+    </div>
+  `,
 })
 export class DateInputComponent extends BaseFormControlComponent<string | null> {
-  protected readonly nativeType = 'date';
-}
+  dateDisplayClasses = computed(() => `${this.inputClasses()} date-display-input`);
 
-@Component({
-  selector: 'app-month-input',
-  standalone: true,
-  imports: [ReactiveFormsModule, ValidationErrorPipe],
-  template: NATIVE_INPUT_TEMPLATE,
-})
-export class MonthInputComponent extends BaseFormControlComponent<string | null> {
-  protected readonly nativeType = 'month';
+  displayValue(): string {
+    const value = this.control().value;
+    if (!value) {
+      return '';
+    }
+
+    const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+    if (!match) {
+      return value;
+    }
+
+    const [, year, month, day] = match;
+    return `${day}.${month}.${year}`;
+  }
 }
 
 @Component({
@@ -70,7 +118,7 @@ export class MonthInputComponent extends BaseFormControlComponent<string | null>
   template: `
     <div class="min-w-0 max-w-full space-y-1.5" [attr.data-validation-anchor]="validationAnchor()">
       @if (label()) {
-        <label [for]="controlId()" class="block min-w-0 max-w-full whitespace-normal wrap-break-word text-[16px] font-normal leading-[1.18] text-[#706876]">
+        <label [for]="controlId()" class="block min-w-0 max-w-full whitespace-normal wrap-break-word text-[12px] font-light leading-[1.18] text-[#706876]">
           {{ label() }}
         </label>
       }
@@ -78,8 +126,8 @@ export class MonthInputComponent extends BaseFormControlComponent<string | null>
       <input
         [id]="controlId()"
         type="text"
-        inputmode="decimal"
-        pattern="[0-9]*[.,]?[0-9]*"
+        inputmode="numeric"
+        pattern="[0-9]*"
         [value]="displayValue()"
         [placeholder]="placeholder()"
         [min]="min()"
@@ -92,7 +140,7 @@ export class MonthInputComponent extends BaseFormControlComponent<string | null>
       />
 
       @if (showError()) {
-        <p [id]="errorId()" class="text-xs font-semibold text-[#d81837]">
+        <p [id]="errorId()" class="text-[12px] font-normal text-[#d81837]">
           {{ errors() | validationError: label() }}
         </p>
       }
@@ -108,7 +156,10 @@ export class NumberInputComponent extends BaseFormControlComponent<number | null
   handleInput(event: Event): void {
     const control = this.control();
     const input = event.target as HTMLInputElement;
-    const rawValue = input.value.trim().replace(',', '.');
+    const rawValue = input.value.replace(/\D/g, '');
+    if (input.value !== rawValue) {
+      input.value = rawValue;
+    }
     const nextValue = rawValue === '' ? null : Number(rawValue);
 
     if (rawValue !== '' && !Number.isFinite(nextValue)) {
@@ -131,7 +182,7 @@ export class NumberInputComponent extends BaseFormControlComponent<number | null
   template: `
     <div class="min-w-0 max-w-full space-y-1.5" [attr.data-validation-anchor]="validationAnchor()">
       @if (label()) {
-        <label [for]="controlId()" class="block min-w-0 max-w-full whitespace-normal wrap-break-word text-[16px] font-normal leading-[1.4]! text-[#706876]">
+        <label [for]="controlId()" class="block min-w-0 max-w-full whitespace-normal wrap-break-word text-[12px] font-light leading-[1.4]! text-[#706876]">
           {{ label() }}
         </label>
       }
@@ -150,7 +201,7 @@ export class NumberInputComponent extends BaseFormControlComponent<number | null
       ></textarea>
 
       @if (showError()) {
-        <p [id]="errorId()" class="text-xs font-semibold text-[#d81837]">
+        <p [id]="errorId()" class="text-[12px] font-normal text-[#d81837]">
           {{ errors() | validationError: label() }}
         </p>
       }
@@ -210,7 +261,7 @@ export class TextAreaComponent extends BaseFormControlComponent<string | null> {
       </label>
 
       @if (showError()) {
-        <p [id]="errorId()" class="text-xs font-semibold text-[#d81837]">
+        <p [id]="errorId()" class="text-[12px] font-normal text-[#d81837]">
           {{ errors() | validationError: label() }}
         </p>
       }

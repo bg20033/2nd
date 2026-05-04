@@ -1,4 +1,7 @@
-<footer class="form-footer backdrop-blur-md bg-gradient-to-t from-[#260b41] to-transparent">
+<footer
+  class="form-footer backdrop-blur-md bg-gradient-to-t from-[#260b41] to-transparent"
+  [class.form-footer--keyboard-open]="keyboardOpen()"
+>
   <div class="footer-content">
     <div class="landing-tools">
       <button class="landing-tool" type="button" aria-label="Chat help" (click)="handleChat()">

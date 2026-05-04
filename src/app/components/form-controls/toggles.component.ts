@@ -12,7 +12,7 @@ import { ControlOptionPrimitive, OptionValue } from './control-option';
   template: `
     <div class="min-w-0 max-w-full space-y-1.5" [attr.data-validation-anchor]="validationAnchor()">
       @if (label()) {
-        <div class="block min-w-0 max-w-full whitespace-normal break-words text-[16px] font-normal leading-[1.18] text-[#706876]">
+        <div class="block min-w-0 max-w-full whitespace-normal break-words text-[12px] font-light leading-[1.18] text-[#706876]">
           {{ label() }}
         </div>
       }
@@ -43,7 +43,7 @@ import { ControlOptionPrimitive, OptionValue } from './control-option';
       </div>
 
       @if (showError()) {
-        <p [id]="errorId()" class="text-xs font-semibold text-[#d81837]">
+        <p [id]="errorId()" class="text-[12px] font-normal text-[#d81837]">
           {{ errors() | validationError: label() }}
         </p>
       }
@@ -78,11 +78,11 @@ export class OptionToggleComponent extends BaseFormControlComponent<OptionValue 
 @Component({
   selector: 'app-yes-no-toggle',
   standalone: true,
-  imports: [ReactiveFormsModule, ValidationErrorPipe],
+  imports: [ReactiveFormsModule],
   template: `
     <div class="min-w-0 max-w-full space-y-1.5" [attr.data-validation-anchor]="validationAnchor()">
       @if (label()) {
-        <div class="block min-w-0 max-w-full whitespace-normal break-words text-[16px] font-normal leading-[1.18] text-[#706876]">
+        <div class="block min-w-0 max-w-full whitespace-normal break-words text-[12px] font-light leading-[1.18] text-[#706876]">
           {{ label() }}
         </div>
       }
@@ -110,8 +110,8 @@ export class OptionToggleComponent extends BaseFormControlComponent<OptionValue 
       </div>
 
       @if (showError()) {
-        <p [id]="errorId()" class="text-xs font-semibold text-[#d81837]">
-          {{ errors() | validationError: label() }}
+        <p [id]="errorId()" class="text-[12px] font-normal text-[#d81837]">
+          {{ yesNoErrorMessage() }}
         </p>
       }
     </div>
@@ -138,5 +138,9 @@ export class YesNoToggleComponent extends BaseFormControlComponent<OptionValue<b
 
   isSelected(option: OptionValue<boolean>): boolean {
     return this.value()?.value === option.value;
+  }
+
+  yesNoErrorMessage(): string {
+    return this.errors()?.['required'] ? 'Pick one.' : '';
   }
 }

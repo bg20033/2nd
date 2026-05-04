@@ -88,8 +88,8 @@ export class QuestionnaireTopbarComponent {
   }
 
   protected topbarLabelClass(tab: PersonTab): string {
-    const weight = tab.state === 'active' ? 'font-semibold text-slate-950' : tab.canOpen ? 'font-medium text-slate-500' : 'font-medium text-slate-400';
-    return `topbar__label max-w-full overflow-hidden text-ellipsis whitespace-nowrap text-[0.8rem] leading-none ${weight}`;
+    const weight = tab.state === 'active' ? 'font-normal text-slate-950' : tab.canOpen ? 'font-normal text-slate-500' : 'font-normal text-slate-400';
+    return `topbar__label max-w-full overflow-hidden text-ellipsis whitespace-nowrap text-[12px] leading-none ${weight}`;
   }
 
   protected topbarAvatarClass(tab: PersonTab): string {

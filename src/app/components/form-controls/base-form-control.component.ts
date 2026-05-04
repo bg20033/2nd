@@ -13,6 +13,7 @@ export abstract class BaseFormControlComponent<T> {
   id = input('');
   min = input<string | number | null>(null);
   max = input<string | number | null>(null);
+  digitsOnly = input(false);
 
   value = signal<T | null>(null);
   errors = signal<ValidationErrors | null>(null);
@@ -34,10 +35,12 @@ export abstract class BaseFormControlComponent<T> {
   describedBy = computed(() => (this.showError() ? this.errorId() : null));
   activeBorder = computed(() => this.touched() && this.hasValue(this.value()));
   validationAnchor = computed(() => (this.showError() ? '' : null));
+  inputMode = computed(() => (this.digitsOnly() ? 'numeric' : null));
+  inputPattern = computed(() => (this.digitsOnly() ? '[0-9]*' : null));
 
   inputClasses = computed(() => {
     const base =
-      'block h-[var(--control-height)] min-h-[var(--control-height)] w-full min-w-0 max-w-full rounded-[11px] border bg-[#e6d9f4] px-3 py-0 text-[16px] font-semibold text-[#08050c] outline-none transition ' +
+      'block h-[var(--control-height)] min-h-[var(--control-height)] w-full min-w-0 max-w-full rounded-[11px] border bg-[#e6d9f4] px-3 py-0 text-[14px] font-normal text-[#08050c] outline-none transition ' +
       'placeholder:text-[#a996bd] disabled:cursor-not-allowed disabled:bg-[#dfd1ee] disabled:text-[#a893bd]';
     let state = 'border-[#cabadc] focus:border-[#cabadc] focus:ring-4 focus:ring-[#7d29de14]';
 
@@ -69,6 +72,23 @@ export abstract class BaseFormControlComponent<T> {
     const control = this.control();
     control.markAsTouched();
     this.syncControlState(control);
+  }
+
+  filterDigits(event: Event): void {
+    if (!this.digitsOnly()) {
+      return;
+    }
+
+    const inputElement = event.target as HTMLInputElement;
+    const digits = inputElement.value.replace(/\D/g, '');
+    if (inputElement.value !== digits) {
+      inputElement.value = digits;
+    }
+
+    const control = this.control() as FormControl<string | null>;
+    control.setValue(digits || null);
+    control.markAsDirty();
+    this.syncControlState(this.control());
   }
 
   protected syncControlState(control: FormControl<T>): void {

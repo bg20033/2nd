@@ -1,6 +1,8 @@
-import { Component, computed, effect, input, output, signal } from '@angular/core';
+import { Component, computed, effect, inject, input, output, signal } from '@angular/core';
+import { debounceTime, distinctUntilChanged, filter, map, startWith, switchMap } from 'rxjs/operators';
 
-import { MonthInputComponent, OptionToggleComponent, TextAreaComponent, TextInputComponent, YesNoToggleComponent } from '../../../form-controls';
+import { DateInputComponent, OptionToggleComponent, TextAreaComponent, TextInputComponent, YesNoToggleComponent } from '../../../form-controls';
+import { LocationService } from '../../../../services/location.service';
 import { QuestionnaireFormService } from '../questionnaire-form.service';
 import { DiagnosisEntryGroup, DiagnosisQuestionId } from '../questionnaire.types';
 
@@ -12,7 +14,7 @@ export type DiagnosisEntryVariant = 'standard' | 'operation' | 'medication';
   imports: [
     TextAreaComponent,
     TextInputComponent,
-    MonthInputComponent,
+    DateInputComponent,
     YesNoToggleComponent,
     OptionToggleComponent,
   ],
@@ -29,6 +31,7 @@ export class DiagnosisEntryComponent {
   remove = output<DiagnosisEntryGroup>();
 
   private stateVersion = signal(0);
+  private readonly locationService = inject(LocationService);
 
   implantYes = computed(() => {
     this.stateVersion();
@@ -57,6 +60,36 @@ export class DiagnosisEntryComponent {
       const subscription = this.entry().events.subscribe(() => {
         this.stateVersion.update((version) => version + 1);
       });
+      onCleanup(() => subscription.unsubscribe());
+    });
+
+    effect((onCleanup) => {
+      const entry = this.entry();
+      const postalCode = entry.controls.doctorPostalCode;
+      const city = entry.controls.doctorCity;
+      const subscription = postalCode.valueChanges
+        .pipe(
+          startWith(postalCode.value),
+          map((value) => value?.trim() ?? ''),
+          debounceTime(250),
+          distinctUntilChanged(),
+          filter((value) => /^\d{4,6}$/.test(value)),
+          switchMap((value) =>
+            this.locationService.searchLocations(value).pipe(
+              map((locations) => locations.find((location) => location.zipCode === value) ?? locations[0] ?? null),
+            ),
+          ),
+        )
+        .subscribe((location) => {
+          if (!location || city.value === location.locationName) {
+            return;
+          }
+
+          city.setValue(location.locationName);
+          city.markAsDirty();
+          city.updateValueAndValidity();
+        });
+
       onCleanup(() => subscription.unsubscribe());
     });
   }

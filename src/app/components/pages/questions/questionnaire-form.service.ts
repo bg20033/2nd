@@ -36,24 +36,24 @@ type ToggleValidatorConfig = {
 
 type DiagnosisAnswerKey = 'q4' | 'q5' | 'q6' | 'q7' | 'q8' | 'q9' | 'q10' | 'q12';
 
-const MONTH_PATTERN = /^\d{4}-(0[1-9]|1[0-2])$/;
+const DATE_PATTERN = /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/;
 
-export function monthDateValidator(control: AbstractControl<string | null>): ValidationErrors | null {
+export function fullDateValidator(control: AbstractControl<string | null>): ValidationErrors | null {
   const value = control.value;
 
   if (!value) {
     return null;
   }
 
-  return MONTH_PATTERN.test(value) ? null : { monthDate: true };
+  return DATE_PATTERN.test(value) ? null : { fullDate: true };
 }
 
-export function monthOrderValidator(fromKey = 'from', toKey = 'to'): ValidatorFn {
+export function dateOrderValidator(fromKey = 'from', toKey = 'to'): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
     const from = control.get(fromKey)?.value;
     const to = control.get(toKey)?.value;
 
-    if (!from || !to || !MONTH_PATTERN.test(from) || !MONTH_PATTERN.test(to)) {
+    if (!from || !to || !DATE_PATTERN.test(from) || !DATE_PATTERN.test(to)) {
       return null;
     }
 
@@ -68,7 +68,7 @@ export function postalCodeValidator(control: AbstractControl<string | null>): Va
 
 export function streetNumberValidator(control: AbstractControl<string | null>): ValidationErrors | null {
   const value = control.value;
-  return !value || /^[0-9]+[a-zA-Z]?([/-][0-9]+[a-zA-Z]?)?$/.test(value) ? null : { streetNumber: true };
+  return !value || /^\d+$/.test(value) ? null : { streetNumber: true };
 }
 
 export function minDiagnosisEntriesValidator(
@@ -369,8 +369,8 @@ export class QuestionnaireFormService implements OnDestroy {
         }),
         questionId: new FormControl(questionId, { nonNullable: true }),
         condition: this.textControl([Validators.required, Validators.minLength(5)]),
-        from: this.monthControl([Validators.required]),
-        to: this.monthControl(),
+        from: this.dateControl([Validators.required]),
+        to: this.dateControl(),
         recovered: this.yesNoControl(true),
         doctorGivenNames: this.textControl([Validators.required, Validators.minLength(2)]),
         doctorFamilyName: this.textControl([Validators.required, Validators.minLength(2)]),
@@ -386,7 +386,7 @@ export class QuestionnaireFormService implements OnDestroy {
         amountPerDay: this.textControl(),
         duration: this.textControl(),
       },
-      { validators: monthOrderValidator('from', 'to') },
+      { validators: dateOrderValidator('from', 'to') },
     );
   }
 
@@ -624,8 +624,8 @@ export class QuestionnaireFormService implements OnDestroy {
     return new FormControl<string | null>(null, validators);
   }
 
-  private monthControl(validators: ValidatorFn[] = []): StringControl {
-    return new FormControl<string | null>(null, [...validators, monthDateValidator]);
+  private dateControl(validators: ValidatorFn[] = []): StringControl {
+    return new FormControl<string | null>(null, [...validators, fullDateValidator]);
   }
 
   private yesNoControl(required = false): YesNoControl {

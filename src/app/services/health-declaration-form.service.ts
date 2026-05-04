@@ -536,10 +536,30 @@ export class HealthDeclarationFormService {
         continue;
       }
       const entry = questionnaire.addDiagnosis(questionId);
-      entry.patchValue(diagnosis, { emitEvent: false });
+      entry.patchValue(this.normalizeDiagnosisDates(diagnosis as Record<string, unknown>), { emitEvent: false });
     }
 
     questionnaire.refreshValidationState();
+  }
+
+  private normalizeDiagnosisDates(diagnosis: Record<string, unknown>): Record<string, unknown> {
+    return {
+      ...diagnosis,
+      from: this.normalizeFullDate(diagnosis['from']),
+      to: this.normalizeFullDate(diagnosis['to']),
+    };
+  }
+
+  private normalizeFullDate(value: unknown): unknown {
+    if (typeof value !== 'string') {
+      return value;
+    }
+
+    if (/^\d{4}-(0[1-9]|1[0-2])$/.test(value)) {
+      return `${value}-01`;
+    }
+
+    return value;
   }
 
   private saveToStorage(): void {

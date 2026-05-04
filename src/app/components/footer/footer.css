@@ -14,6 +14,16 @@
     calc(1rem + env(safe-area-inset-bottom))
     max(0.9rem, env(safe-area-inset-left));
   pointer-events: none;
+  transition:
+    opacity 160ms ease,
+    transform 160ms ease,
+    visibility 160ms ease;
+}
+
+.form-footer--keyboard-open {
+  visibility: hidden;
+  opacity: 0;
+  transform: translateY(110%);
 }
 
 .footer-content {

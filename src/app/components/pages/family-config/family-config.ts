@@ -353,7 +353,7 @@ export class FamilyConfig {
       return;
     }
 
-    const top = target.getBoundingClientRect().top + this.scrollY() - 18;
+    const top = target.getBoundingClientRect().top + this.scrollY() - 118;
     this.scrollTo(Math.max(top, 0));
     const control = target.querySelector<HTMLElement>('input, button, [tabindex]');
     control?.focus({ preventScroll: true });

@@ -31,7 +31,7 @@
       [options]="formService.dentaLevelOptions"
       variant="list"
     />
-  <p class="text-[16px] leading-[1.18] text-[#706876]">
+  <p class="text-[12px] leading-[1.18] text-[#706876]">
     In die Zahnbehandlungsversicherung werden nur Personen mit saniertem, nicht behandlungsbedürftigem Gebiss aufgenommen.
   </p>
 </app-question-card-shell>
@@ -43,13 +43,13 @@
   <div class="grid gap-3 max-[680px]:gap-[0.85rem]">
     <app-textarea [control]="dental.toothStatusNotes" label="" [rows]="1" />
     <div class="grid gap-[0.55rem]">
-      <p class="m-0 text-[18px] font-bold leading-tight text-[#050307]">Zustand der Zähne – Bitte im Zahnschema folgende Angaben eintragen</p>
+      <p class="m-0 text-[14px] font-normal leading-tight text-[#050307]">Zustand der Zähne – Bitte im Zahnschema folgende Angaben eintragen</p>
       <img class="block h-auto w-[min(100%,22rem)]" src="assets/1list.svg" alt="Dental chart legend" />
     </div>
     <div class="dental-chart-stack">
       <div class="dental-chart-numbers">
         @for (label of dentalChartLabels; track $index) {
-          <span class="min-w-0 text-center text-[0.78rem] font-semibold leading-none text-[#8a7b9c]">{{ label }}</span>
+          <span class="min-w-0 text-center text-[12px] font-normal leading-none text-[#8a7b9c]">{{ label }}</span>
         }
       </div>
       <div class="dental-finding__grid relative grid min-w-0 grid-cols-16 overflow-hidden rounded-[0.7rem] border border-[rgba(178,140,229,0.55)] bg-[rgba(234,222,245,0.7)]">
@@ -75,7 +75,7 @@
       </div>
       <div class="dental-chart-numbers dental-chart-numbers--bottom">
         @for (label of dentalChartLabels; track $index) {
-          <span class="min-w-0 text-center text-[0.78rem] font-semibold leading-none text-[#8a7b9c]">{{ label }}</span>
+          <span class="min-w-0 text-center text-[12px] font-normal leading-none text-[#8a7b9c]">{{ label }}</span>
         }
       </div>
     </div>
@@ -89,7 +89,7 @@
 <app-binary-question-card number="16" [control]="q.q16" title="Parodontitis">
   <div class="grid gap-3 max-[680px]:gap-[0.85rem]">
     <app-option-toggle [control]="dental.parodontitisBleeding" label="Zahnfleischbluten" [options]="formService.bleedingOptions" />
-    <div class="grid gap-[0.55rem] text-[0.95rem] leading-[1.35] text-[#6f657a]">
+    <div class="grid gap-[0.55rem] text-[12px] leading-[1.35] text-[#6f657a]">
       <p>Es sind im Parodontalstatus einzutragen:</p>
       <p>1. Taschen von 4 mm und mehr Tiefe</p>
       <p>2. ZB = Zahnbeweglichkeit mit Grad 1, 2, 3 und 4</p>
@@ -97,7 +97,7 @@
     <div class="dental-chart-stack">
       <div class="dental-chart-numbers">
         @for (label of dentalChartLabels; track $index) {
-          <span class="min-w-0 text-center text-[0.78rem] font-semibold leading-none text-[#8a7b9c]">{{ label }}</span>
+          <span class="min-w-0 text-center text-[12px] font-normal leading-none text-[#8a7b9c]">{{ label }}</span>
         }
       </div>
       <div class="dental-finding__grid relative grid min-w-0 grid-cols-16 overflow-hidden rounded-[0.7rem] border border-[rgba(178,140,229,0.55)] bg-[rgba(234,222,245,0.7)]">
@@ -123,7 +123,7 @@
       </div>
       <div class="dental-chart-numbers dental-chart-numbers--bottom">
         @for (label of dentalChartLabels; track $index) {
-          <span class="min-w-0 text-center text-[0.78rem] font-semibold leading-none text-[#8a7b9c]">{{ label }}</span>
+          <span class="min-w-0 text-center text-[12px] font-normal leading-none text-[#8a7b9c]">{{ label }}</span>
         }
       </div>
     </div>

@@ -11,7 +11,6 @@
   display: grid;
   align-content: space-between;
   width: min(100%,800px);
-  overflow: hidden;
 }
 
 .landing-frame > * {
@@ -63,7 +62,7 @@
   border-color: rgba(214, 187, 255, 0.22);
   background: linear-gradient(180deg, rgba(48, 25, 79, 0.88), rgba(40, 18, 68, 0.95));
   color: #ffffff;
-  font-weight: 400 !important;
+  font-weight: 4§00 !important;
 }
 
 .landing-card::before {
