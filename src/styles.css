@@ -72,47 +72,8 @@ textarea {
   line-height: 1.5;
 }
 
-input[type='date'],
-input[type='month'] {
-  appearance: none;
-  -webkit-appearance: none;
-  padding-right: 3rem !important;
-  background-image: var(--date-input-icon) !important;
-  background-repeat: no-repeat !important;
-  background-position: right 1rem center !important;
-  background-size: 1rem 1rem !important;
-}
-
-input[type='date']::-webkit-calendar-picker-indicator,
-input[type='month']::-webkit-calendar-picker-indicator {
-  opacity: 0;
-  cursor: pointer;
-}
-
-.date-picker-shell {
-  height: var(--control-height);
-}
-
-.date-display-input {
-  padding-right: 3rem !important;
-  background-image: var(--date-input-icon) !important;
-  background-repeat: no-repeat !important;
-  background-position: right 1rem center !important;
-  background-size: 1rem 1rem !important;
-  pointer-events: none;
-}
-
-.date-display-input::placeholder {
-  color: #050307;
-}
-
-.date-picker-native {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: var(--control-height);
-  min-height: var(--control-height);
-  opacity: 0;
+input[type='date']::-webkit-calendar-picker-indicator {
+  background: url('/assets/cal.svg') center / 1rem 1rem no-repeat;
   cursor: pointer;
 }
 

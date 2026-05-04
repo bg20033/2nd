@@ -3,6 +3,13 @@ import { FormControl, ValidationErrors, Validators } from '@angular/forms';
 
 let nextControlId = 0;
 
+export type ControlOptionPrimitive = string | boolean;
+
+export interface OptionValue<T extends ControlOptionPrimitive = ControlOptionPrimitive> {
+  value: T;
+  label: string;
+}
+
 @Directive({
   standalone: true,
 })

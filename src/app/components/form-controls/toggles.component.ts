@@ -1,9 +1,8 @@
 import { Component, computed, input } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 
-import { ValidationErrorPipe } from '../../pipes';
-import { BaseFormControlComponent } from './base-form-control.component';
-import { ControlOptionPrimitive, OptionValue } from './control-option';
+import { ValidationErrorPipe } from '../../pipes/validation-error.pipe';
+import { BaseFormControlComponent, ControlOptionPrimitive, OptionValue } from './base-form-control.component';
 
 @Component({
   selector: 'app-option-toggle',

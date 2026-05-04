@@ -1,5 +1,6 @@
-import { InjectionToken, Pipe, PipeTransform, Provider, inject } from '@angular/core';
+import { InjectionToken, Pipe, PipeTransform, inject } from '@angular/core';
 import { ValidationErrors } from '@angular/forms';
+import { ValidationErrorKey } from '../constants/app-enums';
 
 export type ValidationErrorMessageContext = {
   key: string;
@@ -13,32 +14,24 @@ export type ValidationErrorMessage = string | ValidationErrorMessageFactory;
 export type ValidationErrorMessages = Record<string, ValidationErrorMessage>;
 
 export const DEFAULT_VALIDATION_ERROR_MESSAGES: ValidationErrorMessages = {
-  required: ({ label }) => `${label} is required.`,
-  minlength: ({ label, error }) =>
+  [ValidationErrorKey.Required]: ({ label }) => `${label} is required.`,
+  [ValidationErrorKey.MinLength]: ({ label, error }) =>
     `${label} must be at least ${getErrorValue(error, 'requiredLength')} characters.`,
-  maxlength: ({ label, error }) =>
+  [ValidationErrorKey.MaxLength]: ({ label, error }) =>
     `${label} must be at most ${getErrorValue(error, 'requiredLength')} characters.`,
-  min: ({ label, error }) => `${label} must be at least ${getErrorValue(error, 'min')}.`,
-  max: ({ label, error }) => `${label} must be at most ${getErrorValue(error, 'max')}.`,
-  email: ({ label }) => `${label} must be a valid email address.`,
-  pattern: ({ label }) => `${label} has an invalid format.`,
-  fullDate: ({ label }) => `${label} must be a valid date.`,
-  dateOrder: () => 'End date must be after start date.',
-  postalCode: ({ label }) => `${label} must be 4 to 6 digits.`,
-  streetNumber: ({ label }) => `${label} must be a valid street number.`,
+  [ValidationErrorKey.Min]: ({ label, error }) => `${label} must be at least ${getErrorValue(error, 'min')}.`,
+  [ValidationErrorKey.Max]: ({ label, error }) => `${label} must be at most ${getErrorValue(error, 'max')}.`,
+  [ValidationErrorKey.Email]: ({ label }) => `${label} must be a valid email address.`,
+  [ValidationErrorKey.Pattern]: ({ label }) => `${label} has an invalid format.`,
+  [ValidationErrorKey.FullDate]: ({ label }) => `${label} must be a valid date.`,
+  [ValidationErrorKey.DateOrder]: () => 'End date must be after start date.',
+  [ValidationErrorKey.PostalCode]: ({ label }) => `${label} must be 4 to 6 digits.`,
+  [ValidationErrorKey.StreetNumber]: ({ label }) => `${label} must be a valid street number.`,
 };
 
 export const VALIDATION_ERROR_MESSAGES = new InjectionToken<ValidationErrorMessages[]>(
   'VALIDATION_ERROR_MESSAGES',
 );
-
-export function provideValidationErrorMessages(messages: ValidationErrorMessages): Provider {
-  return {
-    provide: VALIDATION_ERROR_MESSAGES,
-    multi: true,
-    useValue: messages,
-  };
-}
 
 @Pipe({
   name: 'validationError',

@@ -19,10 +19,23 @@ import { QuestionnaireTopbarComponent } from './questionnaire-topbar.component';
   standalone: true,
   template: `
     <section class="grid justify-items-center gap-[0.85rem] px-4 py-8 text-center">
-      <div class="grid h-16 w-16 place-items-center rounded-full bg-[#7d29de] text-[14px] font-normal text-white" aria-hidden="true">✓</div>
-      <h2 class="m-0 text-[14px] font-normal tracking-normal text-[#1d1426]">Questionnaire complete</h2>
-      <p class="max-w-96 text-[12px] font-normal leading-[1.45] text-[#6f657a]">Your medical and dental questionnaire is ready for review.</p>
-      <button class="button button-primary mt-[0.35rem] min-w-40" type="button" (click)="completed.emit()">
+      <div
+        class="grid h-16 w-16 place-items-center rounded-full bg-[#7d29de] text-[14px] font-normal text-white"
+        aria-hidden="true"
+      >
+        ✓
+      </div>
+      <h2 class="m-0 text-[14px] font-normal tracking-normal text-[#1d1426]">
+        Questionnaire complete
+      </h2>
+      <p class="max-w-96 text-[12px] font-normal leading-[1.45] text-[#6f657a]">
+        Your medical and dental questionnaire is ready for review.
+      </p>
+      <button
+        class="button button-primary mt-[0.35rem] min-w-40"
+        type="button"
+        (click)="completed.emit()"
+      >
         Back to start
       </button>
     </section>
@@ -64,7 +77,9 @@ export class QuestionnaireFormComponent {
   }
 
   footerNextLabel(): string {
-    return this.declaration.currentPersonIndex() < this.declaration.peopleArray.length - 1 ? 'Next person' : 'Next';
+    return this.declaration.currentPersonIndex() < this.declaration.peopleArray.length - 1
+      ? 'Next person'
+      : 'Next';
   }
 
   submit(): void {
@@ -132,8 +147,9 @@ export class QuestionnaireFormComponent {
 
   private validationScope(): HTMLElement {
     return (
-      this.host.nativeElement.querySelector<HTMLElement>('[data-validation-scope="questionnaire"]') ??
-      this.host.nativeElement
+      this.host.nativeElement.querySelector<HTMLElement>(
+        '[data-validation-scope="questionnaire"]',
+      ) ?? this.host.nativeElement
     );
   }
 
@@ -199,7 +215,7 @@ export class QuestionnaireFormComponent {
       return 18;
     }
     const topbar = document.querySelector<HTMLElement>('app-questionnaire-topbar');
-    return (topbar?.getBoundingClientRect().height ?? 0) + 158;
+    return (topbar?.getBoundingClientRect().height ?? 0) + window.innerHeight / 2;
   }
 
   private scrollY(): number {

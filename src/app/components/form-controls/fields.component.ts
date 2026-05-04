@@ -1,7 +1,7 @@
 import { Component, ElementRef, computed, effect, input, viewChild } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 
-import { ValidationErrorPipe } from '../../pipes';
+import { ValidationErrorPipe } from '../../pipes/validation-error.pipe';
 import { BaseFormControlComponent } from './base-form-control.component';
 
 const NATIVE_INPUT_TEMPLATE = `
@@ -52,63 +52,11 @@ export class TextInputComponent extends BaseFormControlComponent<string | null> 
   selector: 'app-date-input',
   standalone: true,
   imports: [ReactiveFormsModule, ValidationErrorPipe],
-  template: `
-    <div class="min-w-0 max-w-full space-y-1.5" [attr.data-validation-anchor]="validationAnchor()">
-      @if (label()) {
-        <label [for]="controlId()" class="block min-w-0 max-w-full whitespace-normal wrap-break-word text-[12px] font-light leading-[1.18] text-[#706876]">
-          {{ label() }}
-        </label>
-      }
-
-      <div class="date-picker-shell relative min-w-0">
-        <input
-          type="text"
-          tabindex="-1"
-          aria-hidden="true"
-          readonly
-          [value]="displayValue()"
-          placeholder="TT.MM.JJJJ"
-          [class]="dateDisplayClasses()"
-        />
-        <input
-          [id]="controlId()"
-          type="date"
-          lang="de-CH"
-          [formControl]="control()"
-          [min]="min()"
-          [max]="max()"
-          class="date-picker-native"
-          [attr.aria-invalid]="showError()"
-          [attr.aria-describedby]="describedBy()"
-          (blur)="markAsTouched()"
-        />
-      </div>
-
-      @if (showError()) {
-        <p [id]="errorId()" class="text-[12px] font-normal text-[#d81837]">
-          {{ errors() | validationError: label() }}
-        </p>
-      }
-    </div>
-  `,
+  template: NATIVE_INPUT_TEMPLATE,
 })
 export class DateInputComponent extends BaseFormControlComponent<string | null> {
-  dateDisplayClasses = computed(() => `${this.inputClasses()} date-display-input`);
-
-  displayValue(): string {
-    const value = this.control().value;
-    if (!value) {
-      return '';
-    }
-
-    const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
-    if (!match) {
-      return value;
-    }
-
-    const [, year, month, day] = match;
-    return `${day}.${month}.${year}`;
-  }
+  protected readonly nativeType = 'date';
+  protected readonly datePickerLang = 'de-CH';
 }
 
 @Component({

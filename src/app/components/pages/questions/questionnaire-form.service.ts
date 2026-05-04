@@ -1,15 +1,21 @@
 import { Injectable, OnDestroy, signal } from '@angular/core';
-import { AbstractControl, FormArray, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import { AbstractControl, FormArray, FormControl, FormGroup, ValidatorFn, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
 import {
-  BleedingOption,
-  DentalLevel,
+  BLEEDING_OPTIONS,
+  DENTA_LEVEL_OPTIONS,
+  DENTAL_LEVEL_OPTIONS,
+  DIAGNOSIS_QUESTION_IDS,
+  IMPLANT_STATUS_OPTIONS,
+  JAW_COST_OPTIONS,
+  PROSTHESES_CONDITION_OPTIONS,
+  QUESTIONNAIRE_GENDER_OPTIONS,
   DiagnosisQuestionId as DiagnosisQuestion,
   Gender as GenderEnum,
-  ImplantStatus,
-  JawCost,
+  QuestionAnswerKey,
   ProsthesesCondition,
+  SubstanceKind,
 } from '../../../constants/app-enums';
 import { OptionValue } from '../../form-controls';
 import {
@@ -27,6 +33,18 @@ import {
   StringControl,
   YesNoControl,
 } from './questionnaire.types';
+import {
+  DiagnosisAnswerKey,
+  DIAGNOSIS_QUESTION_TO_ANSWER_KEY,
+  SUBSTANCE_FIELD_MAP,
+} from './questionnaire-metadata';
+import {
+  dateOrderValidator,
+  fullDateValidator,
+  minDiagnosisEntriesValidator,
+  postalCodeValidator,
+  streetNumberValidator,
+} from './questionnaire-validators';
 
 type ToggleValidatorConfig = {
   active: boolean;
@@ -34,119 +52,15 @@ type ToggleValidatorConfig = {
   resetValue?: unknown;
 };
 
-type DiagnosisAnswerKey = 'q4' | 'q5' | 'q6' | 'q7' | 'q8' | 'q9' | 'q10' | 'q12';
-
-const DATE_PATTERN = /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/;
-
-export function fullDateValidator(control: AbstractControl<string | null>): ValidationErrors | null {
-  const value = control.value;
-
-  if (!value) {
-    return null;
-  }
-
-  return DATE_PATTERN.test(value) ? null : { fullDate: true };
-}
-
-export function dateOrderValidator(fromKey = 'from', toKey = 'to'): ValidatorFn {
-  return (control: AbstractControl): ValidationErrors | null => {
-    const from = control.get(fromKey)?.value;
-    const to = control.get(toKey)?.value;
-
-    if (!from || !to || !DATE_PATTERN.test(from) || !DATE_PATTERN.test(to)) {
-      return null;
-    }
-
-    return to >= from ? null : { dateOrder: true };
-  };
-}
-
-export function postalCodeValidator(control: AbstractControl<string | null>): ValidationErrors | null {
-  const value = control.value;
-  return !value || /^\d{4,6}$/.test(value) ? null : { postalCode: true };
-}
-
-export function streetNumberValidator(control: AbstractControl<string | null>): ValidationErrors | null {
-  const value = control.value;
-  return !value || /^\d+$/.test(value) ? null : { streetNumber: true };
-}
-
-export function minDiagnosisEntriesValidator(
-  questionId: DiagnosisQuestionId,
-  answerControl: FormControl<OptionValue<boolean> | null>,
-  min = 1,
-): ValidatorFn {
-  return (control: AbstractControl): ValidationErrors | null => {
-    const entries = control as FormArray<DiagnosisEntryGroup>;
-    const answerIsYes = answerControl.value?.value === true;
-
-    if (!answerIsYes) {
-      return null;
-    }
-
-    const count = entries.controls.filter((entry) => entry.controls.questionId.value === questionId).length;
-    return count >= min ? null : { [`minDiagnosis_${questionId}`]: { min, actual: count, questionId } };
-  };
-}
-
-const DIAGNOSIS_QUESTION_IDS: readonly DiagnosisQuestionId[] = [
-  'Q4',
-  'Q5',
-  'Q6',
-  'Q7',
-  'Q8',
-  'Q9',
-  'Q10',
-  'Q12',
-];
-
 @Injectable()
 export class QuestionnaireFormService implements OnDestroy {
-  readonly genderOptions: readonly OptionValue<Gender>[] = [
-    { value: GenderEnum.Female, label: 'Female' },
-    { value: GenderEnum.Male, label: 'Male' },
-    { value: GenderEnum.Other, label: 'Other' },
-  ];
-
-  readonly implantStatusOptions = [
-    { value: ImplantStatus.InPlace, label: 'Verbleibt' },
-    { value: ImplantStatus.Removed, label: 'Entfernt' },
-    { value: ImplantStatus.WillBeRemoved, label: 'Wird entfernt' },
-  ] as const;
-
-  readonly dentalLevelOptions = [
-    { value: DentalLevel.UpTo1000, label: 'Bis CHF 1 000.-' },
-    { value: DentalLevel._1000To3000, label: 'CHF 1 000.- bis CHF 3 000.-' },
-    { value: DentalLevel._3000To5000, label: 'CHF 3 000.- bis CHF 5 000.-' },
-    { value: DentalLevel.Over5000, label: 'Über CHF 5 000.-' },
-  ] as const;
-
-  readonly dentaLevelOptions = [
-    { value: DentalLevel.UpTo1000, label: '1. 50 % max. CHF 500.' },
-    { value: DentalLevel._1000To3000, label: '2. 50 % max. CHF 1 000.' },
-    { value: DentalLevel._3000To5000, label: '3. 75 % max. CHF 1 500.' },
-    { value: DentalLevel.Over5000, label: '4. 75 % max. CHF 2 000.' },
-  ] as const;
-
-  readonly prosthesesConditionOptions = [
-    { value: ProsthesesCondition.Good, label: 'Gut' },
-    { value: ProsthesesCondition.Medium, label: 'Mittel' },
-    { value: ProsthesesCondition.Poor, label: 'Schlecht' },
-  ] as const;
-
-  readonly bleedingOptions = [
-    { value: BleedingOption.Yes, label: 'Ja' },
-    { value: BleedingOption.No, label: 'Nein' },
-    { value: BleedingOption.Partial, label: 'Teilweise' },
-    { value: BleedingOption.Everywhere, label: 'Überall' },
-  ] as const;
-
-  readonly jawCostOptions = [
-    { value: JawCost.UpTo5000, label: 'Bis CHF 5 000.-' },
-    { value: JawCost._1000To3000, label: 'CHF 1 000.- bis CHF 3 000.-' },
-    { value: JawCost._3000To5000, label: 'CHF 3 000.- bis CHF 5 000.-' },
-    { value: JawCost.Over10000, label: 'Über CHF 10 000.-' },
-  ] as const;
+  readonly genderOptions: readonly OptionValue<Gender>[] = QUESTIONNAIRE_GENDER_OPTIONS;
+  readonly implantStatusOptions = IMPLANT_STATUS_OPTIONS;
+  readonly dentalLevelOptions = DENTAL_LEVEL_OPTIONS;
+  readonly dentaLevelOptions = DENTA_LEVEL_OPTIONS;
+  readonly prosthesesConditionOptions = PROSTHESES_CONDITION_OPTIONS;
+  readonly bleedingOptions = BLEEDING_OPTIONS;
+  readonly jawCostOptions = JAW_COST_OPTIONS;
 
   readonly form: QuestionnaireForm = new FormGroup({
     applicantGender: new FormControl<OptionValue<Gender> | null>(null, Validators.required),
@@ -284,44 +198,49 @@ export class QuestionnaireFormService implements OnDestroy {
 
   private createQuestionAnswerGroup(): FormGroup<QuestionAnswerControls> {
     return new FormGroup({
-      q4: this.yesNoControl(true),
-      q4a: this.textControl(),
-      q4b: this.yesNoControl(),
-      q5: this.yesNoControl(true),
-      q6: this.yesNoControl(true),
-      q7: this.yesNoControl(true),
-      q8: this.yesNoControl(true),
-      q9: this.yesNoControl(true),
-      q9a: this.textControl(),
-      q10: this.yesNoControl(true),
-      q10a: this.yesNoControl(),
-      q11: this.yesNoControl(),
-      q12: this.yesNoControl(true),
-      q12a: this.textControl(),
-      q13: this.yesNoControl(true),
-      q16: this.yesNoControl(true),
-      q17: this.yesNoControl(true),
+      [QuestionAnswerKey.Q4]: this.yesNoControl(true),
+      [QuestionAnswerKey.Q4A]: this.textControl(),
+      [QuestionAnswerKey.Q4B]: this.yesNoControl(),
+      [QuestionAnswerKey.Q5]: this.yesNoControl(true),
+      [QuestionAnswerKey.Q6]: this.yesNoControl(true),
+      [QuestionAnswerKey.Q7]: this.yesNoControl(true),
+      [QuestionAnswerKey.Q8]: this.yesNoControl(true),
+      [QuestionAnswerKey.Q9]: this.yesNoControl(true),
+      [QuestionAnswerKey.Q9A]: this.textControl(),
+      [QuestionAnswerKey.Q10]: this.yesNoControl(true),
+      [QuestionAnswerKey.Q10A]: this.yesNoControl(),
+      [QuestionAnswerKey.Q11]: this.yesNoControl(),
+      [QuestionAnswerKey.Q12]: this.yesNoControl(true),
+      [QuestionAnswerKey.Q12A]: this.textControl(),
+      [QuestionAnswerKey.Q13]: this.yesNoControl(true),
+      [QuestionAnswerKey.Q16]: this.yesNoControl(true),
+      [QuestionAnswerKey.Q17]: this.yesNoControl(true),
     });
   }
 
   private createLifestyleGroup(): FormGroup<LifestyleControls> {
-    return new FormGroup({
-      nicotineUse: new FormControl(false, { nonNullable: true }),
-      nicotineUnits: this.textControl(),
-      nicotineFrequency: this.textControl(),
-      nicotineFrom: this.textControl(),
-      nicotineTo: this.textControl(),
-      alcoholUse: new FormControl(false, { nonNullable: true }),
-      alcoholUnits: this.textControl(),
-      alcoholFrequency: this.textControl(),
-      alcoholFrom: this.textControl(),
-      alcoholTo: this.textControl(),
-      drugUse: new FormControl(false, { nonNullable: true }),
-      drugUnits: this.textControl(),
-      drugFrequency: this.textControl(),
-      drugFrom: this.textControl(),
-      drugTo: this.textControl(),
-    });
+    return new FormGroup(
+      {
+        nicotineUse: new FormControl(false, { nonNullable: true }),
+        nicotineUnits: this.textControl(),
+        nicotineFrequency: this.textControl(),
+        nicotineFrom: this.dateControl(),
+        nicotineTo: this.dateControl(),
+        alcoholUse: new FormControl(false, { nonNullable: true }),
+        alcoholUnits: this.textControl(),
+        alcoholFrequency: this.textControl(),
+        alcoholFrom: this.dateControl(),
+        alcoholTo: this.dateControl(),
+        drugUse: new FormControl(false, { nonNullable: true }),
+        drugUnits: this.textControl(),
+        drugFrequency: this.textControl(),
+        drugFrom: this.dateControl(),
+        drugTo: this.dateControl(),
+      },
+      {
+        validators: Object.values(SUBSTANCE_FIELD_MAP).map(({ from, to }) => dateOrderValidator(from, to)),
+      },
+    );
   }
 
   private createDentalInfoGroup(): FormGroup<DentalInfoControls> {
@@ -392,16 +311,11 @@ export class QuestionnaireFormService implements OnDestroy {
 
   private installDiagnosisValidators(): void {
     const answers = this.form.controls.questionAnswers.controls;
-    this.form.controls.diagnoses.addValidators([
-      minDiagnosisEntriesValidator(DiagnosisQuestion.Q4, answers.q4),
-      minDiagnosisEntriesValidator(DiagnosisQuestion.Q5, answers.q5),
-      minDiagnosisEntriesValidator(DiagnosisQuestion.Q6, answers.q6),
-      minDiagnosisEntriesValidator(DiagnosisQuestion.Q7, answers.q7),
-      minDiagnosisEntriesValidator(DiagnosisQuestion.Q8, answers.q8),
-      minDiagnosisEntriesValidator(DiagnosisQuestion.Q9, answers.q9),
-      minDiagnosisEntriesValidator(DiagnosisQuestion.Q10, answers.q10),
-      minDiagnosisEntriesValidator(DiagnosisQuestion.Q12, answers.q12),
-    ]);
+    this.form.controls.diagnoses.addValidators(
+      DIAGNOSIS_QUESTION_IDS.map((questionId) =>
+        minDiagnosisEntriesValidator(questionId, answers[DIAGNOSIS_QUESTION_TO_ANSWER_KEY[questionId]]),
+      ),
+    );
   }
 
   private syncConditionalValidators(): void {
@@ -463,27 +377,17 @@ export class QuestionnaireFormService implements OnDestroy {
         lifestyle.alcoholUse.setValue(false, { emitEvent: false });
         lifestyle.drugUse.setValue(false, { emitEvent: false });
       }
-      this.syncSubstanceBlock(
-        q13Active && lifestyle.nicotineUse.value,
-        lifestyle.nicotineUnits,
-        lifestyle.nicotineFrequency,
-        lifestyle.nicotineFrom,
-        lifestyle.nicotineTo,
-      );
-      this.syncSubstanceBlock(
-        q13Active && lifestyle.alcoholUse.value,
-        lifestyle.alcoholUnits,
-        lifestyle.alcoholFrequency,
-        lifestyle.alcoholFrom,
-        lifestyle.alcoholTo,
-      );
-      this.syncSubstanceBlock(
-        q13Active && lifestyle.drugUse.value,
-        lifestyle.drugUnits,
-        lifestyle.drugFrequency,
-        lifestyle.drugFrom,
-        lifestyle.drugTo,
-      );
+      for (const kind of [SubstanceKind.Nicotine, SubstanceKind.Alcohol, SubstanceKind.Drug]) {
+        const fields = SUBSTANCE_FIELD_MAP[kind];
+        const use = lifestyle[fields.use];
+        this.syncSubstanceBlock(
+          q13Active && use.value === true,
+          lifestyle[fields.units] as StringControl,
+          lifestyle[fields.frequency] as StringControl,
+          lifestyle[fields.from] as StringControl,
+          lifestyle[fields.to] as StringControl,
+        );
+      }
 
       for (const entry of this.form.controls.diagnoses.controls) {
         this.syncDiagnosisEntryValidators(entry);
@@ -533,8 +437,8 @@ export class QuestionnaireFormService implements OnDestroy {
   ): void {
     this.setConditional(units, { active, validators: [Validators.required, Validators.minLength(1)] });
     this.setConditional(frequency, { active, validators: [Validators.required, Validators.minLength(1)] });
-    this.setConditional(from, { active, validators: [] });
-    this.setConditional(to, { active, validators: [] });
+    this.setConditional(from, { active, validators: [fullDateValidator] });
+    this.setConditional(to, { active, validators: [fullDateValidator] });
   }
 
   needsConditionReason(value: string | null | undefined): boolean {
@@ -557,10 +461,6 @@ export class QuestionnaireFormService implements OnDestroy {
   }
 
   private syncDiagnosisEntriesForAnswer(questionId: DiagnosisQuestionId, answer: YesNoControl): void {
-    if (!DIAGNOSIS_QUESTION_IDS.includes(questionId)) {
-      return;
-    }
-
     if (!this.isYes(answer)) {
       this.clearDiagnosisEntriesWhenNo(questionId, answer);
       return;
@@ -572,26 +472,7 @@ export class QuestionnaireFormService implements OnDestroy {
   }
 
   private answerKeyForDiagnosis(questionId: DiagnosisQuestionId): DiagnosisAnswerKey {
-    switch (questionId) {
-      case DiagnosisQuestion.Q4:
-        return 'q4';
-      case DiagnosisQuestion.Q5:
-        return 'q5';
-      case DiagnosisQuestion.Q6:
-        return 'q6';
-      case DiagnosisQuestion.Q7:
-        return 'q7';
-      case DiagnosisQuestion.Q8:
-        return 'q8';
-      case DiagnosisQuestion.Q9:
-        return 'q9';
-      case DiagnosisQuestion.Q10:
-        return 'q10';
-      case DiagnosisQuestion.Q12:
-        return 'q12';
-      default:
-        throw new Error(`Diagnosis question ${questionId} does not have a yes/no answer control.`);
-    }
+    return DIAGNOSIS_QUESTION_TO_ANSWER_KEY[questionId as DiagnosisQuestion];
   }
 
   private setConditional(control: AbstractControl, config: ToggleValidatorConfig): void {

@@ -8,7 +8,19 @@ type AppStep = 'landing' | 'family' | 'questions';
 @Component({
   selector: 'app-root',
   imports: [AppLanding, FamilyConfig, QuestionnaireFormComponent],
-  templateUrl: './app.html',
+  template: `
+    @switch (step()) {
+      @case ('questions') {
+        <app-questionnaire-form (back)="openFamilyConfig()" (completed)="openLanding()" />
+      }
+      @case ('family') {
+        <app-family-config (back)="openLanding()" (next)="openQuestionnaire()" />
+      }
+      @default {
+        <app-landing (start)="openFamilyConfig()" />
+      }
+    }
+  `,
 })
 export class App {
   protected readonly step = signal<AppStep>('landing');

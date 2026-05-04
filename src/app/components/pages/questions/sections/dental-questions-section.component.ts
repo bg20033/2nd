@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { NgTemplateOutlet } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { FormControl } from '@angular/forms';
 
@@ -12,6 +12,8 @@ import {
 } from '../../../form-controls';
 import { HealthDeclarationFormService } from '../../../../services/health-declaration-form.service';
 import { BinaryQuestionCardComponent, QuestionCardShellComponent } from '../cards/question-card-shell.component';
+import { StringControl } from '../questionnaire.types';
+import { DATE_PATTERN } from '../questionnaire-validators';
 
 @Component({
   selector: 'app-dental-questions-section',
@@ -19,8 +21,8 @@ import { BinaryQuestionCardComponent, QuestionCardShellComponent } from '../card
   imports: [
     BinaryQuestionCardComponent,
     CheckboxInputComponent,
-    CommonModule,
     DateInputComponent,
+    NgTemplateOutlet,
     OptionToggleComponent,
     QuestionCardShellComponent,
     TextAreaComponent,
@@ -56,5 +58,16 @@ export class DentalQuestionsSectionComponent {
       : [...control.value, tooth].sort((a, b) => a - b);
     control.setValue(next);
     control.markAsDirty();
+  }
+
+  protected dateOrderError(from: StringControl, to: StringControl): boolean {
+    const fromValue = from.value;
+    const toValue = to.value;
+
+    if (!fromValue || !toValue || !DATE_PATTERN.test(fromValue) || !DATE_PATTERN.test(toValue)) {
+      return false;
+    }
+
+    return toValue < fromValue && (from.touched || to.touched || from.dirty || to.dirty);
   }
 }

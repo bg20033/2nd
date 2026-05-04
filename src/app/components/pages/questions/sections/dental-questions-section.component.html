@@ -191,6 +191,9 @@
           <app-date-input [control]="from" label="Dauer von" />
           <app-date-input [control]="to" label="bis" />
         </div>
+        @if (dateOrderError(from, to)) {
+          <p class="field-error block min-h-[1.1rem]" data-validation-anchor>End date must be after start date.</p>
+        }
       </div>
     }
   </section>
