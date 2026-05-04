@@ -1,0 +1,33 @@
+<app-questionnaire-topbar />
+
+<main class="app-content">
+  <div class="grid min-w-0 ">
+    <section
+      class="app-form-panel"
+      [class.border-[rgba(235,0,0,0.35)]]="validationAttempted()"
+    >
+      @if (declaration.reviewMode()) {
+        <app-review-panel (completed)="completeReview()" />
+      } @else {
+        <form
+          class="questionnaire grid min-w-0 gap-[0.85rem]"
+          data-validation-scope="questionnaire"
+          (submit)="submit(); $event.preventDefault()"
+        >
+          <app-medical-questions-section />
+          <app-dental-questions-section />
+        </form>
+      }
+    </section>
+  </div>
+
+  @if (!declaration.reviewMode()) {
+    <app-footer
+      backLabel="Back"
+      [nextLabel]="footerNextLabel()"
+      [nextDisabled]="nextClickLocked()"
+      (back)="goBack()"
+      (next)="submit()"
+    />
+  }
+</main>

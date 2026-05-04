@@ -1,0 +1,33 @@
+<section class="question-card grid min-w-0 scroll-mt-40 gap-[0.8rem] py-1">
+  <div class="flex min-w-0 flex-wrap items-start justify-between gap-[0.45rem]">
+    <span class="hidden">2</span>
+    <div>
+      <h2 class="m-0 wrap-break-word text-[18px] font-bold leading-[1.22] tracking-normal text-[#050307]">
+        2. Name und Adresse des Arztes/der Ärztin, der/die am besten über Ihre Krankheitsgeschichte Auskunft geben kann:
+      </h2>
+    </div>
+  </div>
+  <div class="grid gap-[0.8rem]">
+    <div class="field-grid">
+      <app-text-input [control]="group().controls.practiceName" label="Praxis/Spital" />
+      <div class="col-span-12 grid min-w-0 gap-3">
+        <div class="grid min-w-0 grid-cols-2 gap-3 max-[700px]:gap-[0.55rem]">
+          <app-text-input [control]="group().controls.familyName" label="Name" />
+          <app-text-input [control]="group().controls.givenNames" label="Vorname" />
+        </div>
+      </div>
+      <div class="col-span-12 grid min-w-0 gap-3">
+        <div class="grid min-w-0 grid-cols-[minmax(0,7fr)_minmax(0,5fr)] gap-3 max-[700px]:gap-[0.55rem]">
+          <app-text-input [control]="group().controls.street" label="Strasse" />
+          <app-text-input [control]="group().controls.streetNumber" label="Nr." />
+        </div>
+      </div>
+      <div class="col-span-12 grid min-w-0 gap-3">
+        <div class="grid min-w-0 grid-cols-[minmax(0,4fr)_minmax(0,8fr)] gap-3 max-[700px]:gap-[0.55rem]">
+          <app-text-input [control]="group().controls.postalCode" label="PLZ" />
+          <app-text-input [control]="group().controls.city" label="Ort" />
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

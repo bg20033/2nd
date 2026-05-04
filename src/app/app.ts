@@ -1,12 +1,27 @@
 import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { AppLanding } from './components/pages/app-landing/app-landing';
+import { FamilyConfig } from './components/pages/family-config/family-config';
+import { QuestionnaireFormComponent } from './components/pages/questions/page/questionnaire-form.component';
+
+type AppStep = 'landing' | 'family' | 'questions';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  imports: [AppLanding, FamilyConfig, QuestionnaireFormComponent],
   templateUrl: './app.html',
-  styleUrl: './app.css'
 })
 export class App {
-  protected readonly title = signal('my-app');
+  protected readonly step = signal<AppStep>('landing');
+
+  protected openFamilyConfig(): void {
+    this.step.set('family');
+  }
+
+  protected openLanding(): void {
+    this.step.set('landing');
+  }
+
+  protected openQuestionnaire(): void {
+    this.step.set('questions');
+  }
 }

@@ -1,3 +1,342 @@
-/* You can add global styles to this file, and also import other style files */
-
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700;800&display=swap');
 @import 'tailwindcss';
+
+:root {
+  --page-bg-start: #25083d;
+  --page-bg-end: #6a3d98;
+  --page-ink: #f8f0ff;
+  --muted-ink: rgba(237, 224, 255, 0.72);
+  --surface-ink: #2a1144;
+  --line: rgba(214, 187, 255, 0.22);
+  --line-strong: rgba(225, 203, 255, 0.38);
+  --surface-rgb: 51 23 83;
+  --surface-strong-rgb: 40 17 68;
+  --canvas-start: #2b0b47;
+  --canvas-mid: #6d419f;
+  --canvas-end: #23073b;
+  --accent: #e445fe;
+  --accent-strong: #9150ff;
+  --accent-soft: rgba(228, 69, 254, 0.18);
+  --danger: #ffb0c6;
+  --shadow: 0 28px 80px rgba(11, 3, 22, 0.34);
+  --radius-xl: 28px;
+  --radius-lg: 22px;
+  --radius-md: 16px;
+  --radius-sm: 12px;
+  --control-height: 40px;
+  --control-border-default: #cfb6e3;
+  --control-border-filled: #7d29de;
+  --control-border-error: #eb0000;
+  --control-focus-ring: rgba(125, 41, 222, 0.16);
+  --control-error-ring: rgba(235, 0, 0, 0.14);
+  --date-input-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none'%3E%3Cpath fill='%239b82b6' d='M7 2a1 1 0 0 1 1 1v1h8V3a1 1 0 1 1 2 0v1h1.2A2.8 2.8 0 0 1 22 6.8v11.4a2.8 2.8 0 0 1-2.8 2.8H4.8A2.8 2.8 0 0 1 2 18.2V6.8A2.8 2.8 0 0 1 4.8 4H6V3a1 1 0 0 1 1-1Zm13 8H4v8.2c0 .44.36.8.8.8h14.4c.44 0 .8-.36.8-.8V10Z'/%3E%3C/svg%3E");
+  font-synthesis-weight: none;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  min-height: 100%;
+  background: var(--page-bg-start);
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  font-family: 'Roboto', Arial, 'Helvetica Neue', sans-serif;
+  background: transparent;
+}
+
+html::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(to top, var(--page-bg-start), var(--page-bg-end));
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+input,
+select,
+textarea {
+  line-height: 1.5;
+}
+
+input[type='date'],
+input[type='month'] {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 3rem !important;
+  background-image: var(--date-input-icon) !important;
+  background-repeat: no-repeat !important;
+  background-position: right 1rem center !important;
+  background-size: 1rem 1rem !important;
+}
+
+input[type='date']::-webkit-calendar-picker-indicator,
+input[type='month']::-webkit-calendar-picker-indicator {
+  opacity: 0;
+  cursor: pointer;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #a893bd;
+  font-weight: 400;
+}
+
+a {
+  color: inherit;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+h1,
+h2,
+h3 {
+  font-family: 'Roboto', Arial, 'Helvetica Neue', sans-serif;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+p {
+  line-height: 1.6;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: fit-content;
+  min-height: 30px;
+  padding: 0.38rem 0.85rem;
+  border-radius: 999px;
+  background: #7d29de;
+  color: #fff;
+  font-size: 0.84rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--control-height);
+  min-height: var(--control-height);
+  padding: 0 1.25rem;
+  border: 1px solid transparent;
+  border-radius: 0.95rem;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 500;
+  text-decoration: none;
+  transition:
+    transform 150ms ease,
+    background-color 150ms ease,
+    border-color 150ms ease,
+    box-shadow 150ms ease,
+    opacity 150ms ease;
+}
+
+.button:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+  transform: none;
+  box-shadow: none;
+}
+
+.button-primary {
+  background: #8425e5;
+  color: #ffffff;
+}
+
+.field-error {
+  display: block;
+  padding-left: 0.5rem;
+  color: #d81837;
+  font-size: 0.78rem;
+  font-weight: 400;
+}
+
+.app-content {
+  display: grid;
+  align-content: center;
+  gap: 1rem;
+  width: min(660px, calc(100% - 2rem));
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: var(--app-content-top, 0.85rem) 0 5.5rem;
+  color: #172521;
+}
+
+.app-form-panel {
+  display: grid;
+  min-width: 0;
+  gap: 1rem;
+  margin: 0 0 40px;
+  padding: 1.15rem;
+  border-radius: 1.75rem;
+  background: #eee7f4;
+  backdrop-filter: none;
+}
+
+app-questionnaire-form .app-content {
+  align-content: start;
+  --app-content-top: 160px;
+  padding-right: 0;
+  padding-left: 0;
+  padding-bottom: 60px;
+}
+
+@media (max-width: 680px) {
+  .app-form-panel {
+    padding: 0.9rem 0.3rem 0.3rem;
+    border-radius: 1.35rem;
+  }
+}
+
+.field-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+
+.field-grid > * {
+  grid-column: span 12;
+  min-width: 0;
+}
+
+.field-grid--two > * {
+  grid-column: span 6;
+}
+
+.field-grid--three > * {
+  grid-column: span 4;
+}
+
+.field-grid--estimate > * {
+  grid-column: span 12;
+}
+
+.grid-cols-16 {
+  grid-template-columns: repeat(16, minmax(0, 1fr));
+}
+
+.question-card {
+  border: 0;
+}
+
+.questionnaire {
+  color: #050307;
+}
+
+.question-inline-block,
+.diagnosis-panel,
+.diagnosis-entry {
+  color: #050307;
+}
+
+.dental-finding__grid {
+  position: relative;
+  z-index: 1;
+  min-height: 30px;
+}
+
+@media (max-width: 768px) {
+  .dental-finding__grid {
+    min-height: 20px;
+  }
+}
+
+.dental-finding__cell {
+  display: grid;
+  place-items: center;
+  min-height: 20px;
+}
+
+.dental-finding__cell.selected {
+  background: #7d29de !important;
+  color: inherit;
+}
+
+.dental-chart-stack {
+  position: relative;
+  display: grid;
+  gap: 0.45rem;
+  min-width: 0;
+
+}
+
+.dental-chart-stack::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  z-index: 3;
+  border-left: 1px dashed rgba(125, 41, 222, 0.58);
+  pointer-events: none;
+  transform: translateX(-0.5px);
+}
+
+.dental-chart-numbers {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(16, minmax(0, 1fr));
+  min-width: 0;
+}
+
+.dental-chart-numbers--bottom {
+  padding-top: 0.1rem;
+}
+
+.dental-chart-image-shell {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  min-width: 0;
+  place-items: center;
+  padding: 0.6rem 0;
+}
+
+.dental-chart-image {
+  display: block;
+  width: 100%;
+  max-width: none;
+  height: auto;
+}
+
+.dental-checkmark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1;
+  pointer-events: none;
+  text-shadow: 0 1px 1px rgba(125, 41, 222, 0.12);
+  transform: translate(-50%, -54%);
+}

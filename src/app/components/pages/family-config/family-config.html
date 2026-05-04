@@ -1,0 +1,255 @@
+<main class="app-content">
+  <app-header class="mb-4" title="Family setup" />
+
+  <section class="app-form-panel">
+    <header class="family-stepper" aria-label="Setup progress">
+      @for (step of setupSteps; track step.number) {
+        <div class="family-stepper__step" [class.is-active]="step.active">
+          <span class="family-stepper__dot">{{ step.number }}</span>
+          <span class="family-stepper__label">{{ step.label }}</span>
+        </div>
+      }
+    </header>
+
+    <section class="family-location-card" aria-label="Place of residence" data-family-validation="location">
+      <label class="field ps-6 pb-0 pt-3" for="locationFilter">Postal code / city</label>
+      <div class="location-input px-2">
+        <input
+          id="locationFilter"
+          type="text"
+          inputmode="text"
+          placeholder="Enter postal code or city..."
+          [value]="searchQuery()"
+          [class.is-valid]="hasSelectedZip()"
+          [class.is-invalid]="locationInvalid()"
+          [attr.aria-invalid]="locationInvalid()"
+          (input)="onSearchInput($event)"
+          (blur)="onBlur()"
+          (focus)="onFocus()"
+          autocomplete="off"
+        />
+        @if (locationInvalid()) {
+          <span class="field-error">Please select a location from the list.</span>
+        }
+
+        @if (showLocationDropdown()) {
+          <ul class="location-dropdown" role="listbox" aria-label="Place of residence">
+            @for (
+              location of locationResults();
+              track location.locationId +
+                '-' +
+                location.zipCode +
+                '-' +
+                location.locationName +
+                '-' +
+                location.cantonName +
+                '-' +
+                $index
+            ) {
+              <li
+                class="location-option"
+                role="option"
+                tabindex="0"
+                [class.is-selected]="location.locationId === selectedLocationId()"
+                (mousedown)="selectLocation(location, $event)"
+                (keydown.enter)="selectLocation(location, $event)"
+                (keydown.space)="selectLocation(location, $event)"
+              >
+                <span class="location-zip">{{ location.zipCode }}</span>
+                <span class="location-name">{{ location.locationName }}</span>
+                <span class="location-canton">{{ location.cantonName }}</span>
+              </li>
+            }
+            @if (isLoading()) {
+              <li class="location-option location-option--status" aria-live="polite">Searching...</li>
+            }
+          </ul>
+        }
+      </div>
+    </section>
+
+    <section class="family-members" [formGroup]="form">
+      <ng-container formArrayName="people">
+        @for (person of people.controls; track person; let i = $index) {
+          @let genderControl = person.controls.gender;
+          @let birthYearControl = person.controls.birthYear;
+          @let genderInvalid = isControlInvalid(genderControl);
+          @let birthYearInvalid = isControlInvalid(birthYearControl) || (person.hasError('babyAge') && (birthYearControl.touched || birthYearControl.dirty));
+          @let genderComplete = isControlComplete(genderControl);
+          @let birthComplete = isControlComplete(birthYearControl) && !person.hasError('babyAge');
+
+          @if (isEditing(i)) {
+            <article
+              class="family-member family-member--editor"
+              [formGroupName]="i"
+              [attr.data-family-person]="i"
+              [attr.data-family-invalid]="genderInvalid || birthYearInvalid ? 'true' : null"
+            >
+              <div class="family-member__editor">
+                <div class="family-member__avatar-shell">
+                  <img class="family-member__avatar" [src]="avatarSrc(person)" [alt]="avatarAlt(person)" />
+                </div>
+
+                <div
+                  class="family-gender-group"
+                  [class.is-locked]="!hasSelectedZip()"
+                  role="radiogroup"
+                  [attr.aria-label]="'Gender for person ' + (i + 1)"
+                  [attr.aria-disabled]="!hasSelectedZip()"
+                >
+                  @for (option of genderOptions; track option.value) {
+                    <label
+                      class="family-gender-option"
+                      [class.family-gender-option--icon]="option.value === personGender.Baby"
+                      [class.is-locked]="!hasSelectedZip()"
+                      [class.is-valid]="option.value === genderControl.value && genderComplete"
+                      [class.is-invalid]="genderInvalid"
+                    >
+                      <input
+                        type="radio"
+                        formControlName="gender"
+                        [value]="option.value"
+                        [attr.name]="'gender-' + i"
+                        (change)="onGenderChange(person, i)"
+                      />
+                      @if (option.value === personGender.Baby) {
+                        <span class="max-w-10">
+                          <img src="assets/babyIcon.png" alt="" aria-hidden="true" />
+                        </span>
+                      } @else {
+                        <span>
+                          <strong
+                            class="family-gender-option__symbol "
+                            [class.family-gender-option__symbol--female]="option.value === personGender.Female"
+                            [class.family-gender-option__symbol--male]="option.value === personGender.Male"
+                          >
+                            {{ option.value === personGender.Female ? '♀' : '♂' }}
+                          </strong>
+                          <span class="family-gender-label family-gender-label--full">{{ option.label }}</span>
+                          <span class="family-gender-label family-gender-label--short" aria-hidden="true">
+                            {{ option.value === personGender.Female ? 'F' : 'M' }}
+                          </span>
+                        </span>
+                      }
+                    </label>
+                  }
+                </div>
+
+                <div class="field family-member__year-field">
+                  <div class="family-member__year-row" [class.family-member__year-row--with-action]="i > 0">
+                    <div class="family-member__year-shell">
+                      <input
+                        id="birthYear-{{ i }}"
+                        type="text"
+                        inputmode="numeric"
+                        maxlength="4"
+                        formControlName="birthYear"
+                        placeholder="1960"
+                        [class.is-valid]="birthComplete"
+                        [class.is-invalid]="birthYearInvalid"
+                        [class.is-locked]="!hasSelectedZip()"
+                        (input)="handleBirthYearInput($event, person, i)"
+                        (blur)="handleProfileDraftChange(person, i)"
+                      />
+                    </div>
+                    @if (i > 0) {
+                      <button
+                        class="family-member__action family-member__action--delete"
+                        type="button"
+                        aria-label="Remove person"
+                        (click)="removePerson(i)"
+                      >
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                          <path
+                            d="M9 3h6l1 2h4v2H4V5h4l1-2Zm1 6h2v8h-2V9Zm4 0h2v8h-2V9ZM7 9h2v8H7V9Zm-1 12a2 2 0 0 1-2-2V8h16v11a2 2 0 0 1-2 2H6Z"
+                          />
+                        </svg>
+                      </button>
+                    }
+                  </div>
+                </div>
+              </div>
+
+              @if (genderInvalid || birthYearInvalid) {
+                <div class="family-member__errors">
+                  @if (genderInvalid) {
+                    <span class="field-error">Please select a gender.</span>
+                  }
+                  @if (birthYearControl.hasError('required') && (birthYearControl.touched || birthYearControl.dirty)) {
+                    <span class="field-error">Birth year is required.</span>
+                  } @else if (birthYearControl.hasError('birthYear') && (birthYearControl.touched || birthYearControl.dirty)) {
+                    <span class="field-error">Please enter a valid birth year for an age between 0 and 120 years.</span>
+                  } @else if (person.hasError('babyAge') && (birthYearControl.touched || birthYearControl.dirty)) {
+                    <span class="field-error">For babies, the birth year may only be the current year.</span>
+                  }
+                </div>
+              }
+            </article>
+          } @else {
+            <article
+              class="family-member family-member--summary"
+              [attr.data-family-person]="i"
+              [attr.data-family-invalid]="person.invalid ? 'true' : null"
+            >
+              <div class="family-member__summary">
+                <div class="family-member__identity">
+                  <div class="family-member__avatar-shell">
+                    <img class="family-member__avatar" [src]="avatarSrc(person)" [alt]="avatarAlt(person)" />
+                  </div>
+                  <span class="family-member__year">{{ birthYearDisplay(person) }}</span>
+                </div>
+
+                <div class="family-member__actions">
+                  <button
+                    class="family-member__action family-member__action--edit"
+                    type="button"
+                    aria-label="Edit person"
+                    (click)="editPerson(i)"
+                  >
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path
+                        d="m4 16.25 9.2-9.2 3.75 3.75-9.2 9.2H4v-3.75Zm10.6-10.6 1.85-1.85a1.5 1.5 0 0 1 2.1 0l1.65 1.65a1.5 1.5 0 0 1 0 2.1l-1.85 1.85-3.75-3.75Z"
+                      />
+                    </svg>
+                  </button>
+                  @if (i > 0) {
+                    <button
+                      class="family-member__action family-member__action--delete"
+                      type="button"
+                      aria-label="Remove person"
+                      (click)="removePerson(i)"
+                    >
+                      <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path
+                          d="M9 3h6l1 2h4v2H4V5h4l1-2Zm1 6h2v8h-2V9Zm4 0h2v8h-2V9ZM7 9h2v8H7V9Zm-1 12a2 2 0 0 1-2-2V8h16v11a2 2 0 0 1-2 2H6Z"
+                        />
+                      </svg>
+                    </button>
+                  }
+                </div>
+              </div>
+            </article>
+          }
+        }
+      </ng-container>
+    </section>
+
+    <footer class="family-footer">
+      <button
+        class="button button-primary family-footer__button family-footer__button--primary"
+        type="button"
+        [disabled]="!canAddPerson()"
+        (click)="addPerson()"
+      >
+        + Add person
+      </button>
+    </footer>
+  </section>
+
+  <app-footer
+    backLabel="Back"
+    nextLabel="Next"
+    (back)="back.emit()"
+    (next)="startQuestionnaire()"
+  />
+</main>

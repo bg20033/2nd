@@ -1,0 +1,16 @@
+<main class="app-content">
+  <app-header class="landing-header" title="Health declaration" />
+  <section class="landing-frame">
+    <section class="landing-intro">
+      <div class="landing-avatar" aria-hidden="true">
+        <img class="landing-avatar__image" src="assets/agenti.png" alt="" />
+      </div>
+      <article class="app-form-panel landing-card">
+        @for (paragraph of introParagraphs; track paragraph) {
+          <p>{{ paragraph }}</p>
+        }
+      </article>
+    </section>
+  </section>
+  <app-footer [backDisabled]="true" nextLabel="Next" (next)="startDeclaration()" />
+</main>

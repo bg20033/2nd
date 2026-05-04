@@ -1,0 +1,32 @@
+<footer class="form-footer backdrop-blur-md bg-gradient-to-t from-[#260b41] to-transparent">
+  <div class="footer-content">
+    <div class="landing-tools">
+      <button class="landing-tool" type="button" aria-label="Chat help" (click)="handleChat()">
+        <img src="assets/Icon-chat.svg" alt="" aria-hidden="true" />
+      </button>
+
+      <button class="landing-tool" type="button" aria-label="Voice help" (click)="handleVoice()">
+        <img src="assets/Icon-microphone.svg" alt="" aria-hidden="true" />
+      </button>
+    </div>
+
+    <div class="landing-actions">
+      <button
+        class="landing-action landing-action--back"
+        type="button"
+        [disabled]="backDisabled()"
+        (click)="handleBack()"
+      >
+        {{ backLabel() }}
+      </button>
+      <button
+        class="landing-action landing-action--next"
+        type="button"
+        [disabled]="nextDisabled()"
+        (click)="handleNext()"
+      >
+        {{ nextLabel() }}
+      </button>
+    </div>
+  </div>
+</footer>

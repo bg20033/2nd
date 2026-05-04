@@ -1,0 +1,120 @@
+@let formService = declaration.activeQuestionnaireForCurrentPerson();
+@let form = formService.form;
+@let previous = form.controls.previousInsurance.controls;
+@let q = form.controls.questionAnswers.controls;
+@let dental = form.controls.dentalInfo.controls;
+
+<app-question-card-shell
+  number="1"
+  title="Wurden bereits Anträge von SWICA oder von anderen Versicherern abgelehnt, zurückgestellt oder nur zu erschwerten Bedingungen angenommen?"
+  description="z.B. Deckungsausschluss, Risikozuschlag bzw. Prämienerhöhung, Ablehnung des Antrags"
+>
+  <app-yes-no-toggle [control]="previous.q1" label="" />
+  @if (isYes(previous.q1)) {
+    <div class="question-inline-block mt-[0.7rem] grid gap-[0.55rem]">
+      <app-textarea [control]="previous.q1a" label="Wenn ja, weshalb und aufgrund welcher Diagnose?" [rows]="1" />
+      <app-yes-no-toggle [control]="previous.q1b" label="Bestehen noch Beschwerden oder folgen noch Behandlungen?" />
+    </div>
+  }
+</app-question-card-shell>
+
+<app-doctor-info-form [group]="form.controls.doctorInfo" />
+
+<app-question-card-shell number="3" title="Grösse und Gewicht" description="Welches sind Ihre Körpermasse?">
+  <div class="field-grid field-grid--two">
+    <app-number-input [control]="form.controls.bodyMetrics.controls.heightCm" label="Grösse (cm)" [min]="40" [max]="250" />
+    <app-number-input [control]="form.controls.bodyMetrics.controls.weightKg" label="Gewicht (kg)" [min]="1" [max]="200" />
+  </div>
+</app-question-card-shell>
+
+<app-diagnosis-question-card
+  number="4"
+  questionId="Q4"
+  [formService]="formService"
+  [control]="q.q4"
+  title="Waren Sie in den letzten 12 Monaten oder sind Sie zurzeit in einer Behandlung, Kontrolle oder Abklärung?"
+  description="Oder beabsichtigen Sie eine solche resp. wurde eine solche empfohlen, jedoch nicht durchgeführt? Wenn ja, welche?"
+>
+  <div class="question-inline-block mt-[0.7rem] grid gap-[0.55rem]">
+    <app-textarea [control]="q.q4a" label="Welche Behandlungen?" [rows]="1" />
+    <app-yes-no-toggle [control]="q.q4b" label="Bestehen noch Beschwerden oder folgen noch Behandlungen?" />
+  </div>
+</app-diagnosis-question-card>
+
+<app-diagnosis-question-card
+  number="5"
+  questionId="Q5"
+  [formService]="formService"
+  [control]="q.q5"
+  title="Bestehen/Bestanden in den letzten 10 Jahren Krankheiten/Störungen/Beschwerden resp. wurden diese ärztlich festgestellt und/oder therapeutisch behandelt? Wenn ja, welche?"
+  description="wie z.B. Krankheit oder Störung der Atemwege, Atemorgane; des Herzens, der Blutgefässe oder des Kreislaufsystems; des Nervensystems oder der Psyche; der Verdauungsorgane; der Nieren, der Haut oder Allergien; des Muskeln, Knochen, Gelenke oder der Wirbelsäule; des Stoffwechsels, des Blutes oder Infektionskrankheiten etc."
+/>
+
+<app-diagnosis-question-card
+  number="6"
+  questionId="Q6"
+  [formService]="formService"
+  [control]="q.q6"
+  title="Haben Sie jemals an einer Tumorerkrankung, einem Bandscheibenvorfall, einer psychischen Krankheit oder einer Herz-Kreislauf-Erkrankung gelitten? Wenn ja, woran?"
+  description="wie z.B. Herzerkrankung, Herzinfarkt, Lungenembolie, Gefässkrankheiten, Schlaganfall, Tumore, Depression etc."
+/>
+
+<app-diagnosis-question-card
+  number="7"
+  questionId="Q8"
+  [formService]="formService"
+  [control]="q.q8"
+  title="Hatten Sie jemals einen ambulanten oder stationären Eingriff/Operation? Wenn ja, warum?"
+/>
+
+<app-diagnosis-question-card
+  number="8"
+  questionId="Q7"
+  [formService]="formService"
+  [control]="q.q7"
+  title="Hatten Sie jemals einen Unfall, nach welchem Sie sich einem chirurgischen Eingriff oder einer ambulanten und/oder stationären Behandlung von mehr als vier Wochen unterziehen mussten?"
+  description="inkl. Therapien/Medikamente"
+/>
+
+<app-diagnosis-question-card
+  number="9"
+  questionId="Q9"
+  [formService]="formService"
+  [control]="q.q9"
+  title="Leiden Sie an einem Geburtsgebrechen oder beziehen Sie eine UVG- oder IV-Rente?"
+  description="Wenn ja, welches Geburtsgebrechen (inkl. Nummer) resp. Grund der Rente?"
+>
+  <app-textarea [control]="q.q9a" label="Wenn ja, welches Geburtsgebrechen oder Grund der Rente?" [rows]="1" />
+</app-diagnosis-question-card>
+
+<app-diagnosis-question-card
+  number="10"
+  questionId="Q10"
+  [formService]="formService"
+  [control]="q.q10"
+  title="Besteht eine Zahn- oder Kieferfehlstellung und/oder ist deswegen eine Abklärung, Behandlung oder Zahnstellungskorrektur geplant resp. wurde ein Verdacht geäussert?"
+  description="Wenn ja, welche? (Sofern Kostenvoranschlag vorhanden, bitte dem Antrag beilegen.)"
+>
+  <app-yes-no-toggle [control]="q.q10a" label="Sind kieferorthopädische Arbeiten zu erwarten?" />
+</app-diagnosis-question-card>
+
+@if (formService.isFemale()) {
+  <app-binary-question-card
+    number="11"
+    [control]="q.q11"
+    title="Für Frauen: Besteht eine Schwangerschaft?"
+  >
+    <div class="field-grid field-grid--two pregnancy-grid">
+      <app-date-input [control]="dental.pregnancyDate" label="Geburtstermin" />
+      <app-number-input [control]="dental.pregnancyWeightBefore" label="Gewicht vor Schwangerschaft" [min]="0" [max]="200" />
+    </div>
+  </app-binary-question-card>
+}
+
+<app-diagnosis-question-card
+  number="12"
+  questionId="Q12"
+  [formService]="formService"
+  [control]="q.q12"
+  title="Nehmen/Nahmen Sie in den letzten 5 Jahren regelmässig Medikamente/Nahrungsergänzungen ein?"
+/>

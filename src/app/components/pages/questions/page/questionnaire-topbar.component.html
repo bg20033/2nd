@@ -1,0 +1,60 @@
+<div class="fixed top-0 right-0 left-0 z-50 bg-linear-to-b from-[#6c4099] to-transparent  pt-[8px] pb-2 backdrop-blur-md">
+  @let tabs = personTabs();
+  @let layout = tabLayout();
+
+  <div class="mx-auto flex w-full px-2 max-w-[660px] flex-col gap-2">
+    <app-header class="questionnaire-topbar__header" title="Gesundheitsdeklaration" [showLanguageButton]="false" [fixed]="false" />
+
+    <div class="overflow-hidden rounded-3xl border border-[#d2c2e4] bg-[#f3edf8] px-2 shadow-2xl">
+      <div
+        #scrollContainer
+        class="topbar-scroll overflow-x-auto overflow-y-hidden"
+        [class.overflow-x-hidden]="layout.hideNativeOverflow"
+        (scroll)="updateScrollMetrics()"
+      >
+        <div
+          class="topbar__row items-end gap-1.5 md:gap-3"
+          [class.grid]="layout.gridColumns > 0"
+          [class.flex]="layout.gridColumns === 0"
+          [class.justify-center]="layout.centered"
+          [class.min-w-max]="layout.scrollable"
+          [style.grid-template-columns]="layout.gridColumns > 0 ? 'repeat(' + layout.gridColumns + ', minmax(0, 1fr))' : null"
+        >
+          @for (tab of tabs; track tab.id) {
+            <button
+              data-person-tab
+              type="button"
+              [class]="topbarTabClass(tab, layout)"
+              [class.topbar__tab--active]="tab.state === 'active'"
+              [class.topbar__tab--completed]="tab.completed"
+              [disabled]="!tab.canOpen"
+              (click)="visitPerson(tab.index)"
+            >
+              @if (tab.completed) {
+                <span class="text-[1.05rem] font-semibold leading-none text-green-500">✓</span>
+              } @else {
+                <span [class]="topbarLabelClass(tab)">
+                  {{ tab.label }}
+                </span>
+              }
+
+              <span [class]="topbarAvatarClass(tab)">
+                <img class="h-full w-full object-contain object-bottom" [src]="tab.avatarSrc" [alt]="tab.label" width="76" height="76" />
+              </span>
+            </button>
+          }
+        </div>
+      </div>
+
+      @if (showScrollIndicator()) {
+        <div class="topbar-scroll-indicator" aria-hidden="true">
+          <span
+            class="topbar-scroll-thumb"
+            [style.width.px]="scrollThumbWidth()"
+            [style.transform]="'translateX(' + scrollThumbOffset() + 'px)'"
+          ></span>
+        </div>
+      }
+    </div>
+  </div>
+</div>
