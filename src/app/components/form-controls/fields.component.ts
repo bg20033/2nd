@@ -135,18 +135,21 @@ export class NumberInputComponent extends BaseFormControlComponent<number | null
         </label>
       }
 
-      <textarea
-        #textarea
-        [id]="controlId()"
-        [formControl]="control()"
-        [placeholder]="placeholder()"
-        [rows]="rows()"
-        [class]="textareaClasses()"
-        [attr.aria-invalid]="showError()"
-        [attr.aria-describedby]="describedBy()"
-        (input)="resize()"
-        (blur)="markAsTouched()"
-      ></textarea>
+      <div class="form-textarea-shell">
+        <textarea
+          #textarea
+          [id]="controlId()"
+          [formControl]="control()"
+          [placeholder]="placeholder()"
+          [rows]="rows()"
+          [class]="textareaClasses()"
+          [attr.aria-invalid]="showError()"
+          [attr.aria-describedby]="describedBy()"
+          (input)="resize()"
+          (blur)="markAsTouched()"
+        ></textarea>
+        <span class="form-textarea-grip" aria-hidden="true" (pointerdown)="startResize($event)"></span>
+      </div>
 
       @if (showError()) {
         <p [id]="errorId()" class="text-[12px] font-normal text-[#d81837]">
@@ -162,7 +165,7 @@ export class TextAreaComponent extends BaseFormControlComponent<string | null> {
 
   private textarea = viewChild<ElementRef<HTMLTextAreaElement>>('textarea');
 
-  textareaClasses = computed(() => `${this.inputClasses()} resize-none overflow-hidden leading-[1.2]! p-[10px]!`);
+  textareaClasses = computed(() => `${this.inputClasses()} form-textarea overflow-hidden leading-[1.2]! p-[10px]! pr-8!`);
 
   constructor() {
     super();
@@ -186,6 +189,32 @@ export class TextAreaComponent extends BaseFormControlComponent<string | null> {
 
     textarea.style.height = '40px';
     textarea.style.height = `${Math.max(40, textarea.scrollHeight)}px`;
+  }
+
+  startResize(event: PointerEvent): void {
+    const textarea = this.textarea()?.nativeElement;
+    if (!textarea) {
+      return;
+    }
+
+    event.preventDefault();
+    textarea.setPointerCapture?.(event.pointerId);
+
+    const startY = event.clientY;
+    const startHeight = textarea.offsetHeight;
+
+    const move = (moveEvent: PointerEvent) => {
+      const nextHeight = Math.max(40, startHeight + moveEvent.clientY - startY);
+      textarea.style.height = `${nextHeight}px`;
+    };
+    const stop = (upEvent: PointerEvent) => {
+      textarea.releasePointerCapture?.(upEvent.pointerId);
+      window.removeEventListener('pointermove', move);
+      window.removeEventListener('pointerup', stop);
+    };
+
+    window.addEventListener('pointermove', move);
+    window.addEventListener('pointerup', stop, { once: true });
   }
 }
 

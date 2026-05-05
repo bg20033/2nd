@@ -91,6 +91,46 @@ textarea::placeholder {
   font-weight: 400;
 }
 
+.form-textarea-shell {
+  position: relative;
+  min-width: 0;
+}
+
+.form-textarea {
+  min-height: var(--control-height);
+  resize: none;
+}
+
+.form-textarea-grip {
+  position: absolute;
+  right: 9px;
+  bottom: 9px;
+  width: 14px;
+  height: 14px;
+  cursor: ns-resize;
+  touch-action: none;
+}
+
+.form-textarea-grip::before,
+.form-textarea-grip::after {
+  content: '';
+  position: absolute;
+  right: -5px;
+  bottom: 4px;
+  width: 16px;
+  height: 2px;
+  border-radius: 999px;
+  background: #bda8d1;
+  transform: rotate(-45deg);
+  transform-origin: right center;
+}
+
+.form-textarea-grip::after {
+  right: -6;
+  bottom: -1px;
+  width: 9px;
+}
+
 a {
   color: inherit;
 }

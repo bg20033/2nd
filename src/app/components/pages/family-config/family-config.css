@@ -270,14 +270,14 @@
 
 .family-member__year-row {
   display: grid;
-  grid-template-columns: 5.25rem;
+  grid-template-columns: 4.6rem;
   align-items: center;
   gap: 0.65rem;
   width: auto;
 }
 
 .family-member__year-row--with-action {
-  grid-template-columns: 5.25rem var(--control-height);
+  grid-template-columns: 4.6rem var(--control-height);
 }
 
 .family-member__year-shell,
@@ -296,7 +296,7 @@
 }
 
 .family-member__year-field input {
-  width: 5.25rem;
+  width: 4.6rem;
   height: var(--control-height);
   min-height: var(--control-height);
   padding: 0 0.45rem;
