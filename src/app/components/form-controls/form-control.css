@@ -47,9 +47,6 @@
         min-width: 0;
       }
 
-
-
-
       .option-button {
         border-radius: 11px;
         background: #e6d9f4;
@@ -98,9 +95,8 @@
       }
 
       .option-button--list.is-selected {
-        margin: 0.2rem;
-        border: 1px solid rgba(178, 140, 229, 0.75);
-        border-radius: 12px;
+        border: 1px solid rgba(178, 140, 229, 0.75) !important;
+        border-radius: 12px !important;
         background: #fff;
         color: #050307;
         box-shadow: none;

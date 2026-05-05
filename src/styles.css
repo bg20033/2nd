@@ -208,7 +208,7 @@ app-questionnaire-form .app-content {
 .field-grid {
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
-  gap: 0.8rem;
+  gap: 0.6rem;
 }
 
 .field-grid > * {

@@ -1,6 +1,6 @@
-<article class="diagnosis-entry grid min-w-0 gap-3" data-validation-card>
+<article class="diagnosis-entry grid min-w-0 gap-[0.6rem]" data-validation-card>
   @if (showHeader()) {
-    <div class="flex items-start justify-between gap-4">
+    <div class="flex items-start justify-between gap-3">
       <h3 class="m-0 min-w-0 wrap-break-word text-[14px] font-normal leading-[1.2] tracking-normal text-[#050307]">
         {{ entryTitle() }}
       </h3>
@@ -13,7 +13,7 @@
   }
 
   @if (variant() === 'operation') {
-    <div class="grid gap-3 border-0 bg-transparent pt-[0.15rem]">
+    <div class="grid gap-[0.6rem] border-0 bg-transparent pt-[0.1rem]">
       <div>
         <p class="mb-[0.45rem] text-[14px] font-normal leading-[1.2] text-[#050307]">Wenn ja, wurde Ihnen ein Implantat oder ein Fremdkörper eingesetzt?</p>
         <p class="m-0 text-[12px] leading-[1.18] text-[#706876]">
@@ -39,7 +39,7 @@
   }
 
   @if (variant() === 'medication') {
-    <div class="grid grid-cols-3 gap-3 border-0 bg-transparent pt-[0.15rem]">
+    <div class="grid grid-cols-3 gap-[0.6rem] border-0 bg-transparent pt-[0.1rem]">
       <div class="col-span-full">
         <p class="mb-[0.2rem] text-[14px] font-normal leading-[1.2] text-[#050307]">1) Bitte geben Sie alle zu dieser Frage relevanten Medikamenten/Diagnosen an:</p>
       </div>
@@ -56,15 +56,15 @@
     [rows]="1"
   />
 
-  <div class="grid min-w-0 grid-cols-2 gap-3">
+  <div class="grid min-w-0 grid-cols-2 gap-[0.6rem]">
     <app-date-input [control]="entry().controls.from" label="Beginn" />
     <app-date-input [control]="entry().controls.to" label="Ende" />
   </div>
   <app-yes-no-toggle class="grid w-full min-w-0 max-w-full content-start overflow-hidden" [control]="entry().controls.recovered" label="Vollständig geheilt?" />
 
-  <fieldset class="grid min-w-0 gap-2 border-0 p-0">
+  <fieldset class="grid min-w-0 gap-[0.45rem] border-0 p-0">
     <legend class="px-0 py-1 text-[12px] font-light leading-[1.18] text-[#706876]">Behandelnde/r Arzt/Ärztin, Therapeut/in</legend>
-    <div class="grid min-w-0 grid-cols-12 items-start gap-3">
+    <div class="grid min-w-0 grid-cols-12 items-start gap-[0.6rem]">
       <app-text-input class="col-span-6 min-w-0" [control]="entry().controls.doctorGivenNames" label="" placeholder="Dr.med.Johannes" />
       <app-text-input class="col-span-6 min-w-0" [control]="entry().controls.doctorFamilyName" label="" placeholder="Doktormann" />
       <app-text-input class="col-span-8 min-w-0" [control]="entry().controls.doctorStreet" label="" placeholder="Doktorstrasse" />

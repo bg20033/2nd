@@ -9,7 +9,7 @@ import { BaseFormControlComponent, ControlOptionPrimitive, OptionValue } from '.
   standalone: true,
   imports: [ReactiveFormsModule, ValidationErrorPipe],
   template: `
-    <div class="min-w-0 max-w-full space-y-1.5" [attr.data-validation-anchor]="validationAnchor()">
+    <div class="min-w-0 max-w-full space-y-1" [attr.data-validation-anchor]="validationAnchor()">
       @if (label()) {
         <div class="block min-w-0 max-w-full whitespace-normal break-words text-[12px] font-light leading-[1.18] text-[#706876]">
           {{ label() }}
@@ -79,7 +79,7 @@ export class OptionToggleComponent extends BaseFormControlComponent<OptionValue 
   standalone: true,
   imports: [ReactiveFormsModule],
   template: `
-    <div class="min-w-0 max-w-full space-y-1.5" [attr.data-validation-anchor]="validationAnchor()">
+    <div class="min-w-0 max-w-full space-y-1" [attr.data-validation-anchor]="validationAnchor()">
       @if (label()) {
         <div class="block min-w-0 max-w-full whitespace-normal break-words text-[12px] font-light leading-[1.18] text-[#706876]">
           {{ label() }}

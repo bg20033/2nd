@@ -1,5 +1,5 @@
 <section
-  class="question-card grid min-w-0 scroll-mt-40 gap-[0.8rem] py-1"
+  class="question-card grid min-w-0 scroll-mt-40 gap-[0.6rem] py-0.5"
   [class.question-card--disabled]="disabled()"
   [class.opacity-[0.62]]="disabled()"
   data-validation-card
@@ -15,13 +15,13 @@
         }
         {{ title() }}
       </h2>
-      @if (description()) {
-        <p class="mt-4 text-[12px] leading-[1.18] text-[#706876]">{{ description() }}</p>
-      }
+          @if (description()) {
+            <p class="mt-2 text-[12px] leading-[1.18] text-[#706876]">{{ description() }}</p>
+          }
     </div>
   </div>
 
-  <div class="grid gap-[0.8rem]">
+  <div class="grid gap-[0.6rem]">
     <ng-content />
   </div>
 </section>

@@ -1,5 +1,5 @@
-<div class="diagnosis-panel grid min-w-0 gap-[0.8rem] pt-[0.15rem]" data-validation-card>
-  <div class="grid min-w-0 gap-[1.2rem]">
+<div class="diagnosis-panel grid min-w-0 gap-[0.6rem] pt-[0.1rem]" data-validation-card>
+  <div class="grid min-w-0 gap-[0.85rem]">
     @for (entry of entries(); track entry.controls.id.value; let i = $index) {
       <app-diagnosis-entry
         [formService]="formService()"

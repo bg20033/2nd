@@ -5,7 +5,7 @@ import { ValidationErrorPipe } from '../../pipes/validation-error.pipe';
 import { BaseFormControlComponent } from './base-form-control.component';
 
 const NATIVE_INPUT_TEMPLATE = `
-  <div class="min-w-0 max-w-full space-y-1.5" [attr.data-validation-anchor]="validationAnchor()">
+  <div class="min-w-0 max-w-full space-y-1" [attr.data-validation-anchor]="validationAnchor()">
     @if (label()) {
       <label [for]="controlId()" class="block min-w-0 max-w-full whitespace-normal wrap-break-word text-[12px] font-light leading-[1.18] text-[#706876]">
         {{ label() }}
@@ -64,7 +64,7 @@ export class DateInputComponent extends BaseFormControlComponent<string | null> 
   standalone: true,
   imports: [ReactiveFormsModule, ValidationErrorPipe],
   template: `
-    <div class="min-w-0 max-w-full space-y-1.5" [attr.data-validation-anchor]="validationAnchor()">
+    <div class="min-w-0 max-w-full space-y-1" [attr.data-validation-anchor]="validationAnchor()">
       @if (label()) {
         <label [for]="controlId()" class="block min-w-0 max-w-full whitespace-normal wrap-break-word text-[12px] font-light leading-[1.18] text-[#706876]">
           {{ label() }}
@@ -128,7 +128,7 @@ export class NumberInputComponent extends BaseFormControlComponent<number | null
   standalone: true,
   imports: [ReactiveFormsModule, ValidationErrorPipe],
   template: `
-    <div class="min-w-0 max-w-full space-y-1.5" [attr.data-validation-anchor]="validationAnchor()">
+    <div class="min-w-0 max-w-full space-y-1" [attr.data-validation-anchor]="validationAnchor()">
       @if (label()) {
         <label [for]="controlId()" class="block min-w-0 max-w-full whitespace-normal wrap-break-word text-[12px] font-light leading-[1.4]! text-[#706876]">
           {{ label() }}
@@ -194,7 +194,7 @@ export class TextAreaComponent extends BaseFormControlComponent<string | null> {
   standalone: true,
   imports: [ReactiveFormsModule, ValidationErrorPipe],
   template: `
-    <div class="min-w-0 max-w-full space-y-1.5" [attr.data-validation-anchor]="validationAnchor()">
+    <div class="min-w-0 max-w-full space-y-1" [attr.data-validation-anchor]="validationAnchor()">
       <label class="checkbox-field">
         <input
           type="checkbox"

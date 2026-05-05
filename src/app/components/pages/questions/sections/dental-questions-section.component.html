@@ -9,8 +9,8 @@
   [control]="q.q13"
   title="Konsumieren und/oder konsumierten Sie jemals regelmässig Nikotin, Alkohol, Drogen oder Ähnliches?"
 >
-  <div class="grid gap-3 max-[680px]:gap-[0.85rem]">
-    <div class="grid gap-3 max-[680px]:gap-[0.85rem]">
+  <div class="grid gap-[0.65rem] max-[680px]:gap-[0.6rem]">
+    <div class="grid gap-[0.65rem] max-[680px]:gap-[0.6rem]">
       <ng-container
         *ngTemplateOutlet="substanceBlock; context: { title: 'Nikotin (z.B. E-Zigaretten, Zigarren, Shishas, Snus, Pfeifen)', use: lifestyle.nicotineUse, units: lifestyle.nicotineUnits, frequency: lifestyle.nicotineFrequency, from: lifestyle.nicotineFrom, to: lifestyle.nicotineTo }"
       />
@@ -40,7 +40,7 @@
   number="15"
   title="Befund vom"
 >
-  <div class="grid gap-3 max-[680px]:gap-[0.85rem]">
+  <div class="grid gap-[0.65rem] max-[680px]:gap-[0.6rem]">
     <app-textarea [control]="dental.toothStatusNotes" label="" [rows]="1" />
     <div class="grid gap-[0.55rem]">
       <p class="m-0 text-[14px] font-normal leading-tight text-[#050307]">Zustand der Zähne – Bitte im Zahnschema folgende Angaben eintragen</p>
@@ -87,7 +87,7 @@
 </app-question-card-shell>
 
 <app-binary-question-card number="16" [control]="q.q16" title="Parodontitis">
-  <div class="grid gap-3 max-[680px]:gap-[0.85rem]">
+  <div class="grid gap-[0.65rem] max-[680px]:gap-[0.6rem]">
     <app-option-toggle [control]="dental.parodontitisBleeding" label="Zahnfleischbluten" [options]="formService.bleedingOptions" />
     <div class="grid gap-[0.55rem] text-[12px] leading-[1.35] text-[#6f657a]">
       <p>Es sind im Parodontalstatus einzutragen:</p>
@@ -182,12 +182,12 @@
       <app-checkbox-input [control]="use" [label]="title" />
     </div>
     @if (use.value) {
-      <div class="grid gap-3 pt-[0.7rem]">
-        <div class="grid gap-[0.55rem]">
+      <div class="grid gap-[0.6rem] pt-[0.45rem]">
+        <div class="grid gap-[0.45rem]">
           <app-text-input [control]="units" label="Stückzahl/Einheiten etc..." />
           <app-text-input [control]="frequency" label="pro Tag/Woche/Monat/Jahr" />
         </div>
-        <div class="grid grid-cols-2 gap-[0.55rem]">
+        <div class="grid grid-cols-2 gap-[0.45rem]">
           <app-date-input [control]="from" label="Dauer von" />
           <app-date-input [control]="to" label="bis" />
         </div>

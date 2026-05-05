@@ -58,7 +58,7 @@ export abstract class YesNoQuestionCardBase {
       <app-yes-no-toggle [control]="control()" label="" />
 
       @if (isYes()) {
-        <div class="grid gap-4">
+        <div class="grid gap-[0.65rem]">
           <ng-content />
         </div>
       }
@@ -228,7 +228,7 @@ export class DiagnosisPanelComponent {
       <app-yes-no-toggle [control]="control()" label="" />
 
       @if (isYes() && !disabled()) {
-        <div class="grid gap-4">
+        <div class="grid gap-[0.65rem]">
           <ng-content />
           <app-diagnosis-panel
             [formService]="formService()"

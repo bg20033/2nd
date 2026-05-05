@@ -11,7 +11,7 @@
 >
   <app-yes-no-toggle [control]="previous.q1" label="" />
   @if (isYes(previous.q1)) {
-    <div class="question-inline-block mt-[0.7rem] grid gap-[0.55rem]">
+    <div class="question-inline-block mt-[0.45rem] grid gap-[0.45rem]">
       <app-textarea [control]="previous.q1a" label="Wenn ja, weshalb und aufgrund welcher Diagnose?" [rows]="1" />
       <app-yes-no-toggle [control]="previous.q1b" label="Bestehen noch Beschwerden oder folgen noch Behandlungen?" />
     </div>
@@ -35,7 +35,7 @@
   title="Waren Sie in den letzten 12 Monaten oder sind Sie zurzeit in einer Behandlung, Kontrolle oder Abklärung?"
   description="Oder beabsichtigen Sie eine solche resp. wurde eine solche empfohlen, jedoch nicht durchgeführt? Wenn ja, welche?"
 >
-  <div class="question-inline-block mt-[0.7rem] grid gap-[0.55rem]">
+  <div class="question-inline-block mt-[0.45rem] grid gap-[0.45rem]">
     <app-textarea [control]="q.q4a" label="Welche Behandlungen?" [rows]="1" />
     <app-yes-no-toggle [control]="q.q4b" label="Bestehen noch Beschwerden oder folgen noch Behandlungen?" />
   </div>
