@@ -88,6 +88,7 @@ export class OptionToggleComponent extends BaseFormControlComponent<OptionValue 
 
       <div
         class="yes-no-toggle"
+        [class.yes-no-toggle--unselected]="!hasSelection()"
         [class.is-active]="activeBorder()"
         [class.is-invalid]="showError()"
         role="group"
@@ -125,6 +126,7 @@ export class YesNoToggleComponent extends BaseFormControlComponent<OptionValue<b
     { value: false, label: this.noLabel() },
     { value: true, label: this.yesLabel() },
   ]);
+  hasSelection = computed(() => this.value()?.value !== undefined);
 
   select(option: OptionValue<boolean>): void {
     const control = this.control();

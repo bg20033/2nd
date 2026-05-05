@@ -198,8 +198,8 @@
 }
 
 .family-member__editor {
-  grid-template-columns: auto minmax(0, 1.45fr) auto;
-  gap: 0.25rem;
+  grid-template-columns: 40px minmax(0, 1fr) auto;
+  gap: 0.65rem;
 }
 
 .family-member__identity {
@@ -244,8 +244,8 @@
 
 .family-member__action {
   display: grid;
-  width: 38px;
-  height: 38px;
+  width: var(--control-height);
+  height: var(--control-height);
   place-items: center;
   border: 0;
   border-radius: 0.6rem;
@@ -269,10 +269,15 @@
 }
 
 .family-member__year-row {
-  display: flex;
+  display: grid;
+  grid-template-columns: 5.25rem;
   align-items: center;
-  gap: 0.5rem;
-  width: max-content;
+  gap: 0.65rem;
+  width: auto;
+}
+
+.family-member__year-row--with-action {
+  grid-template-columns: 5.25rem var(--control-height);
 }
 
 .family-member__year-shell,
@@ -281,8 +286,8 @@
 }
 
 .family-member__year-field {
-  justify-self: start;
-  width: max-content;
+  justify-self: end;
+  width: auto;
 }
 
 .family-member__year-shell {
@@ -291,8 +296,8 @@
 }
 
 .family-member__year-field input {
-  width: 4.65rem;
-  height: calc(var(--control-height) - 4px);
+  width: 5.25rem;
+  height: var(--control-height);
   min-height: var(--control-height);
   padding: 0 0.45rem;
   border: 1px solid rgba(144, 114, 191, 0.55);
@@ -341,8 +346,8 @@
 
 .family-gender-group {
   display: grid;
-  grid-template-columns: 1fr 1fr 0.3fr;
-  gap: 0.25rem;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) var(--control-height);
+  gap: 0.5rem;
   min-width: 0;
 }
 
@@ -429,8 +434,8 @@
 }
 
 .family-gender-option--icon img {
-  width: 1.45rem;
-  height: 1.45rem;
+  width: 1.55rem;
+  height: 1.55rem;
   object-fit: contain;
 }
 
@@ -494,7 +499,6 @@
   }
 
   .family-member__year-row {
-    display: grid;
     grid-template-columns: 4.35rem;
     gap: 0.35rem;
   }

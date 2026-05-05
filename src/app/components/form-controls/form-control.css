@@ -161,6 +161,7 @@ span {
 }
 
 .yes-no-toggle {
+  position: relative;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.25rem;
@@ -169,6 +170,17 @@ span {
   border: 1px solid var(--control-border, #cabadc);
   border-radius: var(--radius-control, 11px);
   background: var(--control-bg, #e6d9f4);
+}
+
+.yes-no-toggle--unselected::before {
+  content: '';
+  position: absolute;
+  top: 0.5rem;
+  bottom: 0.5rem;
+  left: 50%;
+  width: 1px;
+  background: rgba(173, 150, 196, 0.55);
+  transform: translateX(-0.5px);
 }
 
 .yes-no-toggle.is-active {

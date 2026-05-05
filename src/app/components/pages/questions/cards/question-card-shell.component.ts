@@ -92,14 +92,15 @@ export type DiagnosisEntryVariant = 'standard' | 'operation' | 'medication';
       color: #706876;
       font-size: 12px;
       font-weight: 300;
-      line-height: 1.18;
+      line-height: 1.4;
     }
 
     .diagnosis-location__input {
+      display: block;
       width: 100%;
       height: var(--control-height);
       min-height: var(--control-height);
-      padding: 0 0.75rem;
+      padding: 10px;
       border: 1px solid #cabadc;
       border-radius: 11px;
       background: #e6d9f4;
@@ -107,6 +108,7 @@ export type DiagnosisEntryVariant = 'standard' | 'operation' | 'medication';
       font: inherit;
       font-size: 14px;
       font-weight: 400;
+      line-height: 1.2;
       outline: none;
       transition:
         border-color 140ms ease,
