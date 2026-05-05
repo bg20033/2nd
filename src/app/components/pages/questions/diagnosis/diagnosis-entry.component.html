@@ -39,13 +39,10 @@
   }
 
   @if (variant() === 'medication') {
-    <div class="grid grid-cols-3 gap-[0.6rem] border-0 bg-transparent pt-[0.1rem]">
-      <div class="col-span-full">
-        <p class="mb-[0.2rem] text-[14px] font-normal leading-[1.2] text-[#050307]">1) Bitte geben Sie alle zu dieser Frage relevanten Medikamenten/Diagnosen an:</p>
-      </div>
-      <app-text-input [control]="entry().controls.name" label="Name" />
-      <app-text-input [control]="entry().controls.amountPerDay" label="Anzahl/Tag" />
-      <app-text-input [control]="entry().controls.duration" label="Duration" />
+    <div class="grid gap-[0.6rem] border-0 bg-transparent pt-[0.1rem]">
+      <app-textarea [control]="entry().controls.name" label="Name" [rows]="1" />
+      <app-textarea [control]="entry().controls.amountPerDay" label="Anzahl/Tag" [rows]="1" />
+      <app-textarea [control]="entry().controls.duration" label="Duration" [rows]="1" />
     </div>
   }
 
@@ -58,7 +55,12 @@
 
   <div class="grid min-w-0 grid-cols-2 gap-[0.6rem]">
     <app-date-input [control]="entry().controls.from" label="Beginn" />
-    <app-date-input [control]="entry().controls.to" label="Ende" />
+    <div class="grid min-w-0 gap-[0.25rem]">
+      <app-date-input [control]="entry().controls.to" label="Ende" />
+      @if (dateOrderError()) {
+        <p class="field-error block min-h-[1.1rem]" data-validation-anchor>End date must be after start date.</p>
+      }
+    </div>
   </div>
   <app-yes-no-toggle class="grid w-full min-w-0 max-w-full content-start overflow-hidden" [control]="entry().controls.recovered" label="Vollständig geheilt?" />
 
@@ -69,13 +71,78 @@
       <app-text-input class="col-span-6 min-w-0" [control]="entry().controls.doctorFamilyName" label="" placeholder="Doktormann" />
       <app-text-input class="col-span-8 min-w-0" [control]="entry().controls.doctorStreet" label="" placeholder="Doktorstrasse" />
       <app-text-input class="col-span-4 min-w-0" [control]="entry().controls.doctorStreetNumber" label="" placeholder="1" [digitsOnly]="true" />
-      <app-text-input class="col-span-4 min-w-0" [control]="entry().controls.doctorPostalCode" label="" placeholder="8001" [digitsOnly]="true" />
-      <app-text-input class="col-span-8 min-w-0" [control]="entry().controls.doctorCity" label="" placeholder="Zurich" />
+      <div
+        class="diagnosis-location col-span-full"
+        [attr.data-validation-anchor]="locationInvalid() ? '' : null"
+      >
+        <div class="diagnosis-location__field">
+          <label class="diagnosis-location__label" for="diagnosis-location-{{ entry().controls.id.value }}">
+            PLZ / Ort
+          </label>
+          <div class="diagnosis-location__control">
+            <input
+              id="diagnosis-location-{{ entry().controls.id.value }}"
+              class="diagnosis-location__input"
+              type="text"
+              inputmode="text"
+              autocomplete="new-password"
+              autocapitalize="none"
+              autocorrect="off"
+              spellcheck="false"
+              name="diagnosis-location-{{ entry().controls.id.value }}"
+              placeholder="PLZ oder Ort eingeben..."
+              [value]="locationQuery()"
+              [class.is-valid]="locationValid()"
+              [class.is-invalid]="locationInvalid()"
+              [attr.aria-invalid]="locationInvalid()"
+              (input)="onLocationInput($event)"
+              (focus)="onLocationFocus()"
+              (blur)="onLocationBlur()"
+            />
+
+            @if (showLocationDropdown()) {
+              <ul class="diagnosis-location__dropdown" role="listbox" aria-label="PLZ / Ort">
+                @for (
+                  location of locationResults();
+                  track location.locationId +
+                    '-' +
+                    location.zipCode +
+                    '-' +
+                    location.locationName +
+                    '-' +
+                    location.cantonName +
+                    '-' +
+                    $index
+                ) {
+                  <li
+                    class="diagnosis-location__option"
+                    role="option"
+                    tabindex="0"
+                    (mousedown)="selectLocation(location, $event)"
+                    (keydown.enter)="selectLocation(location, $event)"
+                    (keydown.space)="selectLocation(location, $event)"
+                  >
+                    <span class="diagnosis-location__zip">{{ location.zipCode }}</span>
+                    <span class="diagnosis-location__name">{{ location.locationName }}</span>
+                    <span class="diagnosis-location__canton">{{ location.cantonName }}</span>
+                  </li>
+                }
+                @if (locationLoading()) {
+                  <li class="diagnosis-location__option diagnosis-location__option--status" aria-live="polite">
+                    Searching...
+                  </li>
+                }
+              </ul>
+            }
+          </div>
+        </div>
+
+        @if (locationInvalid() && !showLocationDropdown()) {
+          <p class="field-error">{{ locationError() }}</p>
+        }
+      </div>
     </div>
   </fieldset>
   <app-textarea [control]="entry().controls.notes" label="Besondere Bemerkungen:" [rows]="1" />
 
-  @if (dateOrderError()) {
-    <p class="field-error block min-h-[1.1rem]" data-validation-anchor>End date must be after start date.</p>
-  }
 </article>

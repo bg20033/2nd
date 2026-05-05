@@ -69,13 +69,11 @@
   color: rgba(255, 255, 255, 0.94);
   cursor: pointer;
   transition:
-    background-color 150ms ease,
-    transform 150ms ease;
+    background-color 150ms ease;
 }
 
 .global-header__icon-button:hover {
   background: rgba(255, 255, 255, 0.08);
-  transform: translateY(-1px);
 }
 
 .global-header__icon-button.is-open {

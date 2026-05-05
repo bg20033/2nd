@@ -137,6 +137,19 @@ export class QuestionnaireFormService implements OnDestroy {
     return this.form.controls.diagnoses.controls.filter((entry) => entry.controls.questionId.value === questionId);
   }
 
+  validateDiagnosisEntriesFor(questionId: DiagnosisQuestionId): boolean {
+    this.refreshValidationState();
+    const entries = this.diagnosesFor(questionId);
+
+    for (const entry of entries) {
+      this.markEnabledControlsTouched(entry);
+      entry.updateValueAndValidity({ emitEvent: false });
+    }
+
+    this.form.controls.diagnoses.updateValueAndValidity({ emitEvent: false });
+    return entries.every((entry) => entry.valid);
+  }
+
   isYes(control: YesNoControl): boolean {
     return control.value?.value === true;
   }
@@ -297,7 +310,7 @@ export class QuestionnaireFormService implements OnDestroy {
         doctorStreetNumber: this.textControl([Validators.required, streetNumberValidator]),
         doctorPostalCode: this.textControl([Validators.required, postalCodeValidator]),
         doctorCity: this.textControl([Validators.required, Validators.minLength(2)]),
-        notes: this.textControl(),
+        notes: this.textControl([Validators.required, Validators.minLength(2)]),
         implantAnswer: this.yesNoControl(),
         implantDetails: this.textControl(),
         implantStatus: new FormControl(null) as DiagnosisEntryControls['implantStatus'],

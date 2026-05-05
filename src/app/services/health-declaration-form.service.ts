@@ -551,10 +551,14 @@ export class HealthDeclarationFormService {
     const fullJson = JSON.stringify(fullSubmission, null, 2);
     const questionAnswerJson = JSON.stringify(questionAnswers, null, 2);
 
-    console.log(HEALTH_DECLARATION_FILE_NAME, fullJson);
-    console.log(HEALTH_DECLARATION_QUESTION_ANSWERS_FILE_NAME, questionAnswerJson);
+    this.writeSubmissionDebugArtifacts(fullJson, questionAnswerJson);
     this.exposeSubmissionFiles(fullSubmission, questionAnswers, fullJson, questionAnswerJson);
     this.submissionLogged = true;
+  }
+
+  private writeSubmissionDebugArtifacts(fullJson: string, questionAnswerJson: string): void {
+    console.log(HEALTH_DECLARATION_FILE_NAME, fullJson);
+    console.log(HEALTH_DECLARATION_QUESTION_ANSWERS_FILE_NAME, questionAnswerJson);
   }
 
   private exposeSubmissionFiles(

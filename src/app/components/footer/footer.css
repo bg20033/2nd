@@ -13,6 +13,9 @@
     1rem max(0.9rem, env(safe-area-inset-right))
     calc(1rem + env(safe-area-inset-bottom))
     max(0.9rem, env(safe-area-inset-left));
+  background: linear-gradient(to top, #260b41, rgba(38, 11, 65, 0));
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   pointer-events: none;
   transition:
     opacity 160ms ease,

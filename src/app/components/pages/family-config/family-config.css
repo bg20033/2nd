@@ -250,11 +250,6 @@
   border: 0;
   border-radius: 0.6rem;
   cursor: pointer;
-  transition: transform 140ms ease;
-}
-
-.family-member__action:hover {
-  transform: translateY(-1px);
 }
 
 .family-member__action svg {
@@ -304,7 +299,7 @@
   border-radius: 12px;
   background: #ffffff;
   color: #16111d;
-  font-size: 16px !important;
+  font-size: 16px;
   font-weight: 400;
   line-height: 1.5;
   text-align: center;

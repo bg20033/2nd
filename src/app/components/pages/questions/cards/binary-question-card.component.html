@@ -1,0 +1,14 @@
+<app-question-card-shell
+  [number]="number()"
+  [title]="title()"
+  [description]="description()"
+  [disabled]="disabled()"
+>
+  <app-yes-no-toggle [control]="control()" label="" />
+
+  @if (isYes()) {
+    <div class="grid gap-[0.65rem]">
+      <ng-content />
+    </div>
+  }
+</app-question-card-shell>

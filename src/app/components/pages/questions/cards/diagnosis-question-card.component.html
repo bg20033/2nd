@@ -1,0 +1,19 @@
+<app-question-card-shell
+  [number]="number()"
+  [title]="title()"
+  [description]="description()"
+  [disabled]="disabled()"
+>
+  <app-yes-no-toggle [control]="control()" label="" />
+
+  @if (isYes() && !disabled()) {
+    <div class="grid gap-[0.65rem]">
+      <ng-content />
+      <app-diagnosis-panel
+        [formService]="formService()"
+        [questionId]="questionId()"
+        [disabled]="disabled()"
+      />
+    </div>
+  }
+</app-question-card-shell>

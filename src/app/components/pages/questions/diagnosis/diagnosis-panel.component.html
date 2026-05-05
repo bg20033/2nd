@@ -15,10 +15,14 @@
       <p class="field-error font-normal" data-validation-anchor>At least one diagnosis entry is required.</p>
     }
 
+    @if (addBlockedError()) {
+      <p class="field-error font-normal" data-validation-anchor>Complete this diagnosis before adding another.</p>
+    }
+
     @if (!disabled()) {
       <button
         type="button"
-        class="h-(--control-height) w-full cursor-pointer rounded-lg border-0 bg-linear-to-r from-[#6e27de] to-[#8f2ef6] px-4 text-[14px] font-normal text-white transition hover:-translate-y-px hover:shadow-[0_18px_28px_rgba(111,39,222,0.22)]"
+        class="h-(--control-height) w-full cursor-pointer rounded-lg border-0 bg-linear-to-r from-[#6e27de] to-[#8f2ef6] px-4 text-[14px] font-normal text-white transition hover:shadow-[0_18px_28px_rgba(111,39,222,0.22)]"
         (click)="addEntry()"
       >
         {{ addButtonLabel() }}

@@ -212,10 +212,11 @@ export class QuestionnaireFormComponent {
 
   private topOffset(): number {
     if (typeof document === 'undefined') {
-      return 18;
+      return 96;
     }
-    const topbar = document.querySelector<HTMLElement>('app-questionnaire-topbar');
-    return (topbar?.getBoundingClientRect().height ?? 0) + window.innerHeight / 2;
+    const topbar = document.querySelector<HTMLElement>('app-questionnaire-topbar > div')
+      ?? document.querySelector<HTMLElement>('app-questionnaire-topbar');
+    return (topbar?.getBoundingClientRect().height ?? 0) + 96;
   }
 
   private scrollY(): number {

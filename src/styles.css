@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap');
 @import 'tailwindcss';
 
 :root {
@@ -6,6 +6,9 @@
   --page-bg-end: #6a3d98;
   --page-ink: #f8f0ff;
   --muted-ink: rgba(237, 224, 255, 0.72);
+  --panel-bg: #eee7f4;
+  --control-bg: #e6d9f4;
+  --control-border: #cabadc;
   --surface-ink: #2a1144;
   --line: rgba(214, 187, 255, 0.22);
   --line-strong: rgba(225, 203, 255, 0.38);
@@ -17,12 +20,17 @@
   --accent: #e445fe;
   --accent-strong: #9150ff;
   --accent-soft: rgba(228, 69, 254, 0.18);
+  --error: #d81837;
   --danger: #ffb0c6;
   --shadow: 0 28px 80px rgba(11, 3, 22, 0.34);
   --radius-xl: 28px;
   --radius-lg: 22px;
   --radius-md: 16px;
   --radius-sm: 12px;
+  --radius-control: 11px;
+  --space-xs: 0.35rem;
+  --space-s: 0.65rem;
+  --space-m: 1rem;
   --control-height: 40px;
   --control-border-default: #cfb6e3;
   --control-border-filled: #7d29de;
@@ -137,21 +145,15 @@ p {
   font-weight: 400;
   text-decoration: none;
   transition:
-    transform 150ms ease,
     background-color 150ms ease,
     border-color 150ms ease,
     box-shadow 150ms ease,
     opacity 150ms ease;
 }
 
-.button:hover:not(:disabled) {
-  transform: translateY(-1px);
-}
-
 .button:disabled {
   cursor: not-allowed;
   opacity: 0.55;
-  transform: none;
   box-shadow: none;
 }
 
@@ -171,7 +173,7 @@ p {
 .app-content {
   display: grid;
   align-content: center;
-  gap: 1rem;
+  gap: var(--space-m);
   width: min(660px, calc(100% - 2rem));
   min-height: 100vh;
   margin: 0 auto;
@@ -186,7 +188,7 @@ p {
   margin: 0 0 40px;
   padding: 1.15rem;
   border-radius: 1.75rem;
-  background: #eee7f4;
+  background: var(--panel-bg);
   backdrop-filter: none;
 }
 
@@ -265,7 +267,7 @@ app-questionnaire-form .app-content {
 }
 
 .dental-finding__cell.selected {
-  background: #7d29de !important;
+  background: #7d29de;
   color: inherit;
 }
 

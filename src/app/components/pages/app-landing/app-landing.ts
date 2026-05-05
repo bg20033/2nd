@@ -14,10 +14,10 @@ export class AppLanding {
   readonly start = output<void>();
 
   protected readonly introParagraphs = [
-    'So that we can review your application individually, we rely on complete and detailed information.',
-    'Please also use the remark fields provided. Each of the following questions must be answered personally and truthfully by the person to be insured or by their legal representative.',
-    'Incomplete or incorrect information is considered a breach of the duty to disclose. This may result in termination of the contract or exclusion of benefits.',
-    'Helsana will treat your data confidentially and will not share it with third parties. Please do not leave any remark fields blank.',
+    'Damit wir auf Ihren Antrag individuell eingehen können, sind wir auf vollständige und detaillierte Beschreibungen angewiesen.',
+    'Bitte nutzen Sie dazu auch die jeweiligen Bemerkungsfelder. Jeder der nachfolgenden Fragen muss von der zu versichernden Person oder vom gesetzlichen Vertreter persönlich und wahrheitsgetreu beantwortet werden.',
+    'Unvollständige oder falsche Angaben gelten als Anzeigepflichtverletzung. Als Folge kann eine Kündigung des Vertrags oder ein Leistungsausschluss ausgesprochen werden.',
+    'Helsana wird Ihre Daten vertraulich behandeln und nicht an Dritte weitergeben. Bitte lassen Sie keine Bemerkungsfelder leer.',
   ] as const;
 
   protected startDeclaration(): void {

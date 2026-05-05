@@ -81,10 +81,6 @@ type PersonTab = {
     .topbar-tab--interactive {
       cursor: pointer;
     }
-
-    .topbar-tab--interactive:hover {
-      transform: translateY(-2px);
-    }
   `],
   host: { class: 'block' },
   changeDetection: ChangeDetectionStrategy.OnPush,
