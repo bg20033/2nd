@@ -126,7 +126,7 @@ textarea::placeholder {
 }
 
 .form-textarea-grip::after {
-  right: -6;
+  right: -6px;
   bottom: -1px;
   width: 9px;
 }

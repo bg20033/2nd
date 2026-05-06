@@ -50,7 +50,7 @@ export class DentalQuestionsSectionComponent {
 
   protected toothCellClass(control: FormControl<number[]>, tooth: number): string {
     const base =
-      'dental-finding__cell relative min-h-[1.85rem] cursor-pointer border-0 border-r border-[rgba(178,140,229,0.38)] bg-transparent text-[12px] font-normal leading-none text-[#8a7b9c] transition hover:-translate-y-px';
+      'dental-finding__cell relative min-h-[1.85rem] cursor-pointer border-0 border-r border-[rgba(178,140,229,0.38)] bg-transparent text-[12px] font-normal leading-none text-[#8a7b9c] transition';
     return this.hasTooth(control, tooth) ? `${base} selected` : base;
   }
 

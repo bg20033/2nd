@@ -12,7 +12,7 @@ import { BaseFormControlComponent, ControlOptionPrimitive, OptionValue } from '.
   template: `
     <div class="min-w-0 max-w-full space-y-1" [attr.data-validation-anchor]="validationAnchor()">
       @if (label()) {
-        <div class="block min-w-0 max-w-full whitespace-normal break-words text-[12px] font-light leading-[1.18] text-[#706876]">
+        <div class="block min-w-0 max-w-full whitespace-normal wrap-break-word text-[12px] font-light leading-[1.18] text-[#706876]">
           {{ label() }}
         </div>
       }
@@ -82,7 +82,7 @@ export class OptionToggleComponent extends BaseFormControlComponent<OptionValue 
   template: `
     <div class="min-w-0 max-w-full space-y-1" [attr.data-validation-anchor]="validationAnchor()">
       @if (label()) {
-        <div class="block min-w-0 max-w-full whitespace-normal break-words text-[12px] font-light leading-[1.18] text-[#706876]">
+        <div class="block min-w-0 max-w-full whitespace-normal wrap-break-word text-[12px] font-light leading-[1.18] text-[#706876]">
           {{ label() }}
         </div>
       }

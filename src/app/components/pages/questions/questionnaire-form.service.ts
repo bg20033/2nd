@@ -1,4 +1,4 @@
-import { Injectable, OnDestroy, computed, signal } from '@angular/core';
+import { Injectable, OnDestroy, computed } from '@angular/core';
 import { AbstractControl, FormArray, FormControl, FormGroup, ValidatorFn, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
@@ -144,8 +144,6 @@ export class QuestionnaireFormService implements OnDestroy {
     dentalInfo: this.createDentalInfoGroup(),
   });
 
-  readonly rawValue = signal(this.form.getRawValue());
-
   private formSubscription?: Subscription;
   private diagnosisSubscriptions = new Map<string, Subscription>();
   private syncing = false;
@@ -229,7 +227,6 @@ export class QuestionnaireFormService implements OnDestroy {
   refreshValidationState(): void {
     this.syncConditionalValidators();
     this.form.updateValueAndValidity({ emitEvent: false });
-    this.rawValue.set(this.form.getRawValue());
   }
 
   submitValue() {
