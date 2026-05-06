@@ -130,58 +130,6 @@ export const DIAGNOSIS_QUESTION_IDS = [
   DiagnosisQuestionId.Q12,
 ] as const;
 
-export const FAMILY_GENDER_OPTIONS = [
-  { value: PersonGender.Female, label: 'Female' },
-  { value: PersonGender.Male, label: 'Male' },
-  { value: PersonGender.Baby, label: 'Baby' },
-] as const;
-
-export const QUESTIONNAIRE_GENDER_OPTIONS = [
-  { value: Gender.Female, label: 'Female' },
-  { value: Gender.Male, label: 'Male' },
-  { value: Gender.Other, label: 'Other' },
-] as const;
-
-export const IMPLANT_STATUS_OPTIONS = [
-  { value: ImplantStatus.InPlace, label: 'Verbleibt' },
-  { value: ImplantStatus.Removed, label: 'Entfernt' },
-  { value: ImplantStatus.WillBeRemoved, label: 'Wird entfernt' },
-] as const;
-
-export const DENTAL_LEVEL_OPTIONS = [
-  { value: DentalLevel.UpTo1000, label: 'Bis CHF 1 000.-' },
-  { value: DentalLevel._1000To3000, label: 'CHF 1 000.- bis CHF 3 000.-' },
-  { value: DentalLevel._3000To5000, label: 'CHF 3 000.- bis CHF 5 000.-' },
-  { value: DentalLevel.Over5000, label: 'Über CHF 5 000.-' },
-] as const;
-
-export const DENTA_LEVEL_OPTIONS = [
-  { value: DentalLevel.UpTo1000, label: '1. 50 % max. CHF 500.' },
-  { value: DentalLevel._1000To3000, label: '2. 50 % max. CHF 1 000.' },
-  { value: DentalLevel._3000To5000, label: '3. 75 % max. CHF 1 500.' },
-  { value: DentalLevel.Over5000, label: '4. 75 % max. CHF 2 000.' },
-] as const;
-
-export const PROSTHESES_CONDITION_OPTIONS = [
-  { value: ProsthesesCondition.Good, label: 'Gut' },
-  { value: ProsthesesCondition.Medium, label: 'Mittel' },
-  { value: ProsthesesCondition.Poor, label: 'Schlecht' },
-] as const;
-
-export const BLEEDING_OPTIONS = [
-  { value: BleedingOption.Yes, label: 'Ja' },
-  { value: BleedingOption.No, label: 'Nein' },
-  { value: BleedingOption.Partial, label: 'Teilweise' },
-  { value: BleedingOption.Everywhere, label: 'Überall' },
-] as const;
-
-export const JAW_COST_OPTIONS = [
-  { value: JawCost.UpTo5000, label: 'Bis CHF 5 000.-' },
-  { value: JawCost._1000To3000, label: 'CHF 1 000.- bis CHF 3 000.-' },
-  { value: JawCost._3000To5000, label: 'CHF 3 000.- bis CHF 5 000.-' },
-  { value: JawCost.Over10000, label: 'Über CHF 10 000.-' },
-] as const;
-
 export type GenderValue = `${Gender}`;
 export type PersonGenderValue = `${PersonGender}`;
 export type PersonStepStatusValue = `${PersonStepStatus}`;

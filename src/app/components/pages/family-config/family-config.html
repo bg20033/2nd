@@ -1,23 +1,23 @@
 <main class="app-content">
-  <app-header class="mb-4" title="Gesundheitsdeklaration" [showLanguageButton]="false" />
+  <app-header class="mb-4" [title]="'header.title' | t" />
 
   <section class="app-form-panel">
-    <header class="family-stepper" aria-label="Setup progress">
+    <header class="family-stepper" [attr.aria-label]="'family.stepperAria' | t">
       @for (step of setupSteps; track step.number) {
         <div class="family-stepper__step" [class.is-active]="step.active">
           <span class="family-stepper__dot">{{ step.number }}</span>
-          <span class="family-stepper__label">{{ step.label }}</span>
+          <span class="family-stepper__label">{{ step.labelKey | t }}</span>
         </div>
       }
     </header>
-    <section class="family-location-card" aria-label="Place of residence" data-family-validation="location">
-      <label class="field ps-6 pb-0 pt-3" for="locationFilter">Postal code / city</label>
+    <section class="family-location-card" [attr.aria-label]="'family.locationAria' | t" data-family-validation="location">
+      <label class="field ps-6 pb-0 pt-3" for="locationFilter">{{ 'family.locationLabel' | t }}</label>
       <div class="location-input ">
         <input
           id="locationFilter"
           type="text"
           inputmode="text"
-          placeholder="Enter postal code or city..."
+          [placeholder]="'common.placeholder.postalOrCity' | t"
           [value]="searchQuery()"
           [class.is-valid]="hasSelectedZip()"
           [class.is-invalid]="locationInvalid()"
@@ -28,11 +28,11 @@
           autocomplete="off"
         />
         @if (locationInvalid()) {
-          <span class="field-error">Please select a location from the list.</span>
+          <span class="field-error">{{ 'family.locationSelectError' | t }}</span>
         }
 
         @if (showLocationDropdown()) {
-          <ul class="location-dropdown" role="listbox" aria-label="Place of residence">
+          <ul class="location-dropdown" role="listbox" [attr.aria-label]="'family.locationAria' | t">
             @for (
               location of locationResults();
               track location.locationId +
@@ -60,7 +60,7 @@
               </li>
             }
             @if (isLoading()) {
-              <li class="location-option location-option--status" aria-live="polite">Searching...</li>
+              <li class="location-option location-option--status" aria-live="polite">{{ 'family.locationLoading' | t }}</li>
             }
           </ul>
         }
@@ -93,10 +93,10 @@
                   class="family-gender-group"
                   [class.is-locked]="!hasSelectedZip()"
                   role="radiogroup"
-                  [attr.aria-label]="'Gender for person ' + (i + 1)"
+                  [attr.aria-label]="'family.genderGroupAria' | t: { index: i + 1 }"
                   [attr.aria-disabled]="!hasSelectedZip()"
                 >
-                  @for (option of genderOptions; track option.value) {
+                  @for (option of genderOptions(); track option.value) {
                     <label
                       class="family-gender-option"
                       [class.family-gender-option--icon]="option.value === personGender.Baby"
@@ -155,7 +155,7 @@
                       <button
                         class="family-member__action family-member__action--delete"
                         type="button"
-                        aria-label="Remove person"
+                        [attr.aria-label]="'family.removePersonAria' | t"
                         (click)="removePerson(i)"
                       >
                         <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -172,14 +172,14 @@
               @if (genderInvalid || birthYearInvalid) {
                 <div class="family-member__errors">
                   @if (genderInvalid) {
-                    <span class="field-error">Please select a gender.</span>
+                    <span class="field-error">{{ 'family.errors.genderRequired' | t }}</span>
                   }
                   @if (birthYearControl.hasError('required') && (birthYearControl.touched || birthYearControl.dirty)) {
-                    <span class="field-error">Birth year is required.</span>
+                    <span class="field-error">{{ 'family.errors.birthYearRequired' | t }}</span>
                   } @else if (birthYearControl.hasError('birthYear') && (birthYearControl.touched || birthYearControl.dirty)) {
-                    <span class="field-error">Please enter a valid birth year for an age between 0 and 120 years.</span>
+                    <span class="field-error">{{ 'family.errors.birthYearInvalid' | t }}</span>
                   } @else if (person.hasError('babyAge') && (birthYearControl.touched || birthYearControl.dirty)) {
-                    <span class="field-error">For babies, the birth year may only be the current year.</span>
+                    <span class="field-error">{{ 'family.errors.babyBirthYearInvalid' | t }}</span>
                   }
                 </div>
               }
@@ -202,7 +202,7 @@
                   <button
                     class="family-member__action family-member__action--edit"
                     type="button"
-                    aria-label="Edit person"
+                    [attr.aria-label]="'family.editPersonAria' | t"
                     (click)="editPerson(i)"
                   >
                     <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -215,7 +215,7 @@
                     <button
                       class="family-member__action family-member__action--delete"
                       type="button"
-                      aria-label="Remove person"
+                      [attr.aria-label]="'family.removePersonAria' | t"
                       (click)="removePerson(i)"
                     >
                       <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -240,14 +240,14 @@
         [disabled]="!canAddPerson()"
         (click)="addPerson()"
       >
-        + Add person
+        <span>{{ 'family.addPerson' | t }}</span>
       </button>
     </footer>
   </section>
 
   <app-footer
-    backLabel="Back"
-    nextLabel="Next"
+    [backLabel]="'common.back' | t"
+    [nextLabel]="'common.next' | t"
     (back)="back.emit()"
     (next)="startQuestionnaire()"
   />

@@ -7,44 +7,44 @@
 <app-binary-question-card
   number="13"
   [control]="q.q13"
-  title="Konsumieren und/oder konsumierten Sie jemals regelmässig Nikotin, Alkohol, Drogen oder Ähnliches?"
+  [title]="'health.questions.q13' | t"
 >
   <div class="grid gap-[0.65rem] max-[680px]:gap-[0.6rem]">
     <div class="grid gap-[0.65rem] max-[680px]:gap-[0.6rem]">
       <ng-container
-        *ngTemplateOutlet="substanceBlock; context: { title: 'Nikotin (z.B. E-Zigaretten, Zigarren, Shishas, Snus, Pfeifen)', use: lifestyle.nicotineUse, units: lifestyle.nicotineUnits, frequency: lifestyle.nicotineFrequency, from: lifestyle.nicotineFrom, to: lifestyle.nicotineTo }"
+        *ngTemplateOutlet="substanceBlock; context: { title: 'health.lifestyle.nicotine' | t, use: lifestyle.nicotineUse, units: lifestyle.nicotineUnits, frequency: lifestyle.nicotineFrequency, from: lifestyle.nicotineFrom, to: lifestyle.nicotineTo }"
       />
       <ng-container
-        *ngTemplateOutlet="substanceBlock; context: { title: 'Alkohol (1 Einheit = 1 dl Wein, 3 dl Bier oder 4 cl Spirituosen)', use: lifestyle.alcoholUse, units: lifestyle.alcoholUnits, frequency: lifestyle.alcoholFrequency, from: lifestyle.alcoholFrom, to: lifestyle.alcoholTo }"
+        *ngTemplateOutlet="substanceBlock; context: { title: 'health.lifestyle.alcohol' | t, use: lifestyle.alcoholUse, units: lifestyle.alcoholUnits, frequency: lifestyle.alcoholFrequency, from: lifestyle.alcoholFrom, to: lifestyle.alcoholTo }"
       />
       <ng-container
-        *ngTemplateOutlet="substanceBlock; context: { title: 'Drogen', use: lifestyle.drugUse, units: lifestyle.drugUnits, frequency: lifestyle.drugFrequency, from: lifestyle.drugFrom, to: lifestyle.drugTo }"
+        *ngTemplateOutlet="substanceBlock; context: { title: 'health.lifestyle.drug' | t, use: lifestyle.drugUse, units: lifestyle.drugUnits, frequency: lifestyle.drugFrequency, from: lifestyle.drugFrom, to: lifestyle.drugTo }"
       />
     </div>
   </div>
 </app-binary-question-card>
 
-<app-question-card-shell number="14" title="GEWÜNSCHTE STUFE DENTA">
+<app-question-card-shell number="" [title]="'health.dental.desiredLevelTitle' | t">
     <app-option-toggle
       [control]="dental.desiredLevel"
       label=""
-      [options]="formService.dentaLevelOptions"
+      [options]="formService.dentaLevelOptions()"
       variant="list"
     />
   <p class="text-[12px] leading-[1.18] text-[#706876]">
-    In die Zahnbehandlungsversicherung werden nur Personen mit saniertem, nicht behandlungsbedürftigem Gebiss aufgenommen.
+    {{ 'health.dental.desiredLevelHint' | t }}
   </p>
 </app-question-card-shell>
 
 <app-question-card-shell
   number="15"
-  title="Befund vom"
+  [title]="'health.dental.findingTitle' | t"
 >
   <div class="grid gap-[0.65rem] max-[680px]:gap-[0.6rem]">
     <app-textarea [control]="dental.toothStatusNotes" label="" [rows]="1" />
     <div class="grid gap-[0.55rem]">
-      <p class="m-0 text-[14px] font-normal leading-tight text-[#050307]">Zustand der Zähne – Bitte im Zahnschema folgende Angaben eintragen</p>
-      <img class="block h-auto w-[min(100%,22rem)]" src="assets/1list.svg" alt="Dental chart legend" />
+      <p class="m-0 text-[14px] font-normal leading-tight text-[#050307]">{{ 'health.dental.legendTitle' | t }}</p>
+      <img class="block h-auto w-[min(100%,22rem)]" src="assets/1list.svg" [alt]="'health.dental.legendAlt' | t" />
     </div>
     <div class="dental-chart-stack">
       <div class="dental-chart-numbers">
@@ -62,7 +62,7 @@
         }
       </div>
       <div class="dental-chart-image-shell">
-        <img class="dental-chart-image" src="assets/teeth.png" alt="Dental chart" />
+        <img class="dental-chart-image" src="assets/teeth.png" [alt]="'health.dental.chartAlt' | t" />
       </div>
       <div class="dental-finding__grid relative grid min-w-0 grid-cols-16 overflow-hidden rounded-[0.7rem] border border-[rgba(178,140,229,0.55)] bg-[rgba(234,222,245,0.7)]">
         @for (tooth of lowerTeeth; track tooth) {
@@ -79,20 +79,20 @@
         }
       </div>
     </div>
-    <app-option-toggle [control]="dental.prosthesesCondition" label="Zustand der Kronen, Brücken und Prothesen" [options]="formService.prosthesesConditionOptions" />
+    <app-option-toggle [control]="dental.prosthesesCondition" [label]="'health.dental.prosthesesConditionLabel' | t" [options]="formService.prosthesesConditionOptions()" />
     @if (formService.needsConditionReason(dental.prosthesesCondition.value?.value)) {
-      <app-textarea [control]="dental.prosthesesReason" label="Wenn mittelmässig oder schlecht, weshalb?" [rows]="1" />
+      <app-textarea [control]="dental.prosthesesReason" [label]="'health.dental.prosthesesReasonLabel' | t" [rows]="1" />
     }
   </div>
 </app-question-card-shell>
 
-<app-binary-question-card number="16" [control]="q.q16" title="Parodontitis">
+<app-binary-question-card number="16" [control]="q.q16" [title]="'health.questions.q16' | t">
   <div class="grid gap-[0.65rem] max-[680px]:gap-[0.6rem]">
-    <app-option-toggle [control]="dental.parodontitisBleeding" label="Zahnfleischbluten" [options]="formService.bleedingOptions" />
+    <app-option-toggle [control]="dental.parodontitisBleeding" [label]="'health.dental.gumBleedingLabel' | t" [options]="formService.bleedingOptions()" />
     <div class="grid gap-[0.55rem] text-[12px] leading-[1.35] text-[#6f657a]">
-      <p>Es sind im Parodontalstatus einzutragen:</p>
-      <p>1. Taschen von 4 mm und mehr Tiefe</p>
-      <p>2. ZB = Zahnbeweglichkeit mit Grad 1, 2, 3 und 4</p>
+      <p>{{ 'health.dental.parodontitisInstructionsTitle' | t }}</p>
+      <p>1. {{ 'health.dental.parodontitisInstruction1' | t }}</p>
+      <p>2. {{ 'health.dental.parodontitisInstruction2' | t }}</p>
     </div>
     <div class="dental-chart-stack">
       <div class="dental-chart-numbers">
@@ -110,7 +110,7 @@
         }
       </div>
       <div class="dental-chart-image-shell">
-        <img class="dental-chart-image" src="assets/Parodontitis.png" alt="Periodontitis chart" />
+        <img class="dental-chart-image" src="assets/Parodontitis.png" [alt]="'health.dental.parodontitisAlt' | t" />
       </div>
       <div class="dental-finding__grid relative grid min-w-0 grid-cols-16 overflow-hidden rounded-[0.7rem] border border-[rgba(178,140,229,0.55)] bg-[rgba(234,222,245,0.7)]">
         @for (tooth of lowerTeeth; track tooth) {
@@ -127,50 +127,50 @@
         }
       </div>
     </div>
-    <app-textarea [control]="dental.parodontitisRemarks" label="Bemerkungen" [rows]="1" />
+    <app-textarea [control]="dental.parodontitisRemarks" [label]="'health.dental.remarksLabel' | t" [rows]="1" />
   </div>
 </app-binary-question-card>
 
-<app-binary-question-card number="17" [control]="q.q17" title="Zahnstellungs- und kieferanomalien">
+<app-binary-question-card number="17" [control]="q.q17" [title]="'health.questions.q17' | t">
   <div class="field-grid">
-    <app-textarea [control]="dental.jawDescription" label="Beschreibung" [rows]="1" />
-    <app-text-input [control]="dental.angleClass" label="Angle-Klasse" />
-    <app-yes-no-toggle [control]="dental.jawExpectedWork" label="Sind kieferorthopädische Arbeiten zu erwarten?" />
+    <app-textarea [control]="dental.jawDescription" [label]="'health.dental.jawDescriptionLabel' | t" [rows]="1" />
+    <app-text-input [control]="dental.angleClass" [label]="'health.dental.angleClassLabel' | t" />
+    <app-yes-no-toggle [control]="dental.jawExpectedWork" [label]="'health.questions.q10a' | t" />
     @if (isYes(dental.jawExpectedWork)) {
-      <app-textarea [control]="dental.jawReason" label="Wenn ja, warum?" [rows]="1" />
-      <app-textarea [control]="dental.jawTreatments" label="Welche Behandlungen?" [rows]="1" />
-      <app-option-toggle [control]="dental.jawCostEstimate" label="Kostenschätzung" [options]="formService.jawCostOptions" variant="list" />
+      <app-textarea [control]="dental.jawReason" [label]="'health.dental.jawReasonLabel' | t" [rows]="1" />
+      <app-textarea [control]="dental.jawTreatments" [label]="'health.dental.jawTreatmentsLabel' | t" [rows]="1" />
+      <app-option-toggle [control]="dental.jawCostEstimate" [label]="'health.dental.costEstimateLabel' | t" [options]="formService.jawCostOptions()" variant="list" />
     }
   </div>
 </app-binary-question-card>
 
 <app-question-card-shell
   number="18"
-  title="Ergänzende fragen zum zustand der zähne"
+  [title]="'health.dental.additionalQuestionsTitle' | t"
 >
   <div class="field-grid">
-    <app-option-toggle [control]="dental.hygiene" label="18.1 Hygiene" [options]="formService.prosthesesConditionOptions" />
+    <app-option-toggle [control]="dental.hygiene" [label]="'health.dental.hygieneLabel' | t" [options]="formService.prosthesesConditionOptions()" />
     @if (formService.needsConditionReason(dental.hygiene.value?.value)) {
-      <app-textarea [control]="dental.hygieneReason" label="18.1a Wenn mittelmässig oder schlecht, weshalb?" [rows]="1" />
+      <app-textarea [control]="dental.hygieneReason" [label]="'health.questions.q18_1a' | t" [rows]="1" />
     }
-    <app-textarea [control]="dental.lastTreatment" label="18.2 Wann wurde die letzte Behandlung abgeschlossen und aus welchem Grund?" [rows]="1" />
-    <app-textarea [control]="dental.firstTreatment" label="18.3 Wann haben Sie Ihren Patienten/Ihre Patientin erstmals behandelt?" [rows]="1" />
-    <app-textarea [control]="dental.dentalInsuranceExam" label="18.4 Wann fand die Untersuchung für die Zahnversicherung statt?" [rows]="1" />
-    <app-yes-no-toggle [control]="dental.accidentDentalInjuries" label="18.5 Bestehen unfallbedingte Zahnschäden?" />
+    <app-textarea [control]="dental.lastTreatment" [label]="'health.questions.q18_2' | t" [rows]="1" />
+    <app-textarea [control]="dental.firstTreatment" [label]="'health.questions.q18_3' | t" [rows]="1" />
+    <app-textarea [control]="dental.dentalInsuranceExam" [label]="'health.questions.q18_4' | t" [rows]="1" />
+    <app-yes-no-toggle [control]="dental.accidentDentalInjuries" [label]="'health.questions.q18_5' | t" />
     @if (isYes(dental.accidentDentalInjuries)) {
-      <app-textarea [control]="dental.accidentAffectedTeeth" label="18.6 Wenn ja, welche Zähne sind betroffen?" [rows]="1" />
-      <app-textarea [control]="dental.accidentTreatments" label="18.7 Wenn ja, welche Behandlungen wurden durchgeführt bzw. welche Behandlungen stehen noch an?" [rows]="1" />
+      <app-textarea [control]="dental.accidentAffectedTeeth" [label]="'health.questions.q18_6' | t" [rows]="1" />
+      <app-textarea [control]="dental.accidentTreatments" [label]="'health.questions.q18_7' | t" [rows]="1" />
     }
-    <app-yes-no-toggle [control]="dental.dentalProceduresPlanned" label="18.8 Sind innerhalb der nächsten zwölf Monate zahnärztliche Arbeiten geplant oder erforderlich?" />
+    <app-yes-no-toggle [control]="dental.dentalProceduresPlanned" [label]="'health.questions.q18_8' | t" />
     @if (isYes(dental.dentalProceduresPlanned)) {
-      <app-textarea [control]="dental.plannedProcedures" label="18.9 Wenn ja, welche?" [rows]="1" />
-      <app-textarea [control]="dental.plannedTreatmentDate" label="18.10 Wann wird diese Behandlung durchgeführt?" [rows]="1" />
-      <app-textarea [control]="dental.treatmentDelayReason" label="18.11 Weshalb konnte die Behandlung nicht vorher durchgeführt werden?" [rows]="1" />
+      <app-textarea [control]="dental.plannedProcedures" [label]="'health.questions.q18_9' | t" [rows]="1" />
+      <app-textarea [control]="dental.plannedTreatmentDate" [label]="'health.questions.q18_10' | t" [rows]="1" />
+      <app-textarea [control]="dental.treatmentDelayReason" [label]="'health.questions.q18_11' | t" [rows]="1" />
     }
     <app-option-toggle
       [control]="dental.plannedDentalCost"
-      label="18.12 Kostenschätzung"
-      [options]="formService.dentalLevelOptions"
+      [label]="'health.dental.plannedCostLabel' | t"
+      [options]="formService.dentalLevelOptions()"
       variant="list"
     />
   </div>
@@ -184,15 +184,15 @@
     @if (use.value) {
       <div class="grid gap-[0.6rem] pt-[0.45rem]">
         <div class="grid gap-[0.45rem]">
-          <app-text-input [control]="units" label="Stückzahl/Einheiten etc..." />
-          <app-text-input [control]="frequency" label="pro Tag/Woche/Monat/Jahr" />
+          <app-text-input [control]="units" [label]="'common.placeholder.quantityUnits' | t" />
+          <app-text-input [control]="frequency" [label]="'common.placeholder.frequency' | t" />
         </div>
         <div class="grid grid-cols-2 gap-[0.45rem]">
-          <app-date-input [control]="from" label="Dauer von" />
-          <app-date-input [control]="to" label="bis" />
+          <app-date-input [control]="from" [label]="'health.lifestyle.durationFrom' | t" />
+          <app-date-input [control]="to" [label]="'health.lifestyle.to' | t" />
         </div>
         @if (dateOrderError(from, to)) {
-          <p class="field-error block min-h-[1.1rem]" data-validation-anchor>End date must be after start date.</p>
+          <p class="field-error block min-h-[1.1rem]" data-validation-anchor>{{ 'validationDateOrder' | t }}</p>
         }
       </div>
     }

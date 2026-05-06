@@ -11,13 +11,14 @@ import {
 } from '../../../form-controls';
 import { HealthDeclarationFormService } from '../../../../services/health-declaration-form.service';
 import { LocationService } from '../../../../services/location.service';
+import { TranslatePipe } from '../../../../pipes/translate.pipe';
 import { BinaryQuestionCardComponent, DiagnosisQuestionCardComponent, QuestionCardShellComponent } from '../cards/question-card-shell.component';
 import { DoctorInfoControls } from '../questionnaire.types';
 
 @Component({
   selector: 'app-doctor-info-form',
   standalone: true,
-  imports: [TextInputComponent],
+  imports: [TextInputComponent, TranslatePipe],
   templateUrl: './doctor-info-form.component.html',
 })
 export class DoctorInfoFormComponent {
@@ -69,6 +70,7 @@ export class DoctorInfoFormComponent {
     NumberInputComponent,
     QuestionCardShellComponent,
     TextAreaComponent,
+    TranslatePipe,
     YesNoToggleComponent,
   ],
   templateUrl: './medical-questions-section.component.html',

@@ -3,29 +3,29 @@
     <span class="hidden">2</span>
     <div>
       <h2 class="m-0 wrap-break-word text-[14px] font-normal leading-[1.22] tracking-normal text-[#050307]">
-        2. Name und Adresse des Arztes/der Ärztin, der/die am besten über Ihre Krankheitsgeschichte Auskunft geben kann:
+        {{ 'health.doctorInfo.title' | t }}
       </h2>
     </div>
   </div>
   <div class="grid gap-[0.6rem]">
     <div class="field-grid">
-      <app-text-input [control]="group().controls.practiceName" label="Praxis/Spital" />
+      <app-text-input [control]="group().controls.practiceName" [label]="'health.doctorInfo.practiceLabel' | t" />
       <div class="col-span-12 grid min-w-0 gap-[0.6rem]">
         <div class="grid min-w-0 grid-cols-2 gap-[0.6rem] max-[700px]:gap-[0.45rem]">
-          <app-text-input [control]="group().controls.familyName" label="Name" />
-          <app-text-input [control]="group().controls.givenNames" label="Vorname" />
+          <app-text-input [control]="group().controls.familyName" [label]="'health.doctorInfo.familyNameLabel' | t" />
+          <app-text-input [control]="group().controls.givenNames" [label]="'health.doctorInfo.givenNamesLabel' | t" />
         </div>
       </div>
       <div class="col-span-12 grid min-w-0 gap-[0.6rem]">
         <div class="grid min-w-0 grid-cols-[minmax(0,7fr)_minmax(0,5fr)] gap-[0.6rem] max-[700px]:gap-[0.45rem]">
-          <app-text-input [control]="group().controls.street" label="Strasse" />
-          <app-text-input [control]="group().controls.streetNumber" label="Nr." [digitsOnly]="true" />
+          <app-text-input [control]="group().controls.street" [label]="'health.doctorInfo.streetLabel' | t" />
+          <app-text-input [control]="group().controls.streetNumber" [label]="'health.doctorInfo.streetNumberLabel' | t" [digitsOnly]="true" />
         </div>
       </div>
       <div class="col-span-12 grid min-w-0 gap-[0.6rem]">
         <div class="grid min-w-0 grid-cols-[minmax(0,4fr)_minmax(0,8fr)] gap-[0.6rem] max-[700px]:gap-[0.45rem]">
-          <app-text-input [control]="group().controls.postalCode" label="PLZ" [digitsOnly]="true" />
-          <app-text-input [control]="group().controls.city" label="Ort" />
+          <app-text-input [control]="group().controls.postalCode" [label]="'health.doctorInfo.postalCodeLabel' | t" [digitsOnly]="true" />
+          <app-text-input [control]="group().controls.city" [label]="'health.doctorInfo.cityLabel' | t" />
         </div>
       </div>
     </div>

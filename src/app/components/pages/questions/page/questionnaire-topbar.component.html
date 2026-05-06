@@ -1,9 +1,9 @@
-<div class="fixed top-0 right-0 left-0 z-50 bg-linear-to-b from-[#6c4099] to-transparent  pt-[8px] pb-2 backdrop-blur-md">
+<div class="fixed top-0 right-0 left-0 z-50 bg-linear-to-b from-[#6c4099] to-transparent  pb-2 backdrop-blur-md">
   @let tabs = personTabs();
   @let layout = tabLayout();
 
-  <div class="mx-auto flex w-full px-4 max-w-[690px] flex-col gap-2">
-    <app-header class="questionnaire-topbar__header" title="Gesundheitsdeklaration" [showLanguageButton]="false" [fixed]="false" />
+  <div class="questionnaire-topbar__inner">
+    <app-header class="questionnaire-topbar__header" [title]="'header.title' | t" [fixed]="false" />
 
     <div class="overflow-hidden rounded-3xl border border-[#d2c2e4] bg-[#f3edf8] px-2 shadow-2xl">
       <div

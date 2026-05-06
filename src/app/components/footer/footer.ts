@@ -10,8 +10,11 @@ import {
   signal,
 } from '@angular/core';
 
+import { TranslatePipe } from '../../pipes/translate.pipe';
+
 @Component({
   selector: 'app-footer',
+  imports: [TranslatePipe],
   templateUrl: './footer.html',
   styleUrl: './footer.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

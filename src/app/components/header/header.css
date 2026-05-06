@@ -69,42 +69,71 @@
   color: rgba(255, 255, 255, 0.94);
   cursor: pointer;
   transition:
-    background-color 150ms ease;
+    background-color 150ms ease,
+    border-color 150ms ease;
 }
 
 .global-header__icon-button:hover {
   background: rgba(255, 255, 255, 0.08);
 }
 
+.global-header__icon-button:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.7);
+  outline-offset: 3px;
+}
+
 .global-header__icon-button.is-open {
   background: rgba(255, 255, 255, 0.14);
 }
 
-.global-header__language-icon {
-  font-size: 0.95rem;
-  font-weight: 400;
-  line-height: 1;
+.global-header__language-button {
+  width: 2.35rem;
+  height: 2.35rem;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.global-header__language-button:hover,
+.global-header__language-button.is-open {
+  border-color: rgba(255, 255, 255, 0.34);
+  background: rgba(255, 255, 255, 0.17);
+}
+
+.global-header__language-globe {
+  display: block;
+  flex: 0 0 auto;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  width: 1.18rem;
+  height: 1.18rem;
+  stroke-width: 1.85;
 }
 
 .global-header__language-code {
   position: absolute;
   right: -0.2rem;
-  bottom: -0.05rem;
-  min-width: 1.35rem;
-  padding: 0.05rem 0.24rem;
+  bottom: -0.16rem;
+  min-width: 1.28rem;
+  padding: 0.1rem 0.2rem;
+  border: 1px solid rgba(255, 255, 255, 0.34);
   border-radius: 999px;
-  background: rgba(125, 41, 222, 0.95);
+  background: #7d29de;
   color: #ffffff;
-  font-size: 0.55rem;
+  font-size: 0.52rem;
   font-weight: 400;
-  letter-spacing: 0.08em;
+  line-height: 1;
+  letter-spacing: 0.035em;
+  text-align: center;
 }
 
 .global-header__language-menu {
   position: absolute;
   top: calc(100% + 0.75rem);
   right: 0;
-  z-index: 99999;
+  z-index: 20;
   width: min(16rem, calc(100vw - 2rem));
   padding: 0.9rem;
   border: 1px solid rgba(214, 187, 255, 0.24);

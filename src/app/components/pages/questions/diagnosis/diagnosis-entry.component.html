@@ -6,7 +6,7 @@
       </h3>
       @if (canRemove()) {
         <button type="button" class="shrink-0 cursor-pointer border-0 bg-transparent p-0 font-normal text-[#ff0000]" (click)="remove.emit(entry())">
-          - Entfernen
+          {{ 'common.remove' | t }}
         </button>
       }
     </div>
@@ -15,9 +15,9 @@
   @if (variant() === 'operation') {
     <div class="grid gap-[0.6rem] border-0 bg-transparent pt-[0.1rem]">
       <div>
-        <p class="mb-[0.45rem] text-[14px] font-normal leading-[1.2] text-[#050307]">Wenn ja, wurde Ihnen ein Implantat oder ein Fremdkörper eingesetzt?</p>
+        <p class="mb-[0.45rem] text-[14px] font-normal leading-[1.2] text-[#050307]">{{ 'health.question7.implantQuestion' | t }}</p>
         <p class="m-0 text-[12px] leading-[1.18] text-[#706876]">
-          Platten, Schrauben, Prothesen, Brustimplantate, Gelenkersatz, Magenband, Stent etc.
+          {{ 'health.question7.implantHint' | t }}
         </p>
       </div>
       <app-yes-no-toggle
@@ -26,58 +26,58 @@
       />
 
       @if (implantYes()) {
-        <app-textarea [control]="entry().controls.implantDetails" label="Was und wo?" [rows]="1" />
+        <app-textarea [control]="entry().controls.implantDetails" [label]="'health.question7.whatAndWhereLabel' | t" [rows]="1" />
         <app-option-toggle
           [control]="entry().controls.implantStatus"
           label=""
-          [options]="formService().implantStatusOptions"
+          [options]="formService().implantStatusOptions()"
         />
       }
     </div>
 
-    <p class="mt-[0.1rem] mb-[0.2rem] text-[14px] font-normal leading-[1.2] text-[#050307]">1) Bitte geben Sie alle zu dieser Frage relevanten Diagnosen an:</p>
+    <p class="mt-[0.1rem] mb-[0.2rem] text-[14px] font-normal leading-[1.2] text-[#050307]">{{ 'health.question7.diagnosisTitle' | t }}</p>
   }
 
   @if (variant() === 'medication') {
     <div class="grid gap-[0.6rem] border-0 bg-transparent pt-[0.1rem]">
-      <app-textarea [control]="entry().controls.name" label="Name" [rows]="1" />
-      <app-textarea [control]="entry().controls.amountPerDay" label="Anzahl/Tag" [rows]="1" />
-      <app-textarea [control]="entry().controls.duration" label="Duration" [rows]="1" />
+      <app-textarea [control]="entry().controls.name" [label]="'health.question12.nameLabel' | t" [rows]="1" />
+      <app-textarea [control]="entry().controls.amountPerDay" [label]="'health.question12.amountPerDayLabel' | t" [rows]="1" />
+      <app-textarea [control]="entry().controls.duration" [label]="'health.question12.durationLabel' | t" [rows]="1" />
     </div>
   }
 
   <app-textarea
     class="col-span-full grid w-full min-w-0 max-w-full content-start overflow-hidden"
     [control]="entry().controls.condition"
-    label="Diagnose/Krankheiten/Störungen/Beschwerden/Verletzung/betroffene Seite, links/rechts/beidseits/Operation?"
+    [label]="'health.diagnosisEntry.conditionLabel' | t"
     [rows]="1"
   />
 
   <div class="grid min-w-0 grid-cols-2 gap-[0.6rem]">
-    <app-date-input [control]="entry().controls.from" label="Beginn" />
+    <app-date-input [control]="entry().controls.from" [label]="'health.diagnosisEntry.fromLabel' | t" />
     <div class="grid min-w-0 gap-[0.25rem]">
-      <app-date-input [control]="entry().controls.to" label="Ende" />
+      <app-date-input [control]="entry().controls.to" [label]="'health.diagnosisEntry.toLabel' | t" />
       @if (dateOrderError()) {
-        <p class="field-error block min-h-[1.1rem]" data-validation-anchor>End date must be after start date.</p>
+        <p class="field-error block min-h-[1.1rem]" data-validation-anchor>{{ 'health.diagnosisEntry.dateOrderError' | t }}</p>
       }
     </div>
   </div>
-  <app-yes-no-toggle class="grid w-full min-w-0 max-w-full content-start overflow-hidden" [control]="entry().controls.recovered" label="Vollständig geheilt?" />
+  <app-yes-no-toggle class="grid w-full min-w-0 max-w-full content-start overflow-hidden" [control]="entry().controls.recovered" [label]="'health.diagnosisEntry.recoveredLabel' | t" />
 
   <fieldset class="grid min-w-0 gap-[0.45rem] border-0 p-0">
-    <legend class="px-0 py-1 text-[12px] font-light leading-[1.18] text-[#706876]">Behandelnde/r Arzt/Ärztin, Therapeut/in</legend>
+    <legend class="px-0 py-1 text-[12px] font-light leading-[1.18] text-[#706876]">{{ 'health.diagnosisEntry.doctorLabel' | t }}</legend>
     <div class="grid min-w-0 grid-cols-12 items-start gap-[0.6rem]">
-      <app-text-input class="col-span-6 min-w-0" [control]="entry().controls.doctorGivenNames" label="" placeholder="Dr.med.Johannes" />
-      <app-text-input class="col-span-6 min-w-0" [control]="entry().controls.doctorFamilyName" label="" placeholder="Doktormann" />
-      <app-text-input class="col-span-8 min-w-0" [control]="entry().controls.doctorStreet" label="" placeholder="Doktorstrasse" />
-      <app-text-input class="col-span-4 min-w-0" [control]="entry().controls.doctorStreetNumber" label="" placeholder="1" [digitsOnly]="true" />
+      <app-text-input class="col-span-6 min-w-0" [control]="entry().controls.doctorGivenNames" label="" [placeholder]="'health.diagnosisEntry.doctorGivenNamesPlaceholder' | t" />
+      <app-text-input class="col-span-6 min-w-0" [control]="entry().controls.doctorFamilyName" label="" [placeholder]="'health.diagnosisEntry.doctorFamilyNamePlaceholder' | t" />
+      <app-text-input class="col-span-8 min-w-0" [control]="entry().controls.doctorStreet" label="" [placeholder]="'health.diagnosisEntry.doctorStreetPlaceholder' | t" />
+      <app-text-input class="col-span-4 min-w-0" [control]="entry().controls.doctorStreetNumber" label="" [placeholder]="'health.diagnosisEntry.doctorStreetNumberPlaceholder' | t" [digitsOnly]="true" />
       <div
         class="diagnosis-location col-span-full"
         [attr.data-validation-anchor]="locationInvalid() ? '' : null"
       >
         <div class="diagnosis-location__field">
           <label class="diagnosis-location__label" for="diagnosis-location-{{ entry().controls.id.value }}">
-            PLZ / Ort
+            {{ 'postalCodePlaceLabel' | t }}
           </label>
           <div class="diagnosis-location__control">
             <input
@@ -90,7 +90,7 @@
               autocorrect="off"
               spellcheck="false"
               name="diagnosis-location-{{ entry().controls.id.value }}"
-              placeholder="PLZ oder Ort eingeben..."
+              [placeholder]="'postalCodePlacePlaceholder' | t"
               [value]="locationQuery()"
               [class.is-valid]="locationValid()"
               [class.is-invalid]="locationInvalid()"
@@ -101,7 +101,7 @@
             />
 
             @if (showLocationDropdown()) {
-              <ul class="diagnosis-location__dropdown" role="listbox" aria-label="PLZ / Ort">
+              <ul class="diagnosis-location__dropdown" role="listbox" [attr.aria-label]="'postalCodePlaceLabel' | t">
                 @for (
                   location of locationResults();
                   track location.locationId +
@@ -129,7 +129,7 @@
                 }
                 @if (locationLoading()) {
                   <li class="diagnosis-location__option diagnosis-location__option--status" aria-live="polite">
-                    Searching...
+                    <span>{{ 'family.locationLoading' | t }}</span>
                   </li>
                 }
               </ul>
@@ -143,6 +143,6 @@
       </div>
     </div>
   </fieldset>
-  <app-textarea [control]="entry().controls.notes" label="Besondere Bemerkungen:" [rows]="1" />
+  <app-textarea [control]="entry().controls.notes" [label]="'health.diagnosisEntry.notesLabel' | t" [rows]="1" />
 
 </article>

@@ -1,21 +1,20 @@
 import { ChangeDetectionStrategy, Component, ElementRef, HostListener, inject, input, output, signal } from '@angular/core';
 
-type HeaderLanguage = {
-  code: string;
-  label: string;
-  nativeLabel: string;
-};
+import { TranslatePipe } from '../../pipes/translate.pipe';
+import { LanguageCode, TranslationService } from '../../services/translation.service';
 
 @Component({
   selector: 'app-header',
+  imports: [TranslatePipe],
   templateUrl: './header.html',
   styleUrl: './header.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Header {
   private readonly host = inject(ElementRef<HTMLElement>);
+  protected readonly i18n = inject(TranslationService);
 
-  title = input('Questionnaire');
+  title = input('Gesundheitsdeklaration');
   showMenuButton = input(true);
   showLanguageButton = input(true);
   fixed = input(true);
@@ -23,14 +22,6 @@ export class Header {
   menu = output<void>();
   languageChange = output<string>();
 
-  protected readonly supportedLanguages: readonly HeaderLanguage[] = [
-    { code: 'en', label: 'English', nativeLabel: 'English' },
-    { code: 'fr', label: 'French', nativeLabel: 'Français' },
-    { code: 'de', label: 'German', nativeLabel: 'Deutsch' },
-    { code: 'it', label: 'Italian', nativeLabel: 'Italiano' },
-    { code: 'sq', label: 'Albanian', nativeLabel: 'Shqip' },
-  ];
-  protected readonly language = signal('en');
   protected readonly isLanguageMenuOpen = signal(false);
 
   @HostListener('document:click', ['$event'])
@@ -46,12 +37,20 @@ export class Header {
   }
 
   protected selectLanguage(code: string): void {
-    this.language.set(code);
+    if (!this.i18n.isLanguageCode(code)) {
+      return;
+    }
+
+    this.i18n.setLanguage(code);
     this.isLanguageMenuOpen.set(false);
     this.languageChange.emit(code);
   }
 
   protected handleMenu(): void {
     this.menu.emit();
+  }
+
+  protected languageCode(): LanguageCode {
+    return this.i18n.language();
   }
 }

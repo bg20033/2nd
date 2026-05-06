@@ -1,4 +1,4 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import { AbstractControl, FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { auditTime } from 'rxjs';
 
@@ -15,6 +15,7 @@ import {
 import { OptionValue } from '../components/form-controls';
 import { QuestionnaireFormService } from '../components/pages/questions/questionnaire-form.service';
 import { LocationFilterResponse } from './location.service';
+import { TranslationService } from '../services/translation.service';
 import {
   HEALTH_DECLARATION_FILE_NAME,
   HEALTH_DECLARATION_QUESTION_ANSWERS_FILE_NAME,
@@ -91,6 +92,8 @@ const AVATAR_ASSETS = {
 
 @Injectable({ providedIn: 'root' })
 export class HealthDeclarationFormService {
+  private readonly i18n = inject(TranslationService);
+
   readonly currentPersonIndex = signal(0);
   readonly highestReachedPersonIndex = signal(0);
   readonly reviewMode = signal(false);
@@ -294,7 +297,7 @@ export class HealthDeclarationFormService {
     let questionnaire = this.questionnaireServices.get(id);
 
     if (!questionnaire) {
-      questionnaire = new QuestionnaireFormService();
+      questionnaire = new QuestionnaireFormService(this.i18n);
       const stored = this.storedQuestionnaires.get(id);
       if (stored) {
         this.restoreQuestionnaire(questionnaire, stored);
@@ -336,7 +339,7 @@ export class HealthDeclarationFormService {
     }
 
     this.reviewMode.set(true);
-    this.logSubmissionFiles();
+    this.writeSubmissionDebugArtifacts();
     this.syncPeopleState();
     return 'review';
   }
@@ -351,7 +354,7 @@ export class HealthDeclarationFormService {
       return false;
     }
 
-    this.logSubmissionFiles();
+    this.writeSubmissionDebugArtifacts();
     this.clearStoredData();
     return true;
   }
@@ -539,7 +542,7 @@ export class HealthDeclarationFormService {
     };
   }
 
-  private logSubmissionFiles(): void {
+  private writeSubmissionDebugArtifacts(): void {
     if (this.submissionLogged || !this.allPeopleCompleted()) {
       return;
     }
@@ -551,12 +554,12 @@ export class HealthDeclarationFormService {
     const fullJson = JSON.stringify(fullSubmission, null, 2);
     const questionAnswerJson = JSON.stringify(questionAnswers, null, 2);
 
-    this.writeSubmissionDebugArtifacts(fullJson, questionAnswerJson);
+    this.logSubmissionDebugArtifacts(fullJson, questionAnswerJson);
     this.exposeSubmissionFiles(fullSubmission, questionAnswers, fullJson, questionAnswerJson);
     this.submissionLogged = true;
   }
 
-  private writeSubmissionDebugArtifacts(fullJson: string, questionAnswerJson: string): void {
+  private logSubmissionDebugArtifacts(fullJson: string, questionAnswerJson: string): void {
     console.log(HEALTH_DECLARATION_FILE_NAME, fullJson);
     console.log(HEALTH_DECLARATION_QUESTION_ANSWERS_FILE_NAME, questionAnswerJson);
   }

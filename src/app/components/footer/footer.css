@@ -84,8 +84,8 @@
   border-radius: 0.75rem;
   cursor: pointer;
   font: inherit;
-  font-size: 0.95rem;
-  font-weight: 400;
+  font-size: 16px;
+  font-weight: 500;
   pointer-events: auto;
   transition:
     background-color 0.2s ease,

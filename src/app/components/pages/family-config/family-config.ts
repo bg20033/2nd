@@ -11,7 +11,9 @@ import {
   PersonGroup,
 } from '../../../services/health-declaration-form.service';
 import { LocationFilterResponse, LocationService } from '../../../services/location.service';
-import { FAMILY_GENDER_OPTIONS, PersonGender as PersonGenderEnum } from '../../../constants/app-enums';
+import { TranslationService } from '../../../services/translation.service';
+import { TranslatePipe } from '../../../pipes/translate.pipe';
+import { PersonGender as PersonGenderEnum } from '../../../constants/app-enums';
 
 type GenderOption = {
   value: Exclude<PersonGender, ''>;
@@ -20,7 +22,7 @@ type GenderOption = {
 
 @Component({
   selector: 'app-family-config',
-  imports: [Footer, Header, ReactiveFormsModule],
+  imports: [Footer, Header, ReactiveFormsModule, TranslatePipe],
   templateUrl: './family-config.html',
   styleUrl: './family-config.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -28,6 +30,7 @@ type GenderOption = {
 export class FamilyConfig {
   protected readonly declaration = inject(HealthDeclarationFormService);
   private readonly locationService = inject(LocationService);
+  private readonly i18n = inject(TranslationService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly searchSubject = new Subject<string>();
   protected readonly currentYear = new Date().getFullYear();
@@ -49,14 +52,21 @@ export class FamilyConfig {
   private blurCloseTimeoutId: ReturnType<typeof setTimeout> | null = null;
 
   protected readonly setupSteps = [
-    { number: 1, label: 'Personal details', active: true },
-    { number: 2, label: 'Advice', active: false },
-    { number: 3, label: 'Formalities', active: false },
-    { number: 4, label: 'Completion', active: false },
+    { number: 1, labelKey: 'family.steps.personal', active: true },
+    { number: 2, labelKey: 'family.steps.advice', active: false },
+    { number: 3, labelKey: 'family.steps.formalities', active: false },
+    { number: 4, labelKey: 'family.steps.completion', active: false },
   ] as const;
 
   protected readonly personGender = PersonGenderEnum;
-  protected readonly genderOptions: readonly GenderOption[] = FAMILY_GENDER_OPTIONS;
+  protected readonly genderOptions = computed<readonly GenderOption[]>(() => {
+    this.i18n.language();
+    return [
+      { value: PersonGenderEnum.Female, label: this.i18n.translate('family.gender.female') },
+      { value: PersonGenderEnum.Male, label: this.i18n.translate('family.gender.male') },
+      { value: PersonGenderEnum.Baby, label: this.i18n.translate('family.gender.baby') },
+    ];
+  });
 
   protected readonly hasSelectedZip = computed(() => this.selectedLocationId() !== null && !!this.selectedLocationData()?.zipCode);
   protected readonly showLocationDropdown = computed(
@@ -265,7 +275,7 @@ export class FamilyConfig {
   }
 
   protected birthYearDisplay(person: PersonGroup): string {
-    return person.controls.birthYear.value.trim() || 'Year';
+    return person.controls.birthYear.value.trim() || this.i18n.translate('yearPlaceholder');
   }
 
   protected avatarSrc(person: PersonGroup): string {
@@ -275,13 +285,13 @@ export class FamilyConfig {
   protected avatarAlt(person: PersonGroup): string {
     switch (person.controls.gender.value) {
       case PersonGenderEnum.Female:
-        return 'Female family member';
+        return this.i18n.translate('family.avatarAlt.female');
       case PersonGenderEnum.Male:
-        return 'Male family member';
+        return this.i18n.translate('family.avatarAlt.male');
       case PersonGenderEnum.Baby:
-        return 'Baby family member';
+        return this.i18n.translate('family.avatarAlt.baby');
       default:
-        return 'Family member';
+        return this.i18n.translate('family.avatarAlt.person');
     }
   }
 

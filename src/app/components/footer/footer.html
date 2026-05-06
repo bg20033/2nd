@@ -1,11 +1,11 @@
 <footer class="form-footer" [class.form-footer--keyboard-open]="keyboardOpen()">
   <div class="footer-content">
     <div class="landing-tools">
-      <button class="landing-tool" type="button" aria-label="Chat help" (click)="handleChat()">
+      <button class="landing-tool" type="button" [attr.aria-label]="'chatHelpAria' | t" (click)="handleChat()">
         <img src="assets/Icon-chat.svg" alt="" aria-hidden="true" />
       </button>
 
-      <button class="landing-tool" type="button" aria-label="Voice help" (click)="handleVoice()">
+      <button class="landing-tool" type="button" [attr.aria-label]="'voiceHelpAria' | t" (click)="handleVoice()">
         <img src="assets/Icon-microphone.svg" alt="" aria-hidden="true" />
       </button>
     </div>

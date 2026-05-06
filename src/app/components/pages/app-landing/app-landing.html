@@ -1,5 +1,5 @@
 <main class="app-content">
-  <app-header class="landing-header" title="Gesundheitsdeklaration" [showLanguageButton]="false" />
+  <app-header class="landing-header" [title]="'header.title' | t" />
   <section class="landing-frame">
     <section class="landing-intro">
       <div class="landing-avatar" aria-hidden="true">
@@ -7,10 +7,10 @@
       </div>
       <article class="app-form-panel landing-card">
         @for (paragraph of introParagraphs; track paragraph) {
-          <p>{{ paragraph }}</p>
+          <p>{{ paragraph | t }}</p>
         }
       </article>
     </section>
   </section>
-  <app-footer [backDisabled]="true" nextLabel="Next" (next)="startDeclaration()" />
+  <app-footer [backDisabled]="true" [nextLabel]="'common.next' | t" (next)="startDeclaration()" />
 </main>

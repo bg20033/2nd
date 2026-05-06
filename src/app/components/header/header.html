@@ -6,41 +6,49 @@
   <div class="global-header__actions">
     @if (showLanguageButton()) {
       <div class="global-header__language">
-      <button
-        class="global-header__icon-button"
-        type="button"
-        aria-label="Choose language"
-        [attr.aria-expanded]="isLanguageMenuOpen()"
-        [class.is-open]="isLanguageMenuOpen()"
-        (click)="toggleLanguageMenu($event)"
-      >
-        <span class="global-header__language-icon" aria-hidden="true">A</span>
-        <span class="global-header__language-code">{{ language().toUpperCase() }}</span>
-      </button>
+        <button
+          class="global-header__icon-button global-header__language-button"
+          type="button"
+          [attr.aria-label]="'chooseLanguageAria' | t"
+          [attr.aria-expanded]="isLanguageMenuOpen()"
+          [class.is-open]="isLanguageMenuOpen()"
+          (click)="toggleLanguageMenu($event)"
+        >
+          <svg class="global-header__language-globe" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="9" />
+            <path d="M3.6 9h16.8M3.6 15h16.8M12 3c2.1 2.2 3.2 5.1 3.2 9S14.1 18.8 12 21M12 3c-2.1 2.2-3.2 5.1-3.2 9s1.1 6.8 3.2 9" />
+          </svg>
+          <span class="global-header__language-code">{{ languageCode().toUpperCase() }}</span>
+        </button>
 
-      @if (isLanguageMenuOpen()) {
-        <div class="global-header__language-menu" (click)="$event.stopPropagation()">
-          <p class="global-header__language-title">Language</p>
-          <div class="global-header__language-list">
-            @for (item of supportedLanguages; track item.code) {
-              <button
-                class="global-header__language-option"
-                type="button"
-                [class.is-selected]="item.code === language()"
-                (click)="selectLanguage(item.code)"
-              >
-                <span>{{ item.nativeLabel }}</span>
-                <small>{{ item.label }}</small>
-              </button>
-            }
+        @if (isLanguageMenuOpen()) {
+          <div class="global-header__language-menu" (click)="$event.stopPropagation()">
+            <p class="global-header__language-title">{{ 'languageMenuTitle' | t }}</p>
+            <div class="global-header__language-list">
+              @for (item of i18n.supportedLanguages; track item.code) {
+                <button
+                  class="global-header__language-option"
+                  type="button"
+                  [class.is-selected]="item.code === languageCode()"
+                  (click)="selectLanguage(item.code)"
+                >
+                  <span>{{ item.nativeLabel }}</span>
+                  <small>{{ item.label }}</small>
+                </button>
+              }
+            </div>
           </div>
-        </div>
-      }
+        }
       </div>
     }
 
     @if (showMenuButton()) {
-      <button class="global-header__icon-button global-header__menu-button" type="button" aria-label="Open menu" (click)="handleMenu()">
+      <button
+        class="global-header__icon-button global-header__menu-button"
+        type="button"
+        [attr.aria-label]="'openMenuAria' | t"
+        (click)="handleMenu()"
+      >
         <img src="assets/Icon-menu-alt-3.svg" alt="" aria-hidden="true" />
       </button>
     }

@@ -1,22 +1,20 @@
-import { Injectable, OnDestroy, signal } from '@angular/core';
+import { Injectable, OnDestroy, computed, signal } from '@angular/core';
 import { AbstractControl, FormArray, FormControl, FormGroup, ValidatorFn, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
 import {
-  BLEEDING_OPTIONS,
-  DENTA_LEVEL_OPTIONS,
-  DENTAL_LEVEL_OPTIONS,
   DIAGNOSIS_QUESTION_IDS,
-  IMPLANT_STATUS_OPTIONS,
-  JAW_COST_OPTIONS,
-  PROSTHESES_CONDITION_OPTIONS,
-  QUESTIONNAIRE_GENDER_OPTIONS,
   DiagnosisQuestionId as DiagnosisQuestion,
   Gender as GenderEnum,
+  BleedingOption,
+  DentalLevel,
+  ImplantStatus,
+  JawCost,
   QuestionAnswerKey,
   ProsthesesCondition,
   SubstanceKind,
 } from '../../../constants/app-enums';
+import { TranslationService } from '../../../services/translation.service';
 import { OptionValue } from '../../form-controls';
 import {
   BodyMetricsControls,
@@ -54,13 +52,86 @@ type ToggleValidatorConfig = {
 
 @Injectable()
 export class QuestionnaireFormService implements OnDestroy {
-  readonly genderOptions: readonly OptionValue<Gender>[] = QUESTIONNAIRE_GENDER_OPTIONS;
-  readonly implantStatusOptions = IMPLANT_STATUS_OPTIONS;
-  readonly dentalLevelOptions = DENTAL_LEVEL_OPTIONS;
-  readonly dentaLevelOptions = DENTA_LEVEL_OPTIONS;
-  readonly prosthesesConditionOptions = PROSTHESES_CONDITION_OPTIONS;
-  readonly bleedingOptions = BLEEDING_OPTIONS;
-  readonly jawCostOptions = JAW_COST_OPTIONS;
+  constructor(private readonly i18n: TranslationService) {
+    this.form.controls.dentalInfo.controls.findingDate.setValue(this.today(), { emitEvent: false });
+
+    this.installDiagnosisValidators();
+    this.refreshValidationState();
+
+    this.formSubscription = this.form.valueChanges.subscribe(() => {
+      if (this.syncing) {
+        return;
+      }
+      this.refreshValidationState();
+    });
+  }
+
+  readonly genderOptions = computed<readonly OptionValue<Gender>[]>(() => {
+    this.i18n.language();
+    return [
+      { value: GenderEnum.Female, label: this.i18n.translate('family.gender.female') },
+      { value: GenderEnum.Male, label: this.i18n.translate('family.gender.male') },
+      { value: GenderEnum.Other, label: this.i18n.translate('genderOther') },
+    ];
+  });
+
+  readonly implantStatusOptions = computed<readonly OptionValue<ImplantStatus>[]>(() => {
+    this.i18n.language();
+    return [
+      { value: ImplantStatus.InPlace, label: this.i18n.translate('health.question7.implantStatus.retained') },
+      { value: ImplantStatus.Removed, label: this.i18n.translate('health.question7.implantStatus.removed') },
+      { value: ImplantStatus.WillBeRemoved, label: this.i18n.translate('health.question7.implantStatus.scheduledRemoval') },
+    ];
+  });
+
+  readonly dentalLevelOptions = computed<readonly OptionValue<DentalLevel>[]>(() => {
+    this.i18n.language();
+    return [
+      { value: DentalLevel.UpTo1000, label: this.i18n.translate('costUpTo1000') },
+      { value: DentalLevel._1000To3000, label: this.i18n.translate('cost1000To3000') },
+      { value: DentalLevel._3000To5000, label: this.i18n.translate('cost3000To5000') },
+      { value: DentalLevel.Over5000, label: this.i18n.translate('costOver5000') },
+    ];
+  });
+
+  readonly dentaLevelOptions = computed<readonly OptionValue<DentalLevel>[]>(() => {
+    this.i18n.language();
+    return [
+      { value: DentalLevel.UpTo1000, label: this.i18n.translate('dentaLevel1') },
+      { value: DentalLevel._1000To3000, label: this.i18n.translate('dentaLevel2') },
+      { value: DentalLevel._3000To5000, label: this.i18n.translate('dentaLevel3') },
+      { value: DentalLevel.Over5000, label: this.i18n.translate('dentaLevel4') },
+    ];
+  });
+
+  readonly prosthesesConditionOptions = computed<readonly OptionValue<ProsthesesCondition>[]>(() => {
+    this.i18n.language();
+    return [
+      { value: ProsthesesCondition.Good, label: this.i18n.translate('common.condition.good') },
+      { value: ProsthesesCondition.Medium, label: this.i18n.translate('common.condition.medium') },
+      { value: ProsthesesCondition.Poor, label: this.i18n.translate('common.condition.poor') },
+    ];
+  });
+
+  readonly bleedingOptions = computed<readonly OptionValue<BleedingOption>[]>(() => {
+    this.i18n.language();
+    return [
+      { value: BleedingOption.Yes, label: this.i18n.translate('common.bleeding.yes') },
+      { value: BleedingOption.No, label: this.i18n.translate('common.bleeding.no') },
+      { value: BleedingOption.Partial, label: this.i18n.translate('common.bleeding.partial') },
+      { value: BleedingOption.Everywhere, label: this.i18n.translate('common.bleeding.everywhere') },
+    ];
+  });
+
+  readonly jawCostOptions = computed<readonly OptionValue<JawCost>[]>(() => {
+    this.i18n.language();
+    return [
+      { value: JawCost.UpTo5000, label: this.i18n.translate('costUpTo5000') },
+      { value: JawCost._1000To3000, label: this.i18n.translate('cost1000To3000') },
+      { value: JawCost._3000To5000, label: this.i18n.translate('cost3000To5000') },
+      { value: JawCost.Over10000, label: this.i18n.translate('costOver10000') },
+    ];
+  });
 
   readonly form: QuestionnaireForm = new FormGroup({
     applicantGender: new FormControl<OptionValue<Gender> | null>(null, Validators.required),
@@ -78,20 +149,6 @@ export class QuestionnaireFormService implements OnDestroy {
   private formSubscription?: Subscription;
   private diagnosisSubscriptions = new Map<string, Subscription>();
   private syncing = false;
-
-  constructor() {
-    this.form.controls.dentalInfo.controls.findingDate.setValue(this.today(), { emitEvent: false });
-
-    this.installDiagnosisValidators();
-    this.refreshValidationState();
-
-    this.formSubscription = this.form.valueChanges.subscribe(() => {
-      if (this.syncing) {
-        return;
-      }
-      this.refreshValidationState();
-    });
-  }
 
   ngOnDestroy(): void {
     this.destroy();

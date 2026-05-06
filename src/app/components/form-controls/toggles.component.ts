@@ -1,7 +1,8 @@
-import { Component, computed, input } from '@angular/core';
+import { Component, computed, inject, input } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 
 import { ValidationErrorPipe } from '../../pipes/validation-error.pipe';
+import { TranslationService } from '../../services/translation.service';
 import { BaseFormControlComponent, ControlOptionPrimitive, OptionValue } from './base-form-control.component';
 
 @Component({
@@ -119,13 +120,17 @@ export class OptionToggleComponent extends BaseFormControlComponent<OptionValue 
   styleUrl: './form-control.css',
 })
 export class YesNoToggleComponent extends BaseFormControlComponent<OptionValue<boolean> | null> {
-  yesLabel = input('Ja');
-  noLabel = input('Nein');
+  yesLabel = input('');
+  noLabel = input('');
+  private readonly translations = inject(TranslationService);
 
-  options = computed<readonly OptionValue<boolean>[]>(() => [
-    { value: false, label: this.noLabel() },
-    { value: true, label: this.yesLabel() },
-  ]);
+  options = computed<readonly OptionValue<boolean>[]>(() => {
+    this.translations.language();
+    return [
+      { value: false, label: this.noLabel() || this.translations.translate('common.no') },
+      { value: true, label: this.yesLabel() || this.translations.translate('common.yes') },
+    ];
+  });
   hasSelection = computed(() => this.value()?.value !== undefined);
 
   select(option: OptionValue<boolean>): void {
@@ -142,6 +147,6 @@ export class YesNoToggleComponent extends BaseFormControlComponent<OptionValue<b
   }
 
   yesNoErrorMessage(): string {
-    return this.errors()?.['required'] ? 'Pick one.' : '';
+    return this.errors()?.['required'] ? this.translations.translate('health.standardQuestion.answerRequired') : '';
   }
 }

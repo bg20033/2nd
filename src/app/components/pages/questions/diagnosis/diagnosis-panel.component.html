@@ -12,11 +12,11 @@
     }
 
     @if (minDiagnosisError()) {
-      <p class="field-error font-normal" data-validation-anchor>At least one diagnosis entry is required.</p>
+      <p class="field-error font-normal" data-validation-anchor>{{ 'health.standardQuestion.minDiagnosisEntries' | t }}</p>
     }
 
     @if (addBlockedError()) {
-      <p class="field-error font-normal" data-validation-anchor>Complete this diagnosis before adding another.</p>
+      <p class="field-error font-normal" data-validation-anchor>{{ 'completeDiagnosisBeforeAddingError' | t }}</p>
     }
 
     @if (!disabled()) {

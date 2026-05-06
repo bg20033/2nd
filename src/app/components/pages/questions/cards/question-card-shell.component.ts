@@ -4,6 +4,8 @@ import { catchError, debounceTime, distinctUntilChanged, switchMap } from 'rxjs/
 
 import { DateInputComponent, OptionToggleComponent, TextAreaComponent, TextInputComponent, YesNoToggleComponent } from '../../../form-controls';
 import { LocationFilterResponse, LocationService } from '../../../../services/location.service';
+import { TranslatePipe } from '../../../../pipes/translate.pipe';
+import { TranslationService } from '../../../../services/translation.service';
 import { DiagnosisEntryGroup, DiagnosisQuestionId, YesNoControl } from '../questionnaire.types';
 import { QuestionnaireFormService } from '../questionnaire-form.service';
 
@@ -64,6 +66,7 @@ export type DiagnosisEntryVariant = 'standard' | 'operation' | 'medication';
     DateInputComponent,
     YesNoToggleComponent,
     OptionToggleComponent,
+    TranslatePipe,
   ],
   templateUrl: '../diagnosis/diagnosis-entry.component.html',
   styles: [`
@@ -204,6 +207,7 @@ export class DiagnosisEntryComponent {
 
   private stateVersion = signal(0);
   private readonly locationService = inject(LocationService);
+  private readonly i18n = inject(TranslationService);
   private readonly locationSearchSubject = new Subject<string>();
   private locationBlurCloseTimeoutId: ReturnType<typeof setTimeout> | null = null;
 
@@ -239,14 +243,15 @@ export class DiagnosisEntryComponent {
   );
 
   entryTitle = computed(() => {
+    this.i18n.language();
     const number = this.index() + 1;
     if (this.variant() === 'medication') {
-      return `${number}) Bitte geben Sie alle zu dieser Frage relevanten Medikamenten/Diagnosen an:`;
+      return this.i18n.translate('health.question12.entryTitle', { index: number });
     }
     if (this.variant() === 'operation') {
-      return `${number}) Bitte geben Sie alle zu dieser Frage relevanten Diagnosen an:`;
+      return this.i18n.translate('health.question7.diagnosisTitle');
     }
-    return `${number}) Einzelheiten`;
+    return this.i18n.translate('health.diagnosisEntry.detailsTitle', { index: number });
   });
 
   dateOrderError = computed(() => {
@@ -353,12 +358,12 @@ export class DiagnosisEntryComponent {
   protected locationError(): string {
     const entry = this.entry();
     if (entry.controls.doctorPostalCode.hasError('required') || entry.controls.doctorCity.hasError('required')) {
-      return 'PLZ / Ort is required.';
+      return this.i18n.translate('locationRequiredError');
     }
     if (entry.controls.doctorPostalCode.hasError('postalCode')) {
-      return 'PLZ must be 4 to 6 digits.';
+      return this.i18n.translate('postalCodeDigitsError');
     }
-    return 'Please select a location from the list.';
+    return this.i18n.translate('family.locationSelectError');
   }
 
   private syncLocationQueryFromEntry(entry: DiagnosisEntryGroup): void {
@@ -397,7 +402,7 @@ export class DiagnosisEntryComponent {
 @Component({
   selector: 'app-diagnosis-panel',
   standalone: true,
-  imports: [DiagnosisEntryComponent],
+  imports: [DiagnosisEntryComponent, TranslatePipe],
   templateUrl: '../diagnosis/diagnosis-panel.component.html',
   host: { class: 'block' },
 })
@@ -440,7 +445,14 @@ export class DiagnosisPanelComponent {
     return 'standard';
   });
 
-  addButtonLabel = computed(() => (this.variant() === 'medication' ? '+ Weitere' : '+ Weitere Diagnose'));
+  private readonly i18n = inject(TranslationService);
+
+  addButtonLabel = computed(() => {
+    this.i18n.language();
+    return this.variant() === 'medication'
+      ? this.i18n.translate('health.question12.addEntry')
+      : this.i18n.translate('health.standardQuestion.addDiagnosis');
+  });
 
   constructor() {
     effect((onCleanup) => {

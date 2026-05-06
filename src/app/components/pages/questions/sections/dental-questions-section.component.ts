@@ -11,6 +11,7 @@ import {
   YesNoToggleComponent,
 } from '../../../form-controls';
 import { HealthDeclarationFormService } from '../../../../services/health-declaration-form.service';
+import { TranslatePipe } from '../../../../pipes/translate.pipe';
 import { BinaryQuestionCardComponent, QuestionCardShellComponent } from '../cards/question-card-shell.component';
 import { StringControl } from '../questionnaire.types';
 import { DATE_PATTERN } from '../questionnaire-validators';
@@ -27,6 +28,7 @@ import { DATE_PATTERN } from '../questionnaire-validators';
     QuestionCardShellComponent,
     TextAreaComponent,
     TextInputComponent,
+    TranslatePipe,
     YesNoToggleComponent,
   ],
   templateUrl: './dental-questions-section.component.html',

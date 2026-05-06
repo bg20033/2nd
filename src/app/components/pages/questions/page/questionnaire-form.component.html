@@ -23,7 +23,7 @@
 
   @if (!declaration.reviewMode()) {
     <app-footer
-      backLabel="Back"
+      [backLabel]="'common.back' | t"
       [nextLabel]="footerNextLabel()"
       [nextDisabled]="nextClickLocked()"
       (back)="goBack()"

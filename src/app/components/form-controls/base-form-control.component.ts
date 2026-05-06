@@ -1,5 +1,7 @@
-import { Directive, computed, effect, input, signal } from '@angular/core';
+import { Directive, computed, effect, inject, input, signal } from '@angular/core';
 import { FormControl, ValidationErrors, Validators } from '@angular/forms';
+
+import { TranslationService } from '../../services/translation.service';
 
 let nextControlId = 0;
 
@@ -16,7 +18,7 @@ export interface OptionValue<T extends ControlOptionPrimitive = ControlOptionPri
 export abstract class BaseFormControlComponent<T> {
   control = input.required<FormControl<T>>();
   label = input('');
-  placeholder = input('Hier eingeben...');
+  placeholder = input('');
   id = input('');
   min = input<string | number | null>(null);
   max = input<string | number | null>(null);
@@ -29,6 +31,7 @@ export abstract class BaseFormControlComponent<T> {
   invalid = signal(false);
   disabled = signal(false);
 
+  private readonly i18n = inject(TranslationService);
   private readonly fallbackId = `form-control-${++nextControlId}`;
   private readonly stateVersion = signal(0);
 
@@ -44,6 +47,10 @@ export abstract class BaseFormControlComponent<T> {
   validationAnchor = computed(() => (this.showError() ? '' : null));
   inputMode = computed(() => (this.digitsOnly() ? 'numeric' : null));
   inputPattern = computed(() => (this.digitsOnly() ? '[0-9]*' : null));
+  displayPlaceholder = computed(() => {
+    this.i18n.language();
+    return this.placeholder() || this.i18n.translate('common.placeholder.enterHere');
+  });
 
   inputClasses = computed(() => {
     const base =

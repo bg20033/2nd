@@ -1,6 +1,7 @@
 import { InjectionToken, Pipe, PipeTransform, inject } from '@angular/core';
 import { ValidationErrors } from '@angular/forms';
 import { ValidationErrorKey } from '../constants/app-enums';
+import { TranslationService } from '../services/translation.service';
 
 export type ValidationErrorMessageContext = {
   key: string;
@@ -13,21 +14,7 @@ export type ValidationErrorMessageFactory = (context: ValidationErrorMessageCont
 export type ValidationErrorMessage = string | ValidationErrorMessageFactory;
 export type ValidationErrorMessages = Record<string, ValidationErrorMessage>;
 
-export const DEFAULT_VALIDATION_ERROR_MESSAGES: ValidationErrorMessages = {
-  [ValidationErrorKey.Required]: ({ label }) => `${label} is required.`,
-  [ValidationErrorKey.MinLength]: ({ label, error }) =>
-    `${label} must be at least ${getErrorValue(error, 'requiredLength')} characters.`,
-  [ValidationErrorKey.MaxLength]: ({ label, error }) =>
-    `${label} must be at most ${getErrorValue(error, 'requiredLength')} characters.`,
-  [ValidationErrorKey.Min]: ({ label, error }) => `${label} must be at least ${getErrorValue(error, 'min')}.`,
-  [ValidationErrorKey.Max]: ({ label, error }) => `${label} must be at most ${getErrorValue(error, 'max')}.`,
-  [ValidationErrorKey.Email]: ({ label }) => `${label} must be a valid email address.`,
-  [ValidationErrorKey.Pattern]: ({ label }) => `${label} has an invalid format.`,
-  [ValidationErrorKey.FullDate]: ({ label }) => `${label} must be a valid date.`,
-  [ValidationErrorKey.DateOrder]: () => 'End date must be after start date.',
-  [ValidationErrorKey.PostalCode]: ({ label }) => `${label} must be 4 to 6 digits.`,
-  [ValidationErrorKey.StreetNumber]: ({ label }) => `${label} must be a valid street number.`,
-};
+export const DEFAULT_VALIDATION_ERROR_MESSAGES: ValidationErrorMessages = {};
 
 export const VALIDATION_ERROR_MESSAGES = new InjectionToken<ValidationErrorMessages[]>(
   'VALIDATION_ERROR_MESSAGES',
@@ -36,8 +23,10 @@ export const VALIDATION_ERROR_MESSAGES = new InjectionToken<ValidationErrorMessa
 @Pipe({
   name: 'validationError',
   standalone: true,
+  pure: false,
 })
 export class ValidationErrorPipe implements PipeTransform {
+  private readonly i18n = inject(TranslationService);
   private readonly customMessages = inject<ValidationErrorMessages[]>(VALIDATION_ERROR_MESSAGES, {
     optional: true,
   });
@@ -56,7 +45,9 @@ export class ValidationErrorPipe implements PipeTransform {
       return '';
     }
 
-    const resolvedLabel = label || 'This field';
+    this.i18n.language();
+
+    const resolvedLabel = label || this.i18n.translate('thisFieldLabel');
     const allMessages = {
       ...DEFAULT_VALIDATION_ERROR_MESSAGES,
       ...(this.customMessages ?? []).reduce(
@@ -75,7 +66,43 @@ export class ValidationErrorPipe implements PipeTransform {
       return interpolateMessage(message, { key, error, errors, label: resolvedLabel });
     }
 
-    return `${resolvedLabel} is invalid.`;
+    return this.defaultMessage(key, error, resolvedLabel);
+  }
+
+  private defaultMessage(key: string, error: unknown, label: string): string {
+    switch (key) {
+      case ValidationErrorKey.Required:
+        return this.validationText('validationRequired', label);
+      case ValidationErrorKey.MinLength:
+        return this.validationText('validationMinLength', label, getErrorValue(error, 'requiredLength'));
+      case ValidationErrorKey.MaxLength:
+        return this.validationText('validationMaxLength', label, getErrorValue(error, 'requiredLength'));
+      case ValidationErrorKey.Min:
+        return this.validationText('validationMin', label, getErrorValue(error, 'min'));
+      case ValidationErrorKey.Max:
+        return this.validationText('validationMax', label, getErrorValue(error, 'max'));
+      case ValidationErrorKey.Email:
+        return this.validationText('validationEmail', label);
+      case ValidationErrorKey.Pattern:
+        return this.validationText('validationPattern', label);
+      case ValidationErrorKey.FullDate:
+        return this.validationText('validationFullDate', label);
+      case ValidationErrorKey.DateOrder:
+        return this.i18n.translate('validationDateOrder');
+      case ValidationErrorKey.PostalCode:
+        return this.validationText('validationPostalCode', label);
+      case ValidationErrorKey.StreetNumber:
+        return this.validationText('validationStreetNumber', label);
+      default:
+        return this.validationText('validationInvalid', label);
+    }
+  }
+
+  private validationText(key: string, label: string, secondary?: unknown): string {
+    return this.i18n
+      .translate(key, { label, value: secondary == null ? '' : String(secondary) })
+      .replaceAll('{$INTERPOLATION}', label)
+      .replaceAll('{$INTERPOLATION_1}', secondary == null ? '' : String(secondary));
   }
 }
 

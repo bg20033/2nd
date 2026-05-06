@@ -10,6 +10,8 @@ import {
 
 import { Footer } from '../../../footer/footer';
 import { HealthDeclarationFormService } from '../../../../services/health-declaration-form.service';
+import { TranslationService } from '../../../../services/translation.service';
+import { TranslatePipe } from '../../../../pipes/translate.pipe';
 import { DentalQuestionsSectionComponent } from '../sections/dental-questions-section.component';
 import { MedicalQuestionsSectionComponent } from '../sections/medical-questions-section.component';
 import { QuestionnaireTopbarComponent } from './questionnaire-topbar.component';
@@ -17,6 +19,7 @@ import { QuestionnaireTopbarComponent } from './questionnaire-topbar.component';
 @Component({
   selector: 'app-review-panel',
   standalone: true,
+  imports: [TranslatePipe],
   template: `
     <section class="grid justify-items-center gap-[0.85rem] px-4 py-8 text-center">
       <div
@@ -26,17 +29,17 @@ import { QuestionnaireTopbarComponent } from './questionnaire-topbar.component';
         ✓
       </div>
       <h2 class="m-0 text-[14px] font-normal tracking-normal text-[#1d1426]">
-        Questionnaire complete
+        {{ 'review.completeTitle' | t }}
       </h2>
       <p class="max-w-96 text-[12px] font-normal leading-[1.45] text-[#6f657a]">
-        Your medical and dental questionnaire is ready for review.
+        {{ 'review.completeText' | t }}
       </p>
       <button
         class="button button-primary mt-[0.35rem] min-w-40"
         type="button"
         (click)="completed.emit()"
       >
-        Back to start
+        {{ 'review.backToStart' | t }}
       </button>
     </section>
   `,
@@ -56,6 +59,7 @@ export class ReviewPanelComponent {
     MedicalQuestionsSectionComponent,
     QuestionnaireTopbarComponent,
     ReviewPanelComponent,
+    TranslatePipe,
   ],
   templateUrl: './questionnaire-form.component.html',
   host: { class: 'block' },
@@ -70,6 +74,7 @@ export class QuestionnaireFormComponent {
   protected readonly declaration: HealthDeclarationFormService;
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly cdr = inject(ChangeDetectorRef);
+  private readonly i18n = inject(TranslationService);
 
   constructor(declaration: HealthDeclarationFormService) {
     this.declaration = declaration;
@@ -78,8 +83,8 @@ export class QuestionnaireFormComponent {
 
   footerNextLabel(): string {
     return this.declaration.currentPersonIndex() < this.declaration.peopleArray.length - 1
-      ? 'Next person'
-      : 'Next';
+      ? this.i18n.translate('footer.nextPerson')
+      : this.i18n.translate('common.next');
   }
 
   submit(): void {

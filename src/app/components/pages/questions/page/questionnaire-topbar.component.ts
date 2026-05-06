@@ -12,6 +12,7 @@ import {
 
 import { Header } from '../../../header/header';
 import { HealthDeclarationFormService, PersonStepStatus } from '../../../../services/health-declaration-form.service';
+import { TranslatePipe } from '../../../../pipes/translate.pipe';
 
 type PersonTab = {
   id: string;
@@ -26,7 +27,7 @@ type PersonTab = {
 @Component({
   selector: 'app-questionnaire-topbar',
   standalone: true,
-  imports: [Header],
+  imports: [Header, TranslatePipe],
   templateUrl: './questionnaire-topbar.component.html',
   styles: [`
     :host {
@@ -42,18 +43,12 @@ type PersonTab = {
       width: 100%;
     }
 
-    :host ::ng-deep .questionnaire-topbar__header .global-header {
-      grid-template-columns: 0.4rem minmax(0, 1fr) 2.25rem;
-      gap: 0.55rem;
-    }
-
-    :host ::ng-deep .questionnaire-topbar__header .global-header__spacer {
-      width: 0.4rem;
-    }
-
-    :host ::ng-deep .questionnaire-topbar__header .global-header__title {
-      padding: 0;
-      font-size: 24px;
+    .questionnaire-topbar__inner {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      width: min(660px, calc(100% - 2rem));
+      margin: 0 auto;
     }
 
     .topbar-scroll::-webkit-scrollbar {
