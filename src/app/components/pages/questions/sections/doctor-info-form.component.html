@@ -22,11 +22,73 @@
           <app-text-input [control]="group().controls.streetNumber" [label]="'health.doctorInfo.streetNumberLabel' | t" [digitsOnly]="true" />
         </div>
       </div>
-      <div class="col-span-12 grid min-w-0 gap-[0.6rem]">
-        <div class="grid min-w-0 grid-cols-[minmax(0,4fr)_minmax(0,8fr)] gap-[0.6rem] max-[700px]:gap-[0.45rem]">
-          <app-text-input [control]="group().controls.postalCode" [label]="'health.doctorInfo.postalCodeLabel' | t" [digitsOnly]="true" />
-          <app-text-input [control]="group().controls.city" [label]="'health.doctorInfo.cityLabel' | t" />
+      <div
+        class="doctor-location col-span-12"
+        [attr.data-validation-anchor]="locationInvalid() ? '' : null"
+      >
+        <label class="doctor-location__label" for="doctor-location">
+          {{ 'postalCodePlaceLabel' | t }}
+        </label>
+        <div class="doctor-location__control">
+          <input
+            id="doctor-location"
+            class="doctor-location__input"
+            type="text"
+            inputmode="text"
+            autocomplete="new-password"
+            autocapitalize="none"
+            autocorrect="off"
+            spellcheck="false"
+            name="doctor-location"
+            [placeholder]="'postalCodePlacePlaceholder' | t"
+            [value]="locationQuery()"
+            [class.is-valid]="locationValid()"
+            [class.is-invalid]="locationInvalid()"
+            [attr.aria-invalid]="locationInvalid()"
+            (input)="onLocationInput($event)"
+            (focus)="onLocationFocus()"
+            (blur)="onLocationBlur()"
+          />
+
+          @if (showLocationDropdown()) {
+            <ul class="doctor-location__dropdown" role="listbox" [attr.aria-label]="'postalCodePlaceLabel' | t">
+              @for (
+                location of locationResults();
+                track location.locationId +
+                  '-' +
+                  location.zipCode +
+                  '-' +
+                  location.locationName +
+                  '-' +
+                  location.cantonName +
+                  '-' +
+                  $index
+              ) {
+                <li
+                  class="doctor-location__option"
+                  role="option"
+                  tabindex="0"
+                  (mousedown)="selectLocation(location, $event)"
+                  (keydown.enter)="selectLocation(location, $event)"
+                  (keydown.space)="selectLocation(location, $event)"
+                >
+                  <span class="doctor-location__zip">{{ location.zipCode }}</span>
+                  <span class="doctor-location__name">{{ location.locationName }}</span>
+                  <span class="doctor-location__canton">{{ location.cantonName }}</span>
+                </li>
+              }
+              @if (locationLoading()) {
+                <li class="doctor-location__option doctor-location__option--status" aria-live="polite">
+                  <span>{{ 'family.locationLoading' | t }}</span>
+                </li>
+              }
+            </ul>
+          }
         </div>
+
+        @if (locationInvalid() && !showLocationDropdown()) {
+          <p class="field-error">{{ locationError() }}</p>
+        }
       </div>
     </div>
   </div>
