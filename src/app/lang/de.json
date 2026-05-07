@@ -111,7 +111,8 @@
     "title": "Gesundheitsdeklaration",
     "menuAria": "Menü",
     "languageAria": "Sprache ändern",
-    "languageDropdownTitle": "Sprache wählen"
+    "languageDropdownTitle": "Sprache wählen",
+    "progressAria": "Fortschritt des Antrags"
   },
   "common": {
     "back": "Zurück",

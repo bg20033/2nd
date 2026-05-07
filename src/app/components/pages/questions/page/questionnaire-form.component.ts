@@ -2,11 +2,14 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  DestroyRef,
   ElementRef,
   inject,
   output,
   signal,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { Footer } from '../../../footer/footer';
 import { HealthDeclarationFormService } from '../../../../services/health-declaration-form.service';
@@ -141,10 +144,31 @@ export class QuestionnaireFormComponent {
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly i18n = inject(TranslationService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
 
   constructor(declaration: HealthDeclarationFormService) {
     this.declaration = declaration;
-    this.declaration.ensureQuestionnaireFor(this.declaration.currentPersonIndex());
+    this.route.paramMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
+      const rawIndex = params.get('index');
+
+      if (rawIndex === null) {
+        if (this.router.url.startsWith('/review')) {
+          this.declaration.enterReviewMode();
+          return;
+        }
+
+        void this.router.navigateByUrl(`/questions/person/${this.declaration.currentPersonIndex()}`, { replaceUrl: true });
+        return;
+      }
+
+      const index = Number(rawIndex);
+      if (Number.isInteger(index)) {
+        this.declaration.visitPerson(index);
+        this.validationAttempted.set(false);
+      }
+    });
   }
 
   footerNextLabel(): string {
@@ -174,10 +198,12 @@ export class QuestionnaireFormComponent {
     this.validationAttempted.set(false);
     if (result === 'review') {
       this.nextClickLocked.set(false);
+      void this.router.navigateByUrl('/review');
       this.scheduleFrame(() => this.scrollToTop());
       return;
     }
 
+    void this.router.navigateByUrl(`/questions/person/${this.declaration.currentPersonIndex()}`);
     this.scheduleFrame(() => {
       this.scrollToTop();
       this.nextClickLocked.set(false);
@@ -187,19 +213,21 @@ export class QuestionnaireFormComponent {
   goBack(): void {
     const currentIndex = this.declaration.currentPersonIndex();
     if (currentIndex > 0) {
-      this.declaration.visitPerson(currentIndex - 1);
       this.validationAttempted.set(false);
+      void this.router.navigateByUrl(`/questions/person/${currentIndex - 1}`);
       this.scheduleFrame(() => this.scrollToTop());
       return;
     }
 
     this.back.emit();
+    void this.router.navigateByUrl('/family');
   }
 
   completeReview(): void {
     if (this.declaration.submitDeclaration()) {
       this.declaration.startNewDeclaration();
       this.completed.emit();
+      void this.router.navigateByUrl('/landing');
     }
   }
 

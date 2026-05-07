@@ -111,7 +111,8 @@
     "title": "Déclaration de santé",
     "menuAria": "Menu",
     "languageAria": "Changer la langue",
-    "languageDropdownTitle": "Choisir la langue"
+    "languageDropdownTitle": "Choisir la langue",
+    "progressAria": "Progression de la demande"
   },
   "common": {
     "back": "Retour",

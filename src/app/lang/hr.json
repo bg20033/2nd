@@ -111,7 +111,8 @@
     "title": "Health declaration",
     "menuAria": "Menu",
     "languageAria": "Change language",
-    "languageDropdownTitle": "Choose language"
+    "languageDropdownTitle": "Choose language",
+    "progressAria": "Application progress"
   },
   "common": {
     "back": "Back",

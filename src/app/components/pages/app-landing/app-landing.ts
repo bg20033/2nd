@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, output } from '@angular/core';
+import { Router } from '@angular/router';
 
 import { Footer } from '../../footer/footer';
 import { Header } from '../../header/header';
@@ -16,7 +17,10 @@ export class AppLanding {
 
   protected readonly introParagraphs = ['landing.intro1', 'landing.intro2', 'landing.intro3', 'landing.intro4'] as const;
 
+  constructor(private readonly router: Router) {}
+
   protected startDeclaration(): void {
     this.start.emit();
+    void this.router.navigateByUrl('/family');
   }
 }

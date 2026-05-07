@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, ElementRef, HostListener, inject, input, output, signal } from '@angular/core';
 
 import { TranslatePipe } from '../../pipes/translate.pipe';
+import { AppProgressService } from '../../services/app-progress.service';
 import { LanguageCode, TranslationService } from '../../services/translation.service';
 
 @Component({
@@ -13,10 +14,12 @@ import { LanguageCode, TranslationService } from '../../services/translation.ser
 export class Header {
   private readonly host = inject(ElementRef<HTMLElement>);
   protected readonly i18n = inject(TranslationService);
+  protected readonly progress = inject(AppProgressService);
 
   title = input('Gesundheitsdeklaration');
   showMenuButton = input(true);
   showLanguageButton = input(true);
+  showProgress = input(true);
   fixed = input(true);
 
   menu = output<void>();

@@ -236,6 +236,18 @@ export class QuestionnaireFormService implements OnDestroy {
     return this.form.valid ? this.form.getRawValue() : null;
   }
 
+  completionRatio(): number {
+    this.refreshValidationState();
+    const activeControls = this.activeProgressControls(this.form);
+
+    if (activeControls.length === 0) {
+      return 0;
+    }
+
+    const completedControls = activeControls.filter((control) => control.valid && this.hasProgressValue(control.value));
+    return completedControls.length / activeControls.length;
+  }
+
   private createPreviousInsuranceGroup(): FormGroup<PreviousInsuranceControls> {
     return new FormGroup({
       q1: this.yesNoControl(true),
@@ -566,6 +578,42 @@ export class QuestionnaireFormService implements OnDestroy {
         this.markEnabledControlsTouched(child);
       }
     }
+  }
+
+  private activeProgressControls(control: AbstractControl): FormControl[] {
+    if (control.disabled) {
+      return [];
+    }
+
+    if (control instanceof FormControl) {
+      return control.validator ? [control] : [];
+    }
+
+    if (control instanceof FormGroup || control instanceof FormArray) {
+      return Object.values(control.controls).flatMap((child) => this.activeProgressControls(child));
+    }
+
+    return [];
+  }
+
+  private hasProgressValue(value: unknown): boolean {
+    if (value === null || value === undefined) {
+      return false;
+    }
+
+    if (typeof value === 'string') {
+      return value.trim().length > 0;
+    }
+
+    if (Array.isArray(value)) {
+      return value.length > 0;
+    }
+
+    if (typeof value === 'object') {
+      return true;
+    }
+
+    return true;
   }
 
   private textControl(validators: ValidatorFn[] = []): StringControl {

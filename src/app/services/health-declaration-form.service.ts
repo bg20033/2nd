@@ -305,7 +305,7 @@ export class HealthDeclarationFormService {
       this.questionnaireServices.set(id, questionnaire);
       this.questionnaireSubscriptions.set(
         id,
-        questionnaire.form.valueChanges.pipe(auditTime(250)).subscribe(() => this.saveToStorage()),
+        questionnaire.form.valueChanges.pipe(auditTime(120)).subscribe(() => this.syncPeopleState()),
       );
     }
 
@@ -346,6 +346,36 @@ export class HealthDeclarationFormService {
 
   allPeopleCompleted(): boolean {
     return this.peopleArray.length > 0 && this.completedPersonIds().size === this.peopleArray.length;
+  }
+
+  enterReviewMode(): void {
+    if (!this.allPeopleCompleted()) {
+      this.reviewMode.set(false);
+      return;
+    }
+
+    this.reviewMode.set(true);
+    this.syncPeopleState();
+  }
+
+  overallQuestionnaireProgress(): number {
+    this.peopleVersion();
+
+    if (this.peopleArray.length === 0) {
+      return 0;
+    }
+
+    const total = this.peopleArray.controls.reduce((sum, person) => {
+      if (person.controls.completed.value) {
+        return sum + 1;
+      }
+
+      const id = this.personId(person);
+      const questionnaire = this.questionnaireServices.get(id);
+      return sum + (questionnaire?.completionRatio() ?? 0);
+    }, 0);
+
+    return Math.max(0, Math.min(total / this.peopleArray.length, 1));
   }
 
   submitDeclaration(): boolean {

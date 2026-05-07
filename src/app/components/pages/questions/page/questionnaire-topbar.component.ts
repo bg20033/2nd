@@ -9,6 +9,7 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
+import { Router } from '@angular/router';
 
 import { Header } from '../../../header/header';
 import { HealthDeclarationFormService, PersonStepStatus } from '../../../../services/health-declaration-form.service';
@@ -83,6 +84,7 @@ type PersonTab = {
 export class QuestionnaireTopbarComponent {
   protected readonly declaration = inject(HealthDeclarationFormService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly router = inject(Router);
   private readonly scrollContainer = viewChild<ElementRef<HTMLDivElement>>('scrollContainer');
   protected readonly showScrollIndicator = signal(false);
   protected readonly scrollThumbWidth = signal(0);
@@ -120,6 +122,7 @@ export class QuestionnaireTopbarComponent {
 
   protected visitPerson(index: number): void {
     this.declaration.visitPerson(index);
+    void this.router.navigateByUrl(`/questions/person/${index}`);
     this.scheduleScrollMetricsUpdate();
   }
 

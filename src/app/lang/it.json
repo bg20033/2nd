@@ -111,7 +111,8 @@
     "title": "Dichiarazione sanitaria",
     "menuAria": "Menu",
     "languageAria": "Cambia lingua",
-    "languageDropdownTitle": "Scegli la lingua"
+    "languageDropdownTitle": "Scegli la lingua",
+    "progressAria": "Avanzamento della domanda"
   },
   "common": {
     "back": "Indietro",

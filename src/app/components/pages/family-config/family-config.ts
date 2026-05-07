@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, ElementRef, computed, inject, output, signal } from '@angular/core';
 import { AbstractControl, ReactiveFormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Router } from '@angular/router';
 import { Subject, catchError, debounceTime, distinctUntilChanged, of, switchMap } from 'rxjs';
 
 import { Footer } from '../../footer/footer';
@@ -32,6 +33,7 @@ export class FamilyConfig {
   private readonly locationService = inject(LocationService);
   private readonly i18n = inject(TranslationService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly router = inject(Router);
   private readonly searchSubject = new Subject<string>();
   protected readonly currentYear = new Date().getFullYear();
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
@@ -218,6 +220,12 @@ export class FamilyConfig {
 
     this.declaration.visitPerson(0);
     this.next.emit();
+    void this.router.navigateByUrl('/questions/person/0');
+  }
+
+  protected goBack(): void {
+    this.back.emit();
+    void this.router.navigateByUrl('/landing');
   }
 
   protected editPerson(index: number): void {

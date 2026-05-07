@@ -111,7 +111,8 @@
     "title": "Deklarata shëndetësore",
     "menuAria": "Menu",
     "languageAria": "Ndrysho gjuhën",
-    "languageDropdownTitle": "Zgjidh gjuhën"
+    "languageDropdownTitle": "Zgjidh gjuhën",
+    "progressAria": "Progresi i aplikimit"
   },
   "common": {
     "back": "Mbrapa",

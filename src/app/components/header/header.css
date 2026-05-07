@@ -9,8 +9,10 @@
   z-index: 1000;
   display: grid;
   grid-template-columns: 2.25rem minmax(0, 1fr) 2.25rem;
+  grid-template-rows: auto auto;
   align-items: center;
   gap: 1rem;
+  row-gap: 0.1rem;
   width: 100%;
   max-width: 660px;
   padding-inline: 0.15rem;
@@ -191,8 +193,52 @@
   height: 1rem;
 }
 
+.global-header__progress {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.55rem;
+  padding-inline: 0.35rem;
+}
+
+.global-header__progress-track {
+  display: block;
+  height: 0.25rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.global-header__progress-fill {
+  display: block;
+  width: 0;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #ffffff, #e445fe);
+  box-shadow: 0 0 14px rgba(228, 69, 254, 0.45);
+  transition: width 220ms ease;
+}
+
+.global-header__progress-label {
+  min-width: 2.15rem;
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1;
+  text-align: right;
+}
+
 @media (max-width: 480px) {
   .global-header__title {
     font-size: 24px;
+  }
+
+  .global-header__progress-label {
+    display: none;
+  }
+
+  .global-header__progress {
+    grid-template-columns: minmax(0, 1fr);
   }
 }

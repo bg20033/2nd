@@ -53,4 +53,20 @@
       </button>
     }
   </div>
+
+  @if (showProgress()) {
+    <div
+      class="global-header__progress"
+      role="progressbar"
+      [attr.aria-label]="'header.progressAria' | t"
+      aria-valuemin="0"
+      aria-valuemax="100"
+      [attr.aria-valuenow]="progress.percent()"
+    >
+      <span class="global-header__progress-track">
+        <span class="global-header__progress-fill" [style.width.%]="progress.percent()"></span>
+      </span>
+      <span class="global-header__progress-label">{{ progress.label() }}</span>
+    </div>
+  }
 </header>

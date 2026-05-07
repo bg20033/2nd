@@ -111,7 +111,8 @@
     "title": "Sağlık beyanı",
     "menuAria": "Menü",
     "languageAria": "Dili değiştir",
-    "languageDropdownTitle": "Dil seçin"
+    "languageDropdownTitle": "Dil seçin",
+    "progressAria": "Başvuru ilerlemesi"
   },
   "common": {
     "back": "Geri",
