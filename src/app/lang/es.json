@@ -287,12 +287,6 @@
       "doctorCityPlaceholder": "Zúrich",
       "notesLabel": "Observaciones especiales:"
     },
-    "review": {
-      "title": "Declaración enviada correctamente",
-      "messageLine1": "Gracias. Su declaración de salud ha sido enviada.",
-      "messageLine2": "Los datos se han registrado en la consola del desarrollador.",
-      "backToStart": "Volver al inicio"
-    },
     "pregnancy": {
       "birthDateLabel": "Fecha prevista del parto",
       "weightBeforeLabel": "Peso antes del embarazo",

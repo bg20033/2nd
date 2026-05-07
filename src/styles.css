@@ -240,6 +240,10 @@ app-questionnaire-form .app-content {
   padding-bottom: 60px;
 }
 
+app-questionnaire-form .app-content--review {
+  width: min(660px, calc(100% - 2rem));
+}
+
 @media (max-width: 680px) {
   .app-form-panel {
     padding: 1rem;

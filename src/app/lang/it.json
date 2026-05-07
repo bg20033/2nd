@@ -287,12 +287,6 @@
       "doctorCityPlaceholder": "Zurigo",
       "notesLabel": "Osservazioni particolari:"
     },
-    "review": {
-      "title": "Dichiarazione inviata con successo",
-      "messageLine1": "Grazie. La sua dichiarazione sanitaria è stata trasmessa.",
-      "messageLine2": "I dati sono stati registrati nella console sviluppatore.",
-      "backToStart": "Torna all'inizio"
-    },
     "pregnancy": {
       "birthDateLabel": "Data prevista del parto",
       "weightBeforeLabel": "Peso prima della gravidanza",

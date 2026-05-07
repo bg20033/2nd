@@ -287,12 +287,6 @@
       "doctorCityPlaceholder": "Zürich",
       "notesLabel": "Besondere Bemerkungen:"
     },
-    "review": {
-      "title": "Deklaration erfolgreich versendet",
-      "messageLine1": "Vielen Dank. Ihre Gesundheitsdeklaration wurde übermittelt.",
-      "messageLine2": "Die Daten wurden in der Entwicklerkonsole protokolliert.",
-      "backToStart": "Zur Startseite"
-    },
     "pregnancy": {
       "birthDateLabel": "Geburtstermin",
       "weightBeforeLabel": "Gewicht vor Schwangerschaft",
@@ -387,6 +381,56 @@
   "review": {
     "completeTitle": "Fragebogen abgeschlossen",
     "completeText": "Ihre medizinische und zahnärztliche Gesundheitsdeklaration ist bereit zur Prüfung.",
+    "emailLabel": "Empfänger-E-Mail",
+    "emailPlaceholder": "name@example.com",
+    "scopeLabel": "Berichtsumfang",
+    "allPeople": "Alle Personen",
+    "prepareEmail": "Bericht senden",
+    "sending": "Wird gesendet...",
+    "successTitle": "Alles bereit",
+    "successText": "Wir senden den Berichtslink an {{email}}.",
+    "emailServiceNotConfigured": "Der E-Mail-Dienst ist noch nicht konfiguriert.",
+    "emailSendFailed": "Die Berichts-E-Mail konnte nicht gesendet werden. Bitte versuchen Sie es erneut.",
+    "totalEstimate": "Erwartete monatliche Kosten in der Schweiz",
+    "peopleCount": "Personen",
+    "healthScore": "Gesundheitsscore",
+    "riskScore": "Risikoscore",
+    "dentalLoad": "Zahnärztliche Belastung",
+    "positiveAnswers": "Positive Antworten",
+    "diagnoses": "Diagnosen",
+    "month": "Monat",
+    "risk": {
+      "low": "Niedrig",
+      "medium": "Mittel",
+      "high": "Hoch",
+      "critical": "Kritisch"
+    },
     "backToStart": "Zurück zum Start"
+  },
+  "report": {
+    "eyebrow": "Medizinisches Dashboard",
+    "title": "Gesundheitsbericht",
+    "subtitle": "Dieses Dashboard ist über den sicheren Berichtslink aus der E-Mail verfügbar.",
+    "topDrivers": "Wichtigste Risikofaktoren",
+    "categoryBreakdown": "Kategorien",
+    "personDrivers": "Hauptfaktoren",
+    "rawRiskPoints": "Roh-Risikopunkte",
+    "noDrivers": "Keine aktiven Risikofaktoren gefunden.",
+    "answerYes": "Ja",
+    "answerNo": "Nein",
+    "answerPresent": "Vorhanden",
+    "years": "Jahre",
+    "category": {
+      "medical": "Medizinisch",
+      "dental": "Zahnärztlich",
+      "lifestyle": "Lebensstil",
+      "insurance": "Versicherungshistorie",
+      "demographic": "Demografie",
+      "financial": "Finanziell"
+    },
+    "loadingTitle": "Bericht wird geladen",
+    "loadingText": "Wir prüfen den Berichtslink.",
+    "invalidTitle": "Berichtslink nicht verfügbar",
+    "invalidText": "Dieser Berichtslink ist ungültig, abgelaufen oder auf diesem Gerät nicht verfügbar."
   }
 }

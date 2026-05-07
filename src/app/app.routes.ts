@@ -88,5 +88,10 @@ export const appRoutes: Routes = [
       import('./components/pages/questions/page/questionnaire-form.component').then((component) => component.QuestionnaireFormComponent),
     canActivate: [reviewGuard],
   },
+  {
+    path: 'report/:token',
+    loadComponent: () =>
+      import('./components/pages/questions/page/report-page.component').then((component) => component.ReportPageComponent),
+  },
   { path: '**', redirectTo: 'landing' },
 ];

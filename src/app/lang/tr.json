@@ -287,12 +287,6 @@
       "doctorCityPlaceholder": "Zürih",
       "notesLabel": "Özel notlar:"
     },
-    "review": {
-      "title": "Beyan başarıyla gönderildi",
-      "messageLine1": "Teşekkürler. Sağlık beyanınız gönderildi.",
-      "messageLine2": "Veriler geliştirici konsoluna kaydedildi.",
-      "backToStart": "Başa dön"
-    },
     "pregnancy": {
       "birthDateLabel": "Tahmini doğum tarihi",
       "weightBeforeLabel": "Hamilelik öncesi kilo",

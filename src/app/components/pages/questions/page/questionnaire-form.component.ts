@@ -1,5 +1,4 @@
 import {
-  ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   DestroyRef,
@@ -17,107 +16,8 @@ import { TranslationService } from '../../../../services/translation.service';
 import { TranslatePipe } from '../../../../pipes/translate.pipe';
 import { DentalQuestionsSectionComponent } from '../sections/dental-questions-section.component';
 import { MedicalQuestionsSectionComponent } from '../sections/medical-questions-section.component';
+import { ReviewPanelComponent } from './review-panel.component';
 import { QuestionnaireTopbarComponent } from './questionnaire-topbar.component';
-
-@Component({
-  selector: 'app-review-panel',
-  standalone: true,
-  imports: [TranslatePipe],
-  template: `
-    <section class="review-card">
-      <div class="review-card__icon" aria-hidden="true">✓</div>
-      <div class="review-card__copy">
-        <h2>{{ 'review.completeTitle' | t }}</h2>
-        <p>{{ 'review.completeText' | t }}</p>
-      </div>
-      <button class="review-card__button" type="button" (click)="completed.emit()">
-        {{ 'review.backToStart' | t }}
-      </button>
-    </section>
-  `,
-  styles: [`
-    .review-card {
-      display: grid;
-      justify-items: center;
-      gap: 1rem;
-      padding: 2rem 1.25rem;
-      border: 1px solid rgba(202, 186, 220, 0.75);
-      border-radius: 1.35rem;
-      background:
-        radial-gradient(circle at 50% 0%, rgba(132, 41, 255, 0.12), transparent 42%),
-        rgba(255, 255, 255, 0.34);
-      text-align: center;
-    }
-
-    .review-card__icon {
-      display: grid;
-      width: 3.25rem;
-      height: 3.25rem;
-      place-items: center;
-      border: 1px solid rgba(132, 41, 255, 0.18);
-      border-radius: 999px;
-      background: linear-gradient(180deg, #8f2ef6, #6e27de);
-      color: #ffffff;
-      font-size: 1.05rem;
-      font-weight: 400;
-      box-shadow: 0 14px 32px rgba(111, 39, 222, 0.22);
-    }
-
-    .review-card__copy {
-      display: grid;
-      gap: 0.45rem;
-      max-width: 24rem;
-    }
-
-    .review-card h2 {
-      margin: 0;
-      color: #1d1426;
-      font-size: 14px;
-      font-weight: 400;
-      line-height: 1.25;
-      letter-spacing: 0;
-    }
-
-    .review-card p {
-      margin: 0;
-      color: #6f657a;
-      font-size: 12px;
-      font-weight: 400;
-      line-height: 1.45;
-    }
-
-    .review-card__button {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-width: 10rem;
-      min-height: var(--control-height);
-      padding: 0 1.25rem;
-      border: 1px solid transparent;
-      border-radius: 0.9rem;
-      background: linear-gradient(90deg, #6e27de, #8f2ef6);
-      color: #ffffff;
-      cursor: pointer;
-      font: inherit;
-      font-size: 14px;
-      font-weight: 400;
-      box-shadow: 0 16px 28px rgba(111, 39, 222, 0.18);
-      transition:
-        background-color 150ms ease,
-        box-shadow 150ms ease,
-        opacity 150ms ease;
-    }
-
-    .review-card__button:hover {
-      box-shadow: 0 18px 32px rgba(111, 39, 222, 0.24);
-    }
-  `],
-  host: { class: 'block' },
-  changeDetection: ChangeDetectionStrategy.OnPush,
-})
-export class ReviewPanelComponent {
-  completed = output<void>();
-}
 
 @Component({
   selector: 'app-questionnaire-form',
@@ -224,11 +124,9 @@ export class QuestionnaireFormComponent {
   }
 
   completeReview(): void {
-    if (this.declaration.submitDeclaration()) {
-      this.declaration.startNewDeclaration();
-      this.completed.emit();
-      void this.router.navigateByUrl('/landing');
-    }
+    this.declaration.startNewDeclaration();
+    this.completed.emit();
+    void this.router.navigateByUrl('/landing');
   }
 
   private scrollToFirstInvalidField(): void {

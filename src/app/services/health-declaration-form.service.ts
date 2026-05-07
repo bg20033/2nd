@@ -7,32 +7,41 @@ import {
   Gender as GenderEnum,
   type DiagnosisQuestionIdValue as DiagnosisQuestionId,
   PersonGender as PersonGenderEnum,
-  type PersonGenderValue,
   PersonStepStatus as PersonStepStatusEnum,
   type PersonStepStatusValue,
   ValidationErrorKey,
 } from '../constants/app-enums';
-import { OptionValue } from '../components/form-controls';
+import type { OptionValue } from '../components/form-controls';
 import { QuestionnaireFormService } from '../components/pages/questions/questionnaire-form.service';
-import { LocationFilterResponse } from './location.service';
+import type { LocationFilterResponse } from './location.service';
 import { TranslationService } from '../services/translation.service';
 import {
-  HEALTH_DECLARATION_FILE_NAME,
-  HEALTH_DECLARATION_QUESTION_ANSWERS_FILE_NAME,
   HEALTH_DECLARATION_STORAGE_VERSION,
   clearHealthDeclarationDraft,
   readHealthDeclarationDraft,
   writeHealthDeclarationDraft,
-  writeHealthDeclarationSessionFile,
 } from './health-declaration-draft-storage';
 import {
-  QuestionAnswerRow,
   buildQuestionAnswerFile,
 } from './health-declaration-submission';
+import {
+  buildReviewDashboardPerson,
+  formatChfRange,
+  mergeCategoryScores,
+  rankDrivers,
+} from './health-declaration-scoring';
+import type {
+  PersonGender,
+  ReviewDashboard,
+  ReviewPersonScope,
+  ReviewPersonSnapshot,
+} from './health-declaration-report.types';
 
-export type PersonGender = PersonGenderValue;
 export type PersonStepStatus = PersonStepStatusValue;
 export type FinalizePersonResult = 'invalid' | 'advanced' | 'review';
+export type {
+  PersonGender,
+} from './health-declaration-report.types';
 
 export type PersonControls = {
   id: FormControl<string>;
@@ -47,13 +56,7 @@ type DeclarationFormControls = {
   people: FormArray<PersonGroup>;
 };
 
-type StoredPersonData = {
-  id?: string;
-  completed?: boolean;
-  gender?: PersonGender;
-  birthYear?: string;
-  questionnaire?: unknown;
-};
+type StoredPersonData = ReviewPersonSnapshot;
 
 type StoredDeclarationData = {
   version?: number;
@@ -66,11 +69,6 @@ type StoredDeclarationData = {
   familyLocation?: LocationFilterResponse | null;
   familyLocationQuery?: string;
   timestamp?: number;
-};
-
-type HealthDeclarationSubmissionFile = StoredDeclarationData & {
-  fileName: string;
-  submittedAt: string;
 };
 
 const AVATAR_ASSETS = {
@@ -120,7 +118,6 @@ export class HealthDeclarationFormService {
       }
     | null = null;
   private restoring = false;
-  private submissionLogged = false;
 
   constructor() {
     this.restoreFromStorage();
@@ -152,7 +149,6 @@ export class HealthDeclarationFormService {
     this.storedQuestionnaires.clear();
     this.syncedApplicantGenders.clear();
     this.activeQuestionnaireCache = null;
-    this.submissionLogged = false;
     this.restoring = false;
     this.bumpPeopleVersion();
     this.clearStoredData();
@@ -162,7 +158,6 @@ export class HealthDeclarationFormService {
     const person = this.createPerson();
     this.peopleArray.push(person);
     this.reviewMode.set(false);
-    this.submissionLogged = false;
     this.syncPeopleState();
     return person;
   }
@@ -185,7 +180,6 @@ export class HealthDeclarationFormService {
     }
 
     this.peopleArray.removeAt(index);
-    this.submissionLogged = false;
     this.setCompletedPersonId(id, false);
 
     const nextCurrentIndex = Math.min(this.currentPersonIndex(), this.peopleArray.length - 1);
@@ -255,7 +249,6 @@ export class HealthDeclarationFormService {
 
     const id = this.personId(person);
     person.controls.completed.setValue(false, { emitEvent: false });
-    this.submissionLogged = false;
     this.setCompletedPersonId(id, false);
     this.reviewMode.set(false);
     this.syncPeopleState();
@@ -339,7 +332,6 @@ export class HealthDeclarationFormService {
     }
 
     this.reviewMode.set(true);
-    this.writeSubmissionDebugArtifacts();
     this.syncPeopleState();
     return 'review';
   }
@@ -384,9 +376,60 @@ export class HealthDeclarationFormService {
       return false;
     }
 
-    this.writeSubmissionDebugArtifacts();
     this.clearStoredData();
     return true;
+  }
+
+  reviewDashboard(scope: ReviewPersonScope = 'all', recipientEmail = ''): ReviewDashboard {
+    this.peopleVersion();
+
+    const generatedAt = new Date().toISOString();
+    const people = this.snapshotPeople();
+    const answerRows = buildQuestionAnswerFile(generatedAt, people);
+    const selectedPeople = people
+      .map((person, index) => ({ person, index }))
+      .filter(({ person }) => scope === 'all' || person.id === scope);
+    const translate = this.translateForReport();
+    const reports = selectedPeople.map(({ person, index }) =>
+      buildReviewDashboardPerson(person, index, answerRows[index] ?? [], translate),
+    );
+
+    const averageHealthScore = this.average(reports.map((person) => person.healthScore));
+    const averageRiskScore = this.average(reports.map((person) => person.riskScore));
+    const averageDentalLoad = this.average(reports.map((person) => person.dentalLoad));
+    const rawRiskPoints = reports.reduce((sum, person) => sum + person.rawRiskPoints, 0);
+    const monthlyMinChf = reports.reduce((sum, person) => sum + person.estimatedMonthlyMinChf, 0);
+    const monthlyMaxChf = reports.reduce((sum, person) => sum + person.estimatedMonthlyMaxChf, 0);
+    const categoryScores = mergeCategoryScores(reports.map((person) => person.categoryScores));
+    const topDrivers = rankDrivers(
+      reports.flatMap((person) =>
+        person.topDrivers.map((driver) => ({
+          ...driver,
+          personId: person.id,
+          personLabel: person.label,
+        })),
+      ),
+    ).slice(0, 8);
+
+    return {
+      generatedAt,
+      recipientEmail,
+      scope,
+      familyLocation: this.familyLocation(),
+      people: reports,
+      totals: {
+        people: reports.length,
+        averageHealthScore,
+        averageRiskScore,
+        averageDentalLoad,
+        rawRiskPoints,
+        monthlyMinChf,
+        monthlyMaxChf,
+        monthlyLabel: formatChfRange(monthlyMinChf, monthlyMaxChf, translate),
+        categoryScores,
+        topDrivers,
+      },
+    };
   }
 
   avatarSrc(person: PersonGroup): string {
@@ -401,6 +444,18 @@ export class HealthDeclarationFormService {
     }
 
     return AVATAR_ASSETS[ageBand][gender === PersonGenderEnum.Female ? PersonGenderEnum.Female : PersonGenderEnum.Male];
+  }
+
+  private translateForReport(): (key: string, params?: Record<string, string | number | null | undefined>) => string {
+    return (key, params) => this.i18n.translate(key, params);
+  }
+
+  private average(values: number[]): number {
+    if (values.length === 0) {
+      return 0;
+    }
+
+    return Math.round(values.reduce((sum, value) => sum + value, 0) / values.length);
   }
 
   private avatarAgeBand(gender: PersonGender, age: number | null): AvatarAgeBand {
@@ -552,69 +607,6 @@ export class HealthDeclarationFormService {
       writeHealthDeclarationDraft(data);
     } catch {
       // Storage can be unavailable in private browsing or tests.
-    }
-  }
-
-  private buildSubmissionFile(submittedAt: string, people = this.snapshotPeople()): HealthDeclarationSubmissionFile {
-    return {
-      fileName: HEALTH_DECLARATION_FILE_NAME,
-      submittedAt,
-      version: HEALTH_DECLARATION_STORAGE_VERSION,
-      people,
-      currentPersonIndex: this.currentPersonIndex(),
-      highestReachedPersonIndex: this.highestReachedPersonIndex(),
-      reviewMode: this.reviewMode(),
-      completedPersonIds: Array.from(this.completedPersonIds()),
-      nextPersonId: this.nextPersonId,
-      familyLocation: this.familyLocation(),
-      familyLocationQuery: this.familyLocationQuery(),
-      timestamp: Date.now(),
-    };
-  }
-
-  private writeSubmissionDebugArtifacts(): void {
-    if (this.submissionLogged || !this.allPeopleCompleted()) {
-      return;
-    }
-
-    const submittedAt = new Date().toISOString();
-    const people = this.snapshotPeople();
-    const fullSubmission = this.buildSubmissionFile(submittedAt, people);
-    const questionAnswers = buildQuestionAnswerFile(submittedAt, people);
-    const fullJson = JSON.stringify(fullSubmission, null, 2);
-    const questionAnswerJson = JSON.stringify(questionAnswers, null, 2);
-
-    this.logSubmissionDebugArtifacts(fullSubmission, questionAnswers);
-    this.exposeSubmissionFiles(fullSubmission, questionAnswers, fullJson, questionAnswerJson);
-    this.submissionLogged = true;
-  }
-
-  private logSubmissionDebugArtifacts(
-    fullSubmission: HealthDeclarationSubmissionFile,
-    questionAnswers: QuestionAnswerRow[][],
-  ): void {
-    console.log(HEALTH_DECLARATION_FILE_NAME, fullSubmission);
-    console.log(HEALTH_DECLARATION_QUESTION_ANSWERS_FILE_NAME, questionAnswers);
-  }
-
-  private exposeSubmissionFiles(
-    fullSubmission: HealthDeclarationSubmissionFile,
-    questionAnswers: QuestionAnswerRow[][],
-    fullJson: string,
-    questionAnswerJson: string,
-  ): void {
-    const target = globalThis as typeof globalThis & {
-      healthDeclarationJson?: HealthDeclarationSubmissionFile;
-      healthDeclarationQuestionAnswersJson?: QuestionAnswerRow[][];
-    };
-    target.healthDeclarationJson = fullSubmission;
-    target.healthDeclarationQuestionAnswersJson = questionAnswers;
-
-    try {
-      writeHealthDeclarationSessionFile(HEALTH_DECLARATION_FILE_NAME, fullJson);
-      writeHealthDeclarationSessionFile(HEALTH_DECLARATION_QUESTION_ANSWERS_FILE_NAME, questionAnswerJson);
-    } catch {
-      // Session storage can be unavailable in private browsing or tests.
     }
   }
 

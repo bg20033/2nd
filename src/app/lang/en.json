@@ -287,12 +287,6 @@
       "doctorCityPlaceholder": "Zurich",
       "notesLabel": "Special remarks:"
     },
-    "review": {
-      "title": "Declaration sent successfully",
-      "messageLine1": "Thank you. Your health declaration has been submitted.",
-      "messageLine2": "The data has been logged in the developer console.",
-      "backToStart": "Back to start"
-    },
     "pregnancy": {
       "birthDateLabel": "Expected due date",
       "weightBeforeLabel": "Weight before pregnancy",
@@ -387,6 +381,56 @@
   "review": {
     "completeTitle": "Questionnaire complete",
     "completeText": "Your medical and dental health declaration is ready for review.",
+    "emailLabel": "Recipient email",
+    "emailPlaceholder": "name@example.com",
+    "scopeLabel": "Report scope",
+    "allPeople": "All people",
+    "prepareEmail": "Send report",
+    "sending": "Sending...",
+    "successTitle": "All set",
+    "successText": "We are sending the report link to {{email}}.",
+    "emailServiceNotConfigured": "Email service is not configured yet.",
+    "emailSendFailed": "We could not send the report email. Please try again.",
+    "totalEstimate": "Expected Swiss monthly cost",
+    "peopleCount": "People",
+    "healthScore": "Health score",
+    "riskScore": "Risk score",
+    "dentalLoad": "Dental load",
+    "positiveAnswers": "Positive answers",
+    "diagnoses": "Diagnoses",
+    "month": "month",
+    "risk": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
+      "critical": "Critical"
+    },
     "backToStart": "Back to start"
+  },
+  "report": {
+    "eyebrow": "Medical dashboard",
+    "title": "Health report",
+    "subtitle": "This dashboard is available from the secure report link sent by email.",
+    "topDrivers": "Top risk drivers",
+    "categoryBreakdown": "Category breakdown",
+    "personDrivers": "Main drivers",
+    "rawRiskPoints": "Raw risk points",
+    "noDrivers": "No active risk drivers found.",
+    "answerYes": "Yes",
+    "answerNo": "No",
+    "answerPresent": "Present",
+    "years": "years",
+    "category": {
+      "medical": "Medical",
+      "dental": "Dental",
+      "lifestyle": "Lifestyle",
+      "insurance": "Insurance history",
+      "demographic": "Demographic",
+      "financial": "Financial"
+    },
+    "loadingTitle": "Loading report",
+    "loadingText": "We are checking the report link.",
+    "invalidTitle": "Report link unavailable",
+    "invalidText": "This report link is invalid, expired, or unavailable on this device."
   }
 }

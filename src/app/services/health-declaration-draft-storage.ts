@@ -2,9 +2,6 @@ export const HEALTH_DECLARATION_STORAGE_KEY = 'my-app-health-declaration';
 export const HEALTH_DECLARATION_STORAGE_VERSION = 1;
 export const HEALTH_DECLARATION_STORAGE_MAX_AGE_MS = 24 * 60 * 60 * 1000;
 
-export const HEALTH_DECLARATION_FILE_NAME = 'health-declaration.json';
-export const HEALTH_DECLARATION_QUESTION_ANSWERS_FILE_NAME = 'health-declaration-question-answers.json';
-
 type StoredDraftEnvelope = {
   version?: number;
   timestamp?: number;
@@ -44,13 +41,6 @@ export function writeHealthDeclarationDraft(data: unknown): void {
 export function clearHealthDeclarationDraft(): void {
   try {
     localStorage.removeItem(HEALTH_DECLARATION_STORAGE_KEY);
-  } catch {
-  }
-}
-
-export function writeHealthDeclarationSessionFile(fileName: string, json: string): void {
-  try {
-    sessionStorage.setItem(fileName, json);
   } catch {
   }
 }

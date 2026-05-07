@@ -287,12 +287,6 @@
       "doctorCityPlaceholder": "Zurich",
       "notesLabel": "Remarques particulières :"
     },
-    "review": {
-      "title": "Déclaration envoyée avec succès",
-      "messageLine1": "Merci. Votre déclaration de santé a bien été transmise.",
-      "messageLine2": "Les données ont été enregistrées dans la console du développeur.",
-      "backToStart": "Retour au début"
-    },
     "pregnancy": {
       "birthDateLabel": "Date prévue d'accouchement",
       "weightBeforeLabel": "Poids avant la grossesse",

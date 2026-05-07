@@ -1,14 +1,14 @@
 <app-questionnaire-topbar />
 
-<main class="app-content">
+<main class="app-content" [class.app-content--review]="declaration.reviewMode()">
   <div class="grid min-w-0">
-    <section
-      class="app-form-panel"
-      [class.border-[rgba(235,0,0,0.35)]]="validationAttempted()"
-    >
-      @if (declaration.reviewMode()) {
-        <app-review-panel (completed)="completeReview()" />
-      } @else {
+    @if (declaration.reviewMode()) {
+      <app-review-panel (completed)="completeReview()" />
+    } @else {
+      <section
+        class="app-form-panel"
+        [class.border-[rgba(235,0,0,0.35)]]="validationAttempted()"
+      >
         <form
           class="questionnaire grid min-w-0 gap-[0.65rem]"
           data-validation-scope="questionnaire"
@@ -17,8 +17,8 @@
           <app-medical-questions-section />
           <app-dental-questions-section />
         </form>
-      }
-    </section>
+      </section>
+    }
   </div>
 
   @if (!declaration.reviewMode()) {

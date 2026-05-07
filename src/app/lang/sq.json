@@ -287,12 +287,6 @@
       "doctorCityPlaceholder": "Cyrih",
       "notesLabel": "Vërejtje të veçanta:"
     },
-    "review": {
-      "title": "Deklarata u dërgua me sukses",
-      "messageLine1": "Faleminderit. Deklarata juaj shëndetësore u dërgua.",
-      "messageLine2": "Të dhënat u regjistruan në konsolën e zhvilluesit.",
-      "backToStart": "Kthehu në fillim"
-    },
     "pregnancy": {
       "birthDateLabel": "Data e pritshme e lindjes",
       "weightBeforeLabel": "Pesha para shtatzënisë",
@@ -387,6 +381,56 @@
   "review": {
     "completeTitle": "Pyetësori u përfundua",
     "completeText": "Deklarata juaj mjekësore dhe dentare është gati për kontroll.",
+    "emailLabel": "Emaili i pranuesit",
+    "emailPlaceholder": "emri@example.com",
+    "scopeLabel": "Raporti",
+    "allPeople": "Të gjithë personat",
+    "prepareEmail": "Dërgo raportin",
+    "sending": "Duke dërguar...",
+    "successTitle": "Gjithçka në rregull",
+    "successText": "Po e dërgojmë linkun e raportit te {{email}}.",
+    "emailServiceNotConfigured": "Shërbimi i email-it ende nuk është konfiguruar.",
+    "emailSendFailed": "Nuk mundëm ta dërgojmë email-in e raportit. Provo përsëri.",
+    "totalEstimate": "Kosto mujore e pritur në Zvicër",
+    "peopleCount": "Persona",
+    "healthScore": "Score shëndeti",
+    "riskScore": "Score rreziku",
+    "dentalLoad": "Ngarkesa dentare",
+    "positiveAnswers": "Përgjigje pozitive",
+    "diagnoses": "Diagnoza",
+    "month": "muaj",
+    "risk": {
+      "low": "I ulët",
+      "medium": "Mesatar",
+      "high": "I lartë",
+      "critical": "Kritik"
+    },
     "backToStart": "Kthehu në fillim"
+  },
+  "report": {
+    "eyebrow": "Dashboard mjekësor",
+    "title": "Raporti shëndetësor",
+    "subtitle": "Ky dashboard hapet nga linku i sigurt që dërgohet me email.",
+    "topDrivers": "Faktorët kryesorë të rrezikut",
+    "categoryBreakdown": "Ndarja sipas kategorive",
+    "personDrivers": "Faktorët kryesorë",
+    "rawRiskPoints": "Pikë rreziku bruto",
+    "noDrivers": "Nuk u gjetën faktorë aktivë rreziku.",
+    "answerYes": "Po",
+    "answerNo": "Jo",
+    "answerPresent": "E pranishme",
+    "years": "vjet",
+    "category": {
+      "medical": "Mjekësore",
+      "dental": "Dentare",
+      "lifestyle": "Stil jetese",
+      "insurance": "Histori sigurimi",
+      "demographic": "Demografike",
+      "financial": "Financiare"
+    },
+    "loadingTitle": "Raporti po hapet",
+    "loadingText": "Po e kontrollojmë linkun e raportit.",
+    "invalidTitle": "Linku i raportit nuk është i disponueshëm",
+    "invalidText": "Ky link raporti është i pavlefshëm, ka skaduar ose nuk është i disponueshëm në këtë pajisje."
   }
 }

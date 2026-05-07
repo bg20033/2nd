@@ -70,10 +70,34 @@ export class TranslationService {
         return stored;
       }
     } catch {
-      // Ignore storage read failures and fall back to the default language.
+      // Ignore storage read failures and continue with browser/default language.
+    }
+
+    const browserLanguage = this.browserLanguage();
+    if (browserLanguage) {
+      return browserLanguage;
     }
 
     return this.defaultLanguage;
+  }
+
+  private browserLanguage(): LanguageCode | null {
+    const languages = globalThis.navigator?.languages?.length
+      ? globalThis.navigator.languages
+      : [globalThis.navigator?.language].filter((language): language is string => !!language);
+
+    for (const language of languages) {
+      const normalized = language.toLowerCase();
+      const exact = normalized.split('-')[0];
+      if (this.isLanguageCode(normalized)) {
+        return normalized;
+      }
+      if (this.isLanguageCode(exact)) {
+        return exact;
+      }
+    }
+
+    return null;
   }
 
   private lookupValue(dictionary: TranslationDictionary, key: string): unknown {
