@@ -28,8 +28,6 @@ yarn-error.log
 !.vscode/extensions.json
 !.vscode/mcp.json
 .history/*
-
-# Miscellaneous
 /.angular/cache
 .sass-cache/
 /connect.lock
@@ -38,7 +36,5 @@ yarn-error.log
 testem.log
 /typings
 __screenshots__/
-
-# System files
 .DS_Store
 Thumbs.db
