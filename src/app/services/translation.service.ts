@@ -20,6 +20,7 @@ type TranslationPath = readonly string[];
 export class TranslationService {
   private readonly document = inject(DOCUMENT);
   private readonly keyPathCache = new Map<string, TranslationPath>();
+  private readonly translationCache = new Map<string, string>();
 
   readonly defaultLanguage = DEFAULT_LANGUAGE;
   readonly supportedLanguages = LANGUAGE_OPTIONS;
@@ -28,6 +29,7 @@ export class TranslationService {
   private readonly persistLanguageEffect = effect(() => {
     const language = this.language();
     this.document.documentElement.lang = language;
+    this.translationCache.clear();
 
     try {
       localStorage.setItem(LANGUAGE_STORAGE_KEY, language);
@@ -49,16 +51,26 @@ export class TranslationService {
   }
 
   languageLabel(language: LanguageCode): string {
-    const option = this.supportedLanguages.find((entry) => entry.code === language);
-    return option?.nativeLabel ?? language.toUpperCase();
+    return this.supportedLanguages.find((entry) => entry.code === language)?.nativeLabel ?? language.toUpperCase();
   }
 
   translate(key: string, params?: TranslationParams): string {
-    this.language();
+    const language = this.language();
+    const cacheKey = `${language}:${key}`;
+    if (!params) {
+      if (this.translationCache.has(cacheKey)) {
+        return this.translationCache.get(cacheKey) ?? key;
+      }
+    }
 
-    const current = this.lookupValue(TRANSLATION_DICTIONARIES[this.language()], key);
+    const current = this.lookupValue(TRANSLATION_DICTIONARIES[language], key);
     const fallback = this.lookupValue(TRANSLATION_DICTIONARIES[this.defaultLanguage], key);
     const text = typeof current === 'string' ? current : typeof fallback === 'string' ? fallback : key;
+
+    if (!params) {
+      this.translationCache.set(cacheKey, text);
+      return text;
+    }
 
     return this.interpolate(text, params);
   }
@@ -111,13 +123,12 @@ export class TranslationService {
   }
 
   private keyPath(key: string): TranslationPath {
-    const cached = this.keyPathCache.get(key);
-    if (cached) {
-      return cached;
+    let path = this.keyPathCache.get(key);
+    if (!path) {
+      path = key.split('.');
+      this.keyPathCache.set(key, path);
     }
 
-    const path = key.split('.');
-    this.keyPathCache.set(key, path);
     return path;
   }
 

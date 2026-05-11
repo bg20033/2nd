@@ -26,7 +26,7 @@ export function buildQuestionAnswerFile(submittedAt: string, people: SubmissionP
 }
 
 function appendQuestionAnswers(rows: QuestionAnswerRow[], value: unknown, prefix = ''): void {
-  if (typeof value !== 'object' || value === null || Array.isArray(value)) {
+  if (!isPlainObject(value)) {
     return;
   }
 
@@ -51,13 +51,7 @@ function appendAnswerValue(rows: QuestionAnswerRow[], path: string, answer: unkn
   }
 
   if (Array.isArray(answer)) {
-    let hasRecordItems = false;
-    for (const item of answer) {
-      if (typeof item === 'object' && item !== null && !Array.isArray(item)) {
-        hasRecordItems = true;
-        break;
-      }
-    }
+    const hasRecordItems = answer.some(isPlainObject);
 
     if (!hasRecordItems) {
       rows.push([questionLabel(path), answer]);
@@ -66,14 +60,14 @@ function appendAnswerValue(rows: QuestionAnswerRow[], path: string, answer: unkn
 
     for (let index = 0; index < answer.length; index += 1) {
       const item = answer[index];
-      if (typeof item === 'object' && item !== null && !Array.isArray(item)) {
+      if (isPlainObject(item)) {
         appendQuestionAnswers(rows, item, `${path}.${index + 1}`);
       }
     }
     return;
   }
 
-  if (typeof answer === 'object' && answer !== null) {
+  if (isPlainObject(answer)) {
     appendQuestionAnswers(rows, answer, path);
     return;
   }
@@ -120,10 +114,13 @@ function isBlankAnswer(answer: unknown): boolean {
 }
 
 function isOptionValue(answer: unknown): answer is OptionValue {
-  if (typeof answer !== 'object' || answer === null || Array.isArray(answer)) {
+  if (!isPlainObject(answer)) {
     return false;
   }
 
-  const record = answer as Record<string, unknown>;
-  return typeof record['label'] === 'string' && 'value' in record;
+  return typeof answer['label'] === 'string' && 'value' in answer;
+}
+
+function isPlainObject(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
 }

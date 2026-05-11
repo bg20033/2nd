@@ -46,6 +46,12 @@ const SEVERITY_COLORS: Record<ReviewRiskSeverity, string> = {
   critical: '#d81837',
 };
 
+const CHART_TEXT_COLOR = '#706876';
+const CHART_GRID_COLOR = 'rgba(202, 186, 220, 0.45)';
+const CHART_TOOLTIP_BACKGROUND = '#1d1426';
+const CHART_WHITE = '#ffffff';
+const CHART_LABEL_FONT = { size: 11 } as const;
+
 @Component({
   selector: 'app-report-charts',
   standalone: true,
@@ -93,89 +99,91 @@ const SEVERITY_COLORS: Record<ReviewRiskSeverity, string> = {
       </article>
     </section>
   `,
-  styles: [`
-    :host {
-      display: block;
-      min-width: 0;
-    }
-
-    .report-chart-grid {
-      display: grid;
-      grid-template-columns: minmax(17rem, 0.82fr) minmax(0, 1.18fr);
-      gap: 0.85rem;
-      min-width: 0;
-    }
-
-    .report-chart-card {
-      display: grid;
-      gap: 0.75rem;
-      min-width: 0;
-      padding: 0.9rem;
-      border: 1px solid rgba(202, 186, 220, 0.78);
-      border-radius: 0.75rem;
-      background: rgba(255, 255, 255, 0.88);
-      box-shadow: 0 12px 26px rgba(47, 37, 73, 0.06);
-    }
-
-    .report-chart-card--wide {
-      min-height: 17rem;
-    }
-
-    .report-chart-card__head {
-      display: flex;
-      align-items: start;
-      justify-content: space-between;
-      gap: 0.75rem;
-      min-width: 0;
-    }
-
-    .report-chart-card__head span {
-      color: #706876;
-      font-size: 12px;
-      line-height: 1.2;
-    }
-
-    .report-chart-card__head strong {
-      max-width: 11rem;
-      overflow-wrap: anywhere;
-      color: #1d1426;
-      font-size: 16px;
-      font-weight: 800;
-      line-height: 1.15;
-      text-align: right;
-    }
-
-    .report-chart-wrap {
-      position: relative;
-      min-width: 0;
-      height: 14rem;
-    }
-
-    @media (max-width: 860px) {
-      .report-chart-grid {
-        grid-template-columns: 1fr;
+  styles: [
+    `
+      :host {
+        display: block;
+        min-width: 0;
       }
-    }
 
-    @media (max-width: 560px) {
+      .report-chart-grid {
+        display: grid;
+        grid-template-columns: minmax(17rem, 0.82fr) minmax(0, 1.18fr);
+        gap: 0.85rem;
+        min-width: 0;
+      }
+
       .report-chart-card {
-        padding: 0.75rem;
+        display: grid;
+        gap: 0.75rem;
+        min-width: 0;
+        padding: 0.9rem;
+        border: 1px solid rgba(202, 186, 220, 0.78);
+        border-radius: 0.75rem;
+        background: rgba(255, 255, 255, 0.88);
+        box-shadow: 0 12px 26px rgba(47, 37, 73, 0.06);
+      }
+
+      .report-chart-card--wide {
+        min-height: 17rem;
       }
 
       .report-chart-card__head {
-        display: grid;
+        display: flex;
+        align-items: start;
+        justify-content: space-between;
+        gap: 0.75rem;
+        min-width: 0;
+      }
+
+      .report-chart-card__head span {
+        color: #706876;
+        font-size: 12px;
+        line-height: 1.2;
       }
 
       .report-chart-card__head strong {
-        max-width: none;
-        text-align: left;
+        max-width: 11rem;
+        overflow-wrap: anywhere;
+        color: #1d1426;
+        font-size: 16px;
+        font-weight: 800;
+        line-height: 1.15;
+        text-align: right;
       }
 
       .report-chart-wrap {
-        height: 13rem;
+        position: relative;
+        min-width: 0;
+        height: 14rem;
       }
-    }
-  `],
+
+      @media (max-width: 860px) {
+        .report-chart-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 560px) {
+        .report-chart-card {
+          padding: 0.75rem;
+        }
+
+        .report-chart-card__head {
+          display: grid;
+        }
+
+        .report-chart-card__head strong {
+          max-width: none;
+          text-align: left;
+        }
+
+        .report-chart-wrap {
+          height: 13rem;
+        }
+      }
+    `,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ReportChartsComponent implements AfterViewInit, OnChanges, OnDestroy {
@@ -227,29 +235,32 @@ export class ReportChartsComponent implements AfterViewInit, OnChanges, OnDestro
 
   private categoryConfig(): ChartConfiguration<'doughnut', number[], string> {
     const entries = this.categoryEntries();
+    const options = this.doughnutOptions();
 
     return {
       type: 'doughnut',
       data: {
         labels: entries.map((entry) => entry.label),
-        datasets: [{
-          data: entries.map((entry) => entry.value),
-          backgroundColor: entries.map((entry) => entry.color),
-          borderColor: '#ffffff',
-          borderWidth: 3,
-          hoverOffset: 6,
-        }],
+        datasets: [
+          {
+            data: entries.map((entry) => entry.value),
+            backgroundColor: entries.map((entry) => entry.color),
+            borderColor: '#ffffff',
+            borderWidth: 3,
+            hoverOffset: 6,
+          },
+        ],
       },
       options: {
-        ...this.doughnutOptions(),
+        ...options,
         plugins: {
-          ...this.doughnutOptions().plugins,
+          ...options.plugins,
           legend: {
             position: 'bottom',
             labels: {
               boxWidth: 10,
-              color: '#706876',
-              font: { size: 11 },
+              color: CHART_TEXT_COLOR,
+              font: CHART_LABEL_FONT,
             },
           },
         },
@@ -292,23 +303,29 @@ export class ReportChartsComponent implements AfterViewInit, OnChanges, OnDestro
   private driversConfig(): ChartConfiguration<'bar', number[], string> {
     const drivers = this.dashboard.totals.topDrivers.slice(0, 8);
     const chartDrivers = drivers.length ? drivers : [this.emptyDriver()];
+    const options = this.barOptions(
+      Math.max(30, ...chartDrivers.map((driver) => driver.points)),
+      true,
+    );
 
     return {
       type: 'bar',
       data: {
         labels: chartDrivers.map((driver) => this.shortLabel(driver.questionLabel)),
-        datasets: [{
-          label: this.i18n.translate('report.rawRiskPoints'),
-          data: chartDrivers.map((driver) => driver.points),
-          backgroundColor: chartDrivers.map((driver) => SEVERITY_COLORS[driver.severity]),
-          borderRadius: 8,
-        }],
+        datasets: [
+          {
+            label: this.i18n.translate('report.rawRiskPoints'),
+            data: chartDrivers.map((driver) => driver.points),
+            backgroundColor: chartDrivers.map((driver) => SEVERITY_COLORS[driver.severity]),
+            borderRadius: 8,
+          },
+        ],
       },
       options: {
-        ...this.barOptions(Math.max(30, ...chartDrivers.map((driver) => driver.points)), true),
+        ...options,
         indexAxis: 'y',
         plugins: {
-          ...this.barOptions().plugins,
+          ...options.plugins,
           legend: { display: false },
         },
       },
@@ -317,6 +334,7 @@ export class ReportChartsComponent implements AfterViewInit, OnChanges, OnDestro
 
   private costConfig(): ChartConfiguration<'bar', number[], string> {
     const people = this.dashboard.people;
+    const options = this.barOptions();
 
     return {
       type: 'bar',
@@ -338,18 +356,18 @@ export class ReportChartsComponent implements AfterViewInit, OnChanges, OnDestro
         ],
       },
       options: {
-        ...this.barOptions(),
+        ...options,
         scales: {
           x: {
             grid: { display: false },
-            ticks: { color: '#706876', font: { size: 11 } },
+            ticks: { color: CHART_TEXT_COLOR, font: CHART_LABEL_FONT },
           },
           y: {
             beginAtZero: true,
-            grid: { color: 'rgba(202, 186, 220, 0.45)' },
+            grid: { color: CHART_GRID_COLOR },
             ticks: {
-              color: '#706876',
-              font: { size: 11 },
+              color: CHART_TEXT_COLOR,
+              font: CHART_LABEL_FONT,
               callback: (value) => `CHF ${value}`,
             },
           },
@@ -370,15 +388,15 @@ export class ReportChartsComponent implements AfterViewInit, OnChanges, OnDestro
       plugins: {
         legend: {
           labels: {
-            color: '#706876',
+            color: CHART_TEXT_COLOR,
             boxWidth: 10,
-            font: { size: 11 },
+            font: CHART_LABEL_FONT,
           },
         },
         tooltip: {
-          backgroundColor: '#1d1426',
-          titleColor: '#ffffff',
-          bodyColor: '#ffffff',
+          backgroundColor: CHART_TOOLTIP_BACKGROUND,
+          titleColor: CHART_WHITE,
+          bodyColor: CHART_WHITE,
           padding: 10,
           displayColors: true,
         },
@@ -397,15 +415,15 @@ export class ReportChartsComponent implements AfterViewInit, OnChanges, OnDestro
       plugins: {
         legend: {
           labels: {
-            color: '#706876',
+            color: CHART_TEXT_COLOR,
             boxWidth: 10,
-            font: { size: 11 },
+            font: CHART_LABEL_FONT,
           },
         },
         tooltip: {
-          backgroundColor: '#1d1426',
-          titleColor: '#ffffff',
-          bodyColor: '#ffffff',
+          backgroundColor: CHART_TOOLTIP_BACKGROUND,
+          titleColor: CHART_WHITE,
+          bodyColor: CHART_WHITE,
           padding: 10,
           displayColors: true,
         },
@@ -418,13 +436,13 @@ export class ReportChartsComponent implements AfterViewInit, OnChanges, OnDestro
     return {
       x: {
         grid: { display: false },
-        ticks: { color: '#706876', font: { size: 11 } },
+        ticks: { color: CHART_TEXT_COLOR, font: CHART_LABEL_FONT },
       },
       y: {
         beginAtZero: true,
         max,
-        grid: { color: 'rgba(202, 186, 220, 0.45)' },
-        ticks: { color: '#706876', font: { size: 11 } },
+        grid: { color: CHART_GRID_COLOR },
+        ticks: { color: CHART_TEXT_COLOR, font: CHART_LABEL_FONT },
       },
     };
   }
@@ -434,28 +452,32 @@ export class ReportChartsComponent implements AfterViewInit, OnChanges, OnDestro
       x: {
         beginAtZero: true,
         max,
-        grid: { color: 'rgba(202, 186, 220, 0.45)' },
-        ticks: { color: '#706876', font: { size: 11 } },
+        grid: { color: CHART_GRID_COLOR },
+        ticks: { color: CHART_TEXT_COLOR, font: CHART_LABEL_FONT },
       },
       y: {
         grid: { display: false },
-        ticks: { color: '#706876', font: { size: 11 } },
+        ticks: { color: CHART_TEXT_COLOR, font: CHART_LABEL_FONT },
       },
     };
   }
 
   private categoryEntries(): CategoryChartEntry[] {
-    const entries = (Object.entries(this.dashboard.totals.categoryScores) as Array<[ReviewRiskCategory, number]>)
+    const entries = (
+      Object.entries(this.dashboard.totals.categoryScores) as Array<[ReviewRiskCategory, number]>
+    )
       .filter(([, value]) => value > 0)
       .sort(([, a], [, b]) => b - a);
 
     if (entries.length === 0) {
-      return [{
-        category: 'medical',
-        label: this.i18n.translate('report.noDrivers'),
-        value: 1,
-        color: '#cabadc',
-      }];
+      return [
+        {
+          category: 'medical',
+          label: this.i18n.translate('report.noDrivers'),
+          value: 1,
+          color: '#cabadc',
+        },
+      ];
     }
 
     return entries.map(([category, value]) => ({

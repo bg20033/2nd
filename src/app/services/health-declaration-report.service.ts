@@ -1,10 +1,7 @@
 import { Injectable, InjectionToken, inject } from '@angular/core';
 
 import { HealthDeclarationFormService } from './health-declaration-form.service';
-import type {
-  ReviewDashboard,
-  ReviewPersonScope,
-} from './health-declaration-report.types';
+import type { ReviewDashboard, ReviewPersonScope } from './health-declaration-report.types';
 
 export const GOOGLE_APPS_SCRIPT_REPORT_WEBHOOK_URL = new InjectionToken<string>(
   'GOOGLE_APPS_SCRIPT_REPORT_WEBHOOK_URL',
@@ -33,6 +30,7 @@ type JsonpCallback = (value: HealthDeclarationReportPayload | ReviewDashboard | 
 const REPORT_STORAGE_PREFIX = 'healthDeclarationReport:';
 const REPORT_LOOKUP_TIMEOUT_MS = 18000;
 const REPORT_LOOKUP_RETRY_MS = 900;
+const JSONP_TIMEOUT_MS = 12000;
 
 @Injectable({ providedIn: 'root' })
 export class HealthDeclarationReportService {
@@ -57,7 +55,10 @@ export class HealthDeclarationReportService {
     };
   }
 
-  async sendReportEmail(recipientEmail: string, scope: ReviewPersonScope): Promise<HealthDeclarationReportPayload> {
+  async sendReportEmail(
+    recipientEmail: string,
+    scope: ReviewPersonScope,
+  ): Promise<HealthDeclarationReportPayload> {
     if (!this.webhookUrl.trim()) {
       throw new Error('GOOGLE_APPS_SCRIPT_REPORT_WEBHOOK_URL is not configured.');
     }
@@ -68,8 +69,11 @@ export class HealthDeclarationReportService {
     }
 
     await this.postToAppsScript(payload);
-    this.storeReportPayload(payload);
-    await this.verifyRemoteReport(payload.reportToken);
+    if (this.lookupEndpointUrl()) {
+      await this.verifyRemoteReport(payload.reportToken);
+    } else {
+      this.storeReportPayload(payload);
+    }
     return payload;
   }
 
@@ -104,40 +108,41 @@ export class HealthDeclarationReportService {
     const json = JSON.stringify(payload);
 
     try {
-      localStorage.setItem(`${REPORT_STORAGE_PREFIX}${payload.reportToken}`, json);
-    } catch {
-      // Local storage can be unavailable in private browsing or tests.
-    }
-
-    try {
-      sessionStorage.setItem(`${REPORT_STORAGE_PREFIX}${payload.reportToken}`, json);
+      this.sessionStorage()?.setItem(`${REPORT_STORAGE_PREFIX}${payload.reportToken}`, json);
     } catch {
       // Session storage can be unavailable in private browsing or tests.
     }
   }
 
   private readReportPayload(token: string): HealthDeclarationReportPayload | null {
-    const key = `${REPORT_STORAGE_PREFIX}${token}`;
-
-    const localPayload = this.readStoredPayload(localStorage, key, token);
-    if (localPayload) {
-      return localPayload;
+    const storage = this.sessionStorage();
+    if (!storage) {
+      return null;
     }
 
-    return this.readStoredPayload(sessionStorage, key, token);
-  }
-
-  private readStoredPayload(storage: Storage, key: string, token: string): HealthDeclarationReportPayload | null {
+    const key = `${REPORT_STORAGE_PREFIX}${token}`;
     try {
       const stored = storage.getItem(key);
       if (!stored) {
         return null;
       }
 
-      const parsed = JSON.parse(stored) as HealthDeclarationReportPayload;
-      return parsed?.reportToken === token ? parsed : null;
+      const parsed = JSON.parse(stored) as Partial<HealthDeclarationReportPayload> | null;
+      if (!parsed || typeof parsed !== 'object' || parsed.reportToken !== token) {
+        return null;
+      }
+
+      return parsed as HealthDeclarationReportPayload;
     } catch {
       return null;
+    }
+  }
+
+  private sessionStorage(): Storage | undefined {
+    try {
+      return globalThis.sessionStorage;
+    } catch {
+      return undefined;
     }
   }
 
@@ -173,7 +178,9 @@ export class HealthDeclarationReportService {
     });
   }
 
-  private fetchJsonpReport(token: string): Promise<HealthDeclarationReportPayload | ReviewDashboard | null> {
+  private fetchJsonpReport(
+    token: string,
+  ): Promise<HealthDeclarationReportPayload | ReviewDashboard | null> {
     const callbackName = `healthDeclarationReport_${Date.now()}_${Math.random().toString(36).slice(2)}`;
     const url = new URL(this.lookupEndpoint(token));
     url.searchParams.set('callback', callbackName);
@@ -183,7 +190,7 @@ export class HealthDeclarationReportService {
       const timeout = window.setTimeout(() => {
         cleanup();
         reject(new Error('Report lookup timed out.'));
-      }, 12000);
+      }, JSONP_TIMEOUT_MS);
 
       const cleanup = () => {
         window.clearTimeout(timeout);
@@ -247,7 +254,12 @@ export class HealthDeclarationReportService {
   }
 
   private payloadToDashboard(payload: HealthDeclarationReportPayload): ReviewDashboard {
-    const { reportToken: _reportToken, reportUrl: _reportUrl, submittedAt: _submittedAt, ...dashboard } = payload;
+    const {
+      reportToken: _reportToken,
+      reportUrl: _reportUrl,
+      submittedAt: _submittedAt,
+      ...dashboard
+    } = payload;
     return dashboard;
   }
 

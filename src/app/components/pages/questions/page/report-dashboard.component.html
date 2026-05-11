@@ -1,0 +1,155 @@
+<section class="report-dashboard" aria-labelledby="report-title">
+  <div class="report-hero">
+    <div class="report-hero__copy">
+      <span class="report-eyebrow">{{ 'report.eyebrow' | t }}</span>
+      <h2 id="report-title">{{ 'report.title' | t }}</h2>
+      <p>{{ 'report.subtitle' | t }}</p>
+    </div>
+
+    <div class="report-hero__estimate">
+      <span>{{ 'review.totalEstimate' | t }}</span>
+      <strong>{{ dashboard.totals.monthlyLabel }}</strong>
+    </div>
+  </div>
+
+  <div class="report-donuts" aria-label="Report score charts">
+    @for (metric of donutMetrics(); track metric.labelKey) {
+      <article [class]="'report-donut-card report-donut-card--' + metric.tone">
+        <div
+          class="report-donut"
+          [style.background]="donutBackground(metric.value, metric.tone)"
+          aria-hidden="true"
+        >
+          <span>{{ metric.value }}</span>
+        </div>
+        <div>
+          <span>{{ metric.labelKey | t }}</span>
+          <strong>{{ metric.value }}/100</strong>
+        </div>
+      </article>
+    }
+  </div>
+
+  <app-report-charts [dashboard]="dashboard" />
+
+  <div class="report-grid">
+    <article class="report-panel report-panel--drivers">
+      <div class="report-panel__head">
+        <span>{{ 'report.topDrivers' | t }}</span>
+        <strong>{{ dashboard.totals.rawRiskPoints }}</strong>
+      </div>
+
+      <div class="report-driver-list report-scroll-list">
+        @for (
+          driver of dashboard.totals.topDrivers;
+          track driver.id + driver.rank + (driver.personId ?? '')
+        ) {
+          <div [class]="'report-driver report-driver--' + driver.severity">
+            <span class="report-driver__rank">{{ driver.rank }}</span>
+            <div class="report-driver__body">
+              <div class="report-driver__top">
+                <strong>{{ driver.questionLabel }}</strong>
+                <span [class]="driverSeverityClass(driver)">{{ driver.points }}</span>
+              </div>
+              <p>{{ driver.answerLabel }}</p>
+              @if (driver.personLabel) {
+                <small
+                  >{{ driver.personLabel }} / {{ 'report.category.' + driver.category | t }}</small
+                >
+              } @else {
+                <small>{{ 'report.category.' + driver.category | t }}</small>
+              }
+            </div>
+          </div>
+        } @empty {
+          <p class="report-empty-copy">{{ 'report.noDrivers' | t }}</p>
+        }
+      </div>
+    </article>
+
+    <article class="report-panel">
+      <div class="report-panel__head">
+        <span>{{ 'report.categoryBreakdown' | t }}</span>
+        <strong>{{ dashboard.totals.rawRiskPoints }}</strong>
+      </div>
+
+      <div class="report-category-list">
+        @for (entry of categoryEntries(dashboard.totals.categoryScores); track entry.category) {
+          <div class="report-category">
+            <div class="report-category__label">
+              <span>{{ 'report.category.' + entry.category | t }}</span>
+              <strong>{{ entry.value }}</strong>
+            </div>
+            <div class="report-category__track">
+              <div
+                [class]="categoryBarClass(entry.category)"
+                [style.width]="entry.percent + '%'"
+              ></div>
+            </div>
+          </div>
+        }
+      </div>
+    </article>
+  </div>
+
+  <div class="report-people report-scroll-list">
+    @for (person of dashboard.people; track person.id) {
+      <article [class]="'report-person report-person--' + person.riskLevel">
+        <div class="report-person__head">
+          <div>
+            <h3>{{ person.label }}</h3>
+            <p>
+              {{ person.gender || ('genderOther' | t) }} / {{ person.birthYear }} /
+              {{ person.estimatedMonthlyLabel }}
+            </p>
+          </div>
+          <span [class]="riskClass(person)">{{ 'review.risk.' + person.riskLevel | t }}</span>
+        </div>
+
+        <div class="report-person__body">
+          <div class="report-mini-donuts">
+            @for (metric of personDonutMetrics(person); track metric.labelKey) {
+              <div class="report-mini">
+                <div
+                  class="report-mini__chart"
+                  [style.background]="donutBackground(metric.value, metric.tone)"
+                >
+                  <span>{{ metric.value }}</span>
+                </div>
+                <small>{{ metric.labelKey | t }}</small>
+              </div>
+            }
+          </div>
+
+          <div class="report-person__drivers">
+            <span>{{ 'report.personDrivers' | t }}</span>
+            @for (driver of person.topDrivers.slice(0, 3); track driver.id) {
+              <div class="report-person-driver">
+                <strong>{{ driver.questionLabel }}</strong>
+                <span>{{ driver.points }}</span>
+                <small>{{ driver.answerLabel }}</small>
+              </div>
+            } @empty {
+              <p class="report-empty-copy">{{ 'report.noDrivers' | t }}</p>
+            }
+          </div>
+        </div>
+
+        <div class="report-person__metrics">
+          <div>
+            <span>{{ 'review.positiveAnswers' | t }}</span>
+            <strong>{{ person.positiveAnswers }}</strong>
+          </div>
+          <div>
+            <span>{{ 'review.diagnoses' | t }}</span>
+            <strong>{{ person.diagnosisCount }}</strong>
+          </div>
+          <div>
+            <span>{{ 'report.rawRiskPoints' | t }}</span>
+            <strong>{{ person.rawRiskPoints }}</strong>
+          </div>
+        </div>
+      </article>
+    }
+  </div>
+</section>

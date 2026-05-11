@@ -7,9 +7,18 @@ type StoredDraftEnvelope = {
   timestamp?: number;
 };
 
-export function readHealthDeclarationDraft<T extends StoredDraftEnvelope>(): T | null {
+function safeLocalStorage<T>(operation: (storage: Storage) => T, fallback: T): T {
   try {
-    const stored = localStorage.getItem(HEALTH_DECLARATION_STORAGE_KEY);
+    return operation(globalThis.localStorage);
+  } catch {
+    return fallback;
+  }
+}
+
+export function readHealthDeclarationDraft<T extends StoredDraftEnvelope>(): T | null {
+  const stored = safeLocalStorage((storage) => storage.getItem(HEALTH_DECLARATION_STORAGE_KEY), null);
+
+  try {
     if (!stored) {
       return null;
     }
@@ -32,15 +41,9 @@ export function readHealthDeclarationDraft<T extends StoredDraftEnvelope>(): T |
 }
 
 export function writeHealthDeclarationDraft(data: unknown): void {
-  try {
-    localStorage.setItem(HEALTH_DECLARATION_STORAGE_KEY, JSON.stringify(data));
-  } catch {
-  }
+  safeLocalStorage((storage) => storage.setItem(HEALTH_DECLARATION_STORAGE_KEY, JSON.stringify(data)), undefined);
 }
 
 export function clearHealthDeclarationDraft(): void {
-  try {
-    localStorage.removeItem(HEALTH_DECLARATION_STORAGE_KEY);
-  } catch {
-  }
+  safeLocalStorage((storage) => storage.removeItem(HEALTH_DECLARATION_STORAGE_KEY), undefined);
 }

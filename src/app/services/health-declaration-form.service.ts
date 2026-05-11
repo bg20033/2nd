@@ -21,15 +21,7 @@ import {
   readHealthDeclarationDraft,
   writeHealthDeclarationDraft,
 } from './health-declaration-draft-storage';
-import {
-  buildQuestionAnswerFile,
-} from './health-declaration-submission';
-import {
-  buildReviewDashboardPerson,
-  formatChfRange,
-  mergeCategoryScores,
-  rankDrivers,
-} from './health-declaration-scoring';
+import { buildReviewDashboard } from './health-declaration-report-builder';
 import type {
   PersonGender,
   ReviewDashboard,
@@ -39,9 +31,7 @@ import type {
 
 export type PersonStepStatus = PersonStepStatusValue;
 export type FinalizePersonResult = 'invalid' | 'advanced' | 'review';
-export type {
-  PersonGender,
-} from './health-declaration-report.types';
+export type { PersonGender } from './health-declaration-report.types';
 
 export type PersonControls = {
   id: FormControl<string>;
@@ -108,15 +98,16 @@ export class HealthDeclarationFormService {
   private nextPersonId = 1;
   private readonly questionnaireServices = new Map<string, QuestionnaireFormService>();
   private readonly storedQuestionnaires = new Map<string, unknown>();
-  private readonly questionnaireSubscriptions = new Map<string, ReturnType<QuestionnaireFormService['form']['valueChanges']['subscribe']>>();
+  private readonly questionnaireSubscriptions = new Map<
+    string,
+    ReturnType<QuestionnaireFormService['form']['valueChanges']['subscribe']>
+  >();
   private readonly syncedApplicantGenders = new Map<string, PersonGender>();
-  private activeQuestionnaireCache:
-    | {
-        index: number;
-        id: string;
-        service: QuestionnaireFormService;
-      }
-    | null = null;
+  private activeQuestionnaireCache: {
+    index: number;
+    id: string;
+    service: QuestionnaireFormService;
+  } | null = null;
   private restoring = false;
 
   constructor() {
@@ -126,12 +117,8 @@ export class HealthDeclarationFormService {
       this.peopleArray.push(this.createPerson());
     }
 
-    this.peopleArray.valueChanges
-      .pipe(auditTime(250))
-      .subscribe(() => this.syncPeopleState());
-    this.peopleArray.statusChanges
-      .pipe(auditTime(250))
-      .subscribe(() => this.bumpPeopleVersion());
+    this.peopleArray.valueChanges.pipe(auditTime(250)).subscribe(() => this.syncPeopleState());
+    this.peopleArray.statusChanges.pipe(auditTime(250)).subscribe(() => this.bumpPeopleVersion());
   }
 
   startNewDeclaration(): void {
@@ -184,7 +171,9 @@ export class HealthDeclarationFormService {
 
     const nextCurrentIndex = Math.min(this.currentPersonIndex(), this.peopleArray.length - 1);
     this.currentPersonIndex.set(Math.max(0, nextCurrentIndex));
-    this.highestReachedPersonIndex.set(Math.min(this.highestReachedPersonIndex(), this.peopleArray.length - 1));
+    this.highestReachedPersonIndex.set(
+      Math.min(this.highestReachedPersonIndex(), this.peopleArray.length - 1),
+    );
     this.reviewMode.set(false);
     this.syncPeopleState();
   }
@@ -210,7 +199,11 @@ export class HealthDeclarationFormService {
   }
 
   familySetupValid(): boolean {
-    return this.familyLocation() !== null && this.peopleArray.length > 0 && this.peopleArray.controls.every((person) => person.valid);
+    return (
+      this.familyLocation() !== null &&
+      this.peopleArray.length > 0 &&
+      this.peopleArray.controls.every((person) => person.valid)
+    );
   }
 
   markFamilySetupTouched(): void {
@@ -259,7 +252,9 @@ export class HealthDeclarationFormService {
       return PersonStepStatusEnum.Active;
     }
 
-    return this.isPersonCompleted(index) ? PersonStepStatusEnum.Completed : PersonStepStatusEnum.Inactive;
+    return this.isPersonCompleted(index)
+      ? PersonStepStatusEnum.Completed
+      : PersonStepStatusEnum.Inactive;
   }
 
   activePerson(): PersonGroup {
@@ -298,7 +293,9 @@ export class HealthDeclarationFormService {
       this.questionnaireServices.set(id, questionnaire);
       this.questionnaireSubscriptions.set(
         id,
-        questionnaire.form.valueChanges.pipe(auditTime(120)).subscribe(() => this.syncPeopleState()),
+        questionnaire.form.valueChanges
+          .pipe(auditTime(120))
+          .subscribe(() => this.syncPeopleState()),
       );
     }
 
@@ -337,7 +334,9 @@ export class HealthDeclarationFormService {
   }
 
   allPeopleCompleted(): boolean {
-    return this.peopleArray.length > 0 && this.completedPersonIds().size === this.peopleArray.length;
+    return (
+      this.peopleArray.length > 0 && this.completedPersonIds().size === this.peopleArray.length
+    );
   }
 
   enterReviewMode(): void {
@@ -383,53 +382,13 @@ export class HealthDeclarationFormService {
   reviewDashboard(scope: ReviewPersonScope = 'all', recipientEmail = ''): ReviewDashboard {
     this.peopleVersion();
 
-    const generatedAt = new Date().toISOString();
-    const people = this.snapshotPeople();
-    const answerRows = buildQuestionAnswerFile(generatedAt, people);
-    const selectedPeople = people
-      .map((person, index) => ({ person, index }))
-      .filter(({ person }) => scope === 'all' || person.id === scope);
-    const translate = this.translateForReport();
-    const reports = selectedPeople.map(({ person, index }) =>
-      buildReviewDashboardPerson(person, index, answerRows[index] ?? [], translate),
-    );
-
-    const averageHealthScore = this.average(reports.map((person) => person.healthScore));
-    const averageRiskScore = this.average(reports.map((person) => person.riskScore));
-    const averageDentalLoad = this.average(reports.map((person) => person.dentalLoad));
-    const rawRiskPoints = reports.reduce((sum, person) => sum + person.rawRiskPoints, 0);
-    const monthlyMinChf = reports.reduce((sum, person) => sum + person.estimatedMonthlyMinChf, 0);
-    const monthlyMaxChf = reports.reduce((sum, person) => sum + person.estimatedMonthlyMaxChf, 0);
-    const categoryScores = mergeCategoryScores(reports.map((person) => person.categoryScores));
-    const topDrivers = rankDrivers(
-      reports.flatMap((person) =>
-        person.topDrivers.map((driver) => ({
-          ...driver,
-          personId: person.id,
-          personLabel: person.label,
-        })),
-      ),
-    ).slice(0, 8);
-
-    return {
-      generatedAt,
+    return buildReviewDashboard({
+      people: this.snapshotPeople(),
+      familyLocation: this.familyLocation(),
+      translate: this.translateForReport(),
       recipientEmail,
       scope,
-      familyLocation: this.familyLocation(),
-      people: reports,
-      totals: {
-        people: reports.length,
-        averageHealthScore,
-        averageRiskScore,
-        averageDentalLoad,
-        rawRiskPoints,
-        monthlyMinChf,
-        monthlyMaxChf,
-        monthlyLabel: formatChfRange(monthlyMinChf, monthlyMaxChf, translate),
-        categoryScores,
-        topDrivers,
-      },
-    };
+    });
   }
 
   avatarSrc(person: PersonGroup): string {
@@ -443,19 +402,16 @@ export class HealthDeclarationFormService {
       return AVATAR_ASSETS[ageBand];
     }
 
-    return AVATAR_ASSETS[ageBand][gender === PersonGenderEnum.Female ? PersonGenderEnum.Female : PersonGenderEnum.Male];
+    return AVATAR_ASSETS[ageBand][
+      gender === PersonGenderEnum.Female ? PersonGenderEnum.Female : PersonGenderEnum.Male
+    ];
   }
 
-  private translateForReport(): (key: string, params?: Record<string, string | number | null | undefined>) => string {
+  private translateForReport(): (
+    key: string,
+    params?: Record<string, string | number | null | undefined>,
+  ) => string {
     return (key, params) => this.i18n.translate(key, params);
-  }
-
-  private average(values: number[]): number {
-    if (values.length === 0) {
-      return 0;
-    }
-
-    return Math.round(values.reduce((sum, value) => sum + value, 0) / values.length);
   }
 
   private avatarAgeBand(gender: PersonGender, age: number | null): AvatarAgeBand {
@@ -480,7 +436,10 @@ export class HealthDeclarationFormService {
       {
         id: new FormControl(id, { nonNullable: true }),
         completed: new FormControl(data?.completed ?? false, { nonNullable: true }),
-        gender: new FormControl<PersonGender>(data?.gender ?? PersonGenderEnum.Unknown, { nonNullable: true, validators: [Validators.required] }),
+        gender: new FormControl<PersonGender>(data?.gender ?? PersonGenderEnum.Unknown, {
+          nonNullable: true,
+          validators: [Validators.required],
+        }),
         birthYear: new FormControl(data?.birthYear ?? '', {
           nonNullable: true,
           validators: [Validators.required, Validators.pattern(/^\d{4}$/), this.birthYearValidator],
@@ -496,7 +455,9 @@ export class HealthDeclarationFormService {
     return id;
   }
 
-  private birthYearValidator(control: AbstractControl<string>): { [ValidationErrorKey.BirthYear]: true } | null {
+  private birthYearValidator(
+    control: AbstractControl<string>,
+  ): { [ValidationErrorKey.BirthYear]: true } | null {
     const value = control.value.trim();
     if (!/^\d{4}$/.test(value)) {
       return { [ValidationErrorKey.BirthYear]: true };
@@ -510,17 +471,27 @@ export class HealthDeclarationFormService {
   private babyAgeValidator(group: AbstractControl): { [ValidationErrorKey.BabyAge]: true } | null {
     const gender = group.get('gender')?.value;
     const rawYear = group.get('birthYear')?.value;
-    if (gender !== PersonGenderEnum.Baby || typeof rawYear !== 'string' || !/^\d{4}$/.test(rawYear.trim())) {
+    if (
+      gender !== PersonGenderEnum.Baby ||
+      typeof rawYear !== 'string' ||
+      !/^\d{4}$/.test(rawYear.trim())
+    ) {
       return null;
     }
 
     const year = Number(rawYear.trim());
     const currentYear = new Date().getFullYear();
     const allowedPreviousYear = new Date().getMonth() + 1 <= 9;
-    return year === currentYear || (allowedPreviousYear && year === currentYear - 1) ? null : { [ValidationErrorKey.BabyAge]: true };
+    return year === currentYear || (allowedPreviousYear && year === currentYear - 1)
+      ? null
+      : { [ValidationErrorKey.BabyAge]: true };
   }
 
-  private syncApplicantGender(id: string, questionnaire: QuestionnaireFormService, gender: PersonGender): void {
+  private syncApplicantGender(
+    id: string,
+    questionnaire: QuestionnaireFormService,
+    gender: PersonGender,
+  ): void {
     if (this.syncedApplicantGenders.get(id) === gender) {
       return;
     }
@@ -554,12 +525,16 @@ export class HealthDeclarationFormService {
       if (!diagnosis || typeof diagnosis !== 'object') {
         continue;
       }
-      const questionId = (diagnosis as Record<string, unknown>)['questionId'] as DiagnosisQuestionId | undefined;
+      const questionId = (diagnosis as Record<string, unknown>)['questionId'] as
+        | DiagnosisQuestionId
+        | undefined;
       if (!questionId) {
         continue;
       }
       const entry = questionnaire.addDiagnosis(questionId);
-      entry.patchValue(this.normalizeDiagnosisDates(diagnosis as Record<string, unknown>), { emitEvent: false });
+      entry.patchValue(this.normalizeDiagnosisDates(diagnosis as Record<string, unknown>), {
+        emitEvent: false,
+      });
     }
 
     questionnaire.refreshValidationState();
@@ -615,7 +590,9 @@ export class HealthDeclarationFormService {
       const id = this.personId(person);
       return {
         ...person.getRawValue(),
-        questionnaire: this.questionnaireServices.get(id)?.form.getRawValue() ?? this.storedQuestionnaires.get(id),
+        questionnaire:
+          this.questionnaireServices.get(id)?.form.getRawValue() ??
+          this.storedQuestionnaires.get(id),
       };
     });
   }
@@ -639,10 +616,16 @@ export class HealthDeclarationFormService {
         }
       }
 
-      this.currentPersonIndex.set(Math.min(data.currentPersonIndex ?? 0, Math.max(this.peopleArray.length - 1, 0)));
-      this.highestReachedPersonIndex.set(Math.min(data.highestReachedPersonIndex ?? 0, Math.max(this.peopleArray.length - 1, 0)));
+      this.currentPersonIndex.set(
+        Math.min(data.currentPersonIndex ?? 0, Math.max(this.peopleArray.length - 1, 0)),
+      );
+      this.highestReachedPersonIndex.set(
+        Math.min(data.highestReachedPersonIndex ?? 0, Math.max(this.peopleArray.length - 1, 0)),
+      );
       this.reviewMode.set(data.reviewMode ?? false);
-      const validPersonIds = new Set(this.peopleArray.controls.map((person) => this.personId(person)));
+      const validPersonIds = new Set(
+        this.peopleArray.controls.map((person) => this.personId(person)),
+      );
       const completedIds = (data.completedPersonIds ?? []).filter((id) => validPersonIds.has(id));
       this.completedPersonIds.set(new Set(completedIds));
       for (const person of this.peopleArray.controls) {

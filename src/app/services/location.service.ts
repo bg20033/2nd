@@ -24,6 +24,8 @@ type OpenPlzLocality = {
 
 type OpenPlzResponse = OpenPlzLocality[] | { results?: OpenPlzLocality[] };
 
+const OPEN_PLZ_LOCALITIES_URL = 'https://openplzapi.org/ch/Localities';
+
 @Injectable({
   providedIn: 'root',
 })
@@ -42,30 +44,25 @@ export class LocationService {
       : `name=${encodeURIComponent(trimmedQuery)}`;
 
     return this.http
-      .get<OpenPlzResponse>(`https://openplzapi.org/ch/Localities?${searchParam}&pageSize=20`)
+      .get<OpenPlzResponse>(`${OPEN_PLZ_LOCALITIES_URL}?${searchParam}&pageSize=20`)
       .pipe(
         map((response) => {
           const localities = Array.isArray(response) ? response : response.results ?? [];
-          const mapped: LocationFilterResponse[] = localities
-            .map((locality) => {
-              const zipCode = locality.postalCode ?? '';
-              const locationName = locality.name ?? '';
-              if (!zipCode || !locationName) {
-                return null;
-              }
+          return localities.reduce<LocationFilterResponse[]>((locations, locality) => {
+            const zipCode = locality.postalCode ?? '';
+            const locationName = locality.name ?? '';
+            if (!zipCode || !locationName || (isNumeric && !zipCode.startsWith(trimmedQuery))) {
+              return locations;
+            }
 
-              return {
-                locationId: Number(locality.key) || 0,
-                zipCode,
-                locationName,
-                cantonName: locality.canton?.shortName || locality.canton?.name || '',
-              };
-            })
-            .filter((entry): entry is LocationFilterResponse => entry !== null);
-
-          return isNumeric
-            ? mapped.filter((location) => location.zipCode.startsWith(trimmedQuery))
-            : mapped;
+            locations.push({
+              locationId: Number(locality.key) || 0,
+              zipCode,
+              locationName,
+              cantonName: locality.canton?.shortName || locality.canton?.name || '',
+            });
+            return locations;
+          }, []);
         }),
         catchError(() => of([])),
       );
