@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, computed, inject, output, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  output,
+  signal,
+} from '@angular/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { HealthDeclarationFormService } from '../../../../services/health-declaration-form.service';
@@ -20,7 +27,11 @@ import { ValidationErrorPipe } from '../../../../pipes/validation-error.pipe';
           <div class="review-panel__check" aria-hidden="true">&#10003;</div>
           <h2 id="review-title">{{ 'review.successTitle' | t }}</h2>
           <p>{{ 'review.successText' | t: { email: report.recipientEmail } }}</p>
-          <button class="review-button review-button--primary" type="button" (click)="completed.emit()">
+          <button
+            class="review-button review-button--primary"
+            type="button"
+            (click)="completed.emit()"
+          >
             {{ 'review.backToStart' | t }}
           </button>
         </div>
@@ -46,14 +57,20 @@ import { ValidationErrorPipe } from '../../../../pipes/validation-error.pipe';
               [disabled]="sending()"
             />
             @if (recipientEmail.invalid && recipientEmail.touched) {
-              <p class="field-error">{{ recipientEmail.errors | validationError: ('review.emailLabel' | t) }}</p>
+              <p class="field-error">
+                {{ recipientEmail.errors | validationError: ('review.emailLabel' | t) }}
+              </p>
             }
           </label>
 
           @if (showScopeSelector()) {
             <label class="review-field">
               <span>{{ 'review.scopeLabel' | t }}</span>
-              <select [value]="selectedScope()" [disabled]="sending()" (change)="selectScope($event)">
+              <select
+                [value]="selectedScope()"
+                [disabled]="sending()"
+                (change)="selectScope($event)"
+              >
                 <option value="all">{{ 'review.allPeople' | t }}</option>
                 @for (person of personOptions(); track person.id) {
                   <option [value]="person.id">{{ person.label }}</option>
@@ -78,167 +95,169 @@ import { ValidationErrorPipe } from '../../../../pipes/validation-error.pipe';
       }
     </section>
   `,
-  styles: [`
-    :host {
-      display: block;
-    }
-
-    .review-panel {
-      display: grid;
-      gap: 1rem;
-      min-width: 0;
-      margin: 1.25rem 0 40px;
-      padding: 1.15rem;
-      border-radius: 1.75rem;
-      background: var(--panel-bg);
-      color: #1d1426;
-    }
-
-    .review-panel__top,
-    .review-controls,
-    .review-success {
-      display: grid;
-      gap: 0.75rem;
-      min-width: 0;
-    }
-
-    .review-panel__copy {
-      display: flex;
-      gap: 0.8rem;
-      align-items: center;
-      min-width: 0;
-    }
-
-    .review-success {
-      justify-items: center;
-      padding: 1rem 0.25rem;
-      text-align: center;
-    }
-
-    .review-panel__check {
-      display: grid;
-      flex: 0 0 auto;
-      width: 2.4rem;
-      height: 2.4rem;
-      place-items: center;
-      border-radius: 999px;
-      background: #8425e5;
-      color: #ffffff;
-      font-size: 0.95rem;
-    }
-
-    .review-panel h2 {
-      margin: 0;
-      color: #1d1426;
-      font-size: 14px;
-      font-weight: 500;
-      line-height: 1.25;
-    }
-
-    .review-panel p {
-      margin: 0.25rem 0 0;
-      color: #706876;
-      font-size: 12px;
-      line-height: 1.45;
-    }
-
-    .review-panel p.field-error {
-      color: #d81837;
-    }
-
-    .review-controls {
-      grid-template-columns: 1fr;
-      align-items: stretch;
-    }
-
-    .review-field {
-      display: grid;
-      gap: 0.35rem;
-      min-width: 0;
-    }
-
-    .review-field span {
-      color: #706876;
-      font-size: 12px;
-      line-height: 1.2;
-    }
-
-    .review-field input,
-    .review-field select {
-      width: 100%;
-      min-width: 0;
-      min-height: var(--control-height);
-      padding: 0 0.8rem;
-      border: 1px solid var(--control-border, #cabadc);
-      border-radius: var(--radius-control, 11px);
-      background: var(--control-bg, #e6d9f4);
-      color: #050307;
-      font-size: 14px;
-      outline: none;
-    }
-
-    .review-field input:disabled,
-    .review-field select:disabled,
-    .review-button:disabled {
-      cursor: not-allowed;
-      opacity: 0.58;
-    }
-
-    .review-field input:focus,
-    .review-field select:focus {
-      border-color: #8429ff;
-      box-shadow: 0 0 0 3px rgba(125, 41, 222, 0.16);
-    }
-
-    .review-field input[aria-invalid='true'] {
-      border-color: var(--error, #d81837);
-      box-shadow: 0 0 0 3px rgba(235, 0, 0, 0.14);
-    }
-
-    .review-submit-error {
-      padding-left: 0.5rem;
-    }
-
-    .review-button {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 100%;
-      min-width: 0;
-      min-height: var(--control-height);
-      padding: 0 1.25rem;
-      border: 1px solid rgba(125, 41, 222, 0.22);
-      border-radius: 0.9rem;
-      background: #ffffff;
-      color: #1d1426;
-      cursor: pointer;
-      font: inherit;
-      font-size: 14px;
-      font-weight: 400;
-      transition:
-        border-color 150ms ease,
-        box-shadow 150ms ease,
-        opacity 150ms ease;
-    }
-
-    .review-button--primary {
-      border-color: transparent;
-      background: #8425e5;
-      color: #ffffff;
-      box-shadow: 0 16px 28px rgba(111, 39, 222, 0.18);
-    }
-
-    .review-button:hover:not(:disabled) {
-      box-shadow: 0 16px 26px rgba(70, 24, 128, 0.14);
-    }
-
-    @media (max-width: 680px) {
-      .review-panel {
-        padding: 1rem;
-        border-radius: 1.35rem;
+  styles: [
+    `
+      :host {
+        display: block;
       }
-    }
-  `],
+
+      .review-panel {
+        display: grid;
+        gap: 1rem;
+        min-width: 0;
+        margin: 1.25rem 0 40px;
+        padding: 1.15rem;
+        border-radius: 1.75rem;
+        background: var(--panel-bg);
+        color: #1d1426;
+      }
+
+      .review-panel__top,
+      .review-controls,
+      .review-success {
+        display: grid;
+        gap: 0.75rem;
+        min-width: 0;
+      }
+
+      .review-panel__copy {
+        display: flex;
+        gap: 0.8rem;
+        align-items: center;
+        min-width: 0;
+      }
+
+      .review-success {
+        justify-items: center;
+        padding: 1rem 0.25rem;
+        text-align: center;
+      }
+
+      .review-panel__check {
+        display: grid;
+        flex: 0 0 auto;
+        width: 2.4rem;
+        height: 2.4rem;
+        place-items: center;
+        border-radius: 999px;
+        background: #8425e5;
+        color: #ffffff;
+        font-size: 0.95rem;
+      }
+
+      .review-panel h2 {
+        margin: 0;
+        color: #1d1426;
+        font-size: 14px;
+        font-weight: 500;
+        line-height: 1.25;
+      }
+
+      .review-panel p {
+        margin: 0.25rem 0 0;
+        color: #706876;
+        font-size: 12px;
+        line-height: 1.45;
+      }
+
+      .review-panel p.field-error {
+        color: #d81837;
+      }
+
+      .review-controls {
+        grid-template-columns: 1fr;
+        align-items: stretch;
+      }
+
+      .review-field {
+        display: grid;
+        gap: 0.35rem;
+        min-width: 0;
+      }
+
+      .review-field span {
+        color: #706876;
+        font-size: 12px;
+        line-height: 1.2;
+      }
+
+      .review-field input,
+      .review-field select {
+        width: 100%;
+        min-width: 0;
+        min-height: var(--control-height);
+        padding: 0 0.8rem;
+        border: 1px solid var(--control-border, #cabadc);
+        border-radius: var(--radius-control, 11px);
+        background: var(--control-bg, #e6d9f4);
+        color: #050307;
+        font-size: 14px;
+        outline: none;
+      }
+
+      .review-field input:disabled,
+      .review-field select:disabled,
+      .review-button:disabled {
+        cursor: not-allowed;
+        opacity: 0.58;
+      }
+
+      .review-field input:focus,
+      .review-field select:focus {
+        border-color: #8429ff;
+        box-shadow: 0 0 0 3px rgba(125, 41, 222, 0.16);
+      }
+
+      .review-field input[aria-invalid='true'] {
+        border-color: var(--error, #d81837);
+        box-shadow: 0 0 0 3px rgba(235, 0, 0, 0.14);
+      }
+
+      .review-submit-error {
+        padding-left: 0.5rem;
+      }
+
+      .review-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        min-width: 0;
+        min-height: var(--control-height);
+        padding: 0 1.25rem;
+        border: 1px solid rgba(125, 41, 222, 0.22);
+        border-radius: 0.9rem;
+        background: #ffffff;
+        color: #1d1426;
+        cursor: pointer;
+        font: inherit;
+        font-size: 14px;
+        font-weight: 400;
+        transition:
+          border-color 150ms ease,
+          box-shadow 150ms ease,
+          opacity 150ms ease;
+      }
+
+      .review-button--primary {
+        border-color: transparent;
+        background: #8425e5;
+        color: #ffffff;
+        box-shadow: 0 16px 28px rgba(111, 39, 222, 0.18);
+      }
+
+      .review-button:hover:not(:disabled) {
+        box-shadow: 0 16px 26px rgba(70, 24, 128, 0.14);
+      }
+
+      @media (max-width: 680px) {
+        .review-panel {
+          padding: 1rem;
+          border-radius: 1.35rem;
+        }
+      }
+    `,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ReviewPanelComponent {
@@ -297,8 +316,16 @@ export class ReviewPanelComponent {
   }
 
   private errorText(error: unknown): string {
-    if (error instanceof Error && error.message.includes('GOOGLE_APPS_SCRIPT_REPORT_WEBHOOK_URL')) {
+    if (!(error instanceof Error)) {
+      return this.i18n.translate('review.emailSendFailed');
+    }
+
+    if (error.message.includes('GOOGLE_APPS_SCRIPT_REPORT_WEBHOOK_URL')) {
       return this.i18n.translate('review.emailServiceNotConfigured');
+    }
+
+    if (error.message.includes('Report was not stored by Google Apps Script')) {
+      return 'Google Apps Script received the request, but the report was not found in the spreadsheet. Run setup(), confirm REPORT_SPREADSHEET_ID, and check the Errors sheet.';
     }
 
     return this.i18n.translate('review.emailSendFailed');

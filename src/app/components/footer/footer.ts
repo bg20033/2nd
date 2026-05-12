@@ -19,7 +19,7 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
   styleUrl: './footer.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Footer {
+export class Footer implements AfterViewInit, OnDestroy {
   backDisabled = input(false);
   nextDisabled = input(false);
   backLabel = input('Back');

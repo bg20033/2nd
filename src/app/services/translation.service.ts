@@ -4,9 +4,10 @@ import { effect, inject, Injectable, signal } from '@angular/core';
 import {
   DEFAULT_LANGUAGE,
   LANGUAGE_OPTIONS,
-  LanguageCode,
-  TRANSLATION_DICTIONARIES,
-  TranslationDictionary,
+  loadTranslationDictionary,
+  translationDictionaryFor,
+  type LanguageCode,
+  type TranslationDictionary,
 } from '../lang';
 
 export type { LanguageCode } from '../lang';
@@ -25,21 +26,29 @@ export class TranslationService {
   readonly defaultLanguage = DEFAULT_LANGUAGE;
   readonly supportedLanguages = LANGUAGE_OPTIONS;
   readonly language = signal<LanguageCode>(this.loadInitialLanguage());
+  readonly dictionaryVersion = signal(0);
 
-  private readonly persistLanguageEffect = effect(() => {
-    const language = this.language();
-    this.document.documentElement.lang = language;
-    this.translationCache.clear();
+  constructor() {
+    effect(() => {
+      const language = this.language();
+      this.document.documentElement.lang = language;
+      this.translationCache.clear();
 
-    try {
-      localStorage.setItem(LANGUAGE_STORAGE_KEY, language);
-    } catch {
-      // Ignore storage write failures and keep runtime language in memory.
-    }
-  });
+      try {
+        localStorage.setItem(LANGUAGE_STORAGE_KEY, language);
+      } catch {
+        // Ignore storage write failures and keep runtime language in memory.
+      }
+    });
+
+    effect(() => {
+      const language = this.language();
+      void this.loadLanguage(language);
+    });
+  }
 
   setLanguage(language: LanguageCode): void {
-    if (!(language in TRANSLATION_DICTIONARIES)) {
+    if (!this.isLanguageCode(language)) {
       return;
     }
 
@@ -50,12 +59,9 @@ export class TranslationService {
     return !!value && this.supportedLanguages.some((entry) => entry.code === value);
   }
 
-  languageLabel(language: LanguageCode): string {
-    return this.supportedLanguages.find((entry) => entry.code === language)?.nativeLabel ?? language.toUpperCase();
-  }
-
   translate(key: string, params?: TranslationParams): string {
     const language = this.language();
+    this.dictionaryVersion();
     const cacheKey = `${language}:${key}`;
     if (!params) {
       if (this.translationCache.has(cacheKey)) {
@@ -63,9 +69,10 @@ export class TranslationService {
       }
     }
 
-    const current = this.lookupValue(TRANSLATION_DICTIONARIES[language], key);
-    const fallback = this.lookupValue(TRANSLATION_DICTIONARIES[this.defaultLanguage], key);
-    const text = typeof current === 'string' ? current : typeof fallback === 'string' ? fallback : key;
+    const current = this.lookupValue(translationDictionaryFor(language), key);
+    const fallback = this.lookupValue(translationDictionaryFor(this.defaultLanguage), key);
+    const text =
+      typeof current === 'string' ? current : typeof fallback === 'string' ? fallback : key;
 
     if (!params) {
       this.translationCache.set(cacheKey, text);
@@ -112,7 +119,25 @@ export class TranslationService {
     return null;
   }
 
-  private lookupValue(dictionary: TranslationDictionary, key: string): unknown {
+  private async loadLanguage(language: LanguageCode): Promise<void> {
+    if (translationDictionaryFor(language)) {
+      return;
+    }
+
+    try {
+      await loadTranslationDictionary(language);
+      this.translationCache.clear();
+      this.dictionaryVersion.update((version) => version + 1);
+    } catch {
+      // Keep using fallback translations if a lazy dictionary chunk cannot load.
+    }
+  }
+
+  private lookupValue(dictionary: TranslationDictionary | undefined, key: string): unknown {
+    if (!dictionary) {
+      return undefined;
+    }
+
     return this.keyPath(key).reduce<unknown>((current, segment) => {
       if (current && typeof current === 'object' && segment in current) {
         return (current as Record<string, unknown>)[segment];

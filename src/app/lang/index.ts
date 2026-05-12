@@ -1,13 +1,4 @@
 import de from './de.json';
-import en from './en.json';
-import es from './es.json';
-import fr from './fr.json';
-import hr from './hr.json';
-import it from './it.json';
-import pt from './pt.json';
-import sq from './sq.json';
-import sr from './sr.json';
-import tr from './tr.json';
 
 export type LanguageCode = 'de' | 'en' | 'fr' | 'it' | 'tr' | 'sq' | 'sr' | 'es' | 'hr' | 'pt';
 
@@ -17,9 +8,10 @@ export interface LanguageOption {
   nativeLabel: string;
 }
 
-export type TranslationDictionary = typeof de;
+export type TranslationDictionary = Record<string, unknown>;
+type TranslationDictionaryModule = { default: TranslationDictionary };
 
-export const DEFAULT_LANGUAGE: LanguageCode = 'de';
+export const DEFAULT_LANGUAGE = 'de' satisfies LanguageCode;
 
 export const LANGUAGE_OPTIONS: readonly LanguageOption[] = [
   { code: 'de', label: 'German', nativeLabel: 'Deutsch' },
@@ -34,15 +26,46 @@ export const LANGUAGE_OPTIONS: readonly LanguageOption[] = [
   { code: 'pt', label: 'Portuguese', nativeLabel: 'Português' },
 ] as const;
 
-export const TRANSLATION_DICTIONARIES: Readonly<Record<LanguageCode, TranslationDictionary>> = {
-  de,
-  en: en as TranslationDictionary,
-  fr: fr as TranslationDictionary,
-  it: it as TranslationDictionary,
-  tr: tr as TranslationDictionary,
-  sq: sq as TranslationDictionary,
-  sr: sr as TranslationDictionary,
-  es: es as TranslationDictionary,
-  hr: hr as TranslationDictionary,
-  pt: pt as TranslationDictionary,
+const TRANSLATION_DICTIONARY_LOADERS: Record<
+  Exclude<LanguageCode, typeof DEFAULT_LANGUAGE>,
+  () => Promise<TranslationDictionaryModule>
+> = {
+  en: () => import('./en.json') as Promise<TranslationDictionaryModule>,
+  fr: () => import('./fr.json') as Promise<TranslationDictionaryModule>,
+  it: () => import('./it.json') as Promise<TranslationDictionaryModule>,
+  tr: () => import('./tr.json') as Promise<TranslationDictionaryModule>,
+  sq: () => import('./sq.json') as Promise<TranslationDictionaryModule>,
+  sr: () => import('./sr.json') as Promise<TranslationDictionaryModule>,
+  es: () => import('./es.json') as Promise<TranslationDictionaryModule>,
+  hr: () => import('./hr.json') as Promise<TranslationDictionaryModule>,
+  pt: () => import('./pt.json') as Promise<TranslationDictionaryModule>,
 };
+
+const translationDictionaries: Partial<Record<LanguageCode, TranslationDictionary>> = {
+  de: de as TranslationDictionary,
+};
+
+export function translationDictionaryFor(
+  language: LanguageCode,
+): TranslationDictionary | undefined {
+  return translationDictionaries[language];
+}
+
+export async function loadTranslationDictionary(
+  language: LanguageCode,
+): Promise<TranslationDictionary> {
+  const loadedDictionary = translationDictionaries[language];
+  if (loadedDictionary) {
+    return loadedDictionary;
+  }
+
+  if (language === DEFAULT_LANGUAGE) {
+    return de;
+  }
+
+  const loader =
+    TRANSLATION_DICTIONARY_LOADERS[language as Exclude<LanguageCode, typeof DEFAULT_LANGUAGE>];
+  const module = await loader();
+  translationDictionaries[language] = module.default;
+  return module.default;
+}

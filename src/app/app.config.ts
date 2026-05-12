@@ -22,5 +22,5 @@ export const appConfig: ApplicationConfig = {
       provide: GOOGLE_APPS_SCRIPT_REPORT_LOOKUP_URL,
       useValue: appEnv.GOOGLE_APPS_SCRIPT_REPORT_LOOKUP_URL,
     },
-  ]
+  ],
 };

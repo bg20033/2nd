@@ -28,9 +28,9 @@ export type HealthDeclarationReportPayload = ReviewDashboard & {
 type JsonpCallback = (value: HealthDeclarationReportPayload | ReviewDashboard | null) => void;
 
 const REPORT_STORAGE_PREFIX = 'healthDeclarationReport:';
-const REPORT_LOOKUP_TIMEOUT_MS = 18000;
-const REPORT_LOOKUP_RETRY_MS = 900;
-const JSONP_TIMEOUT_MS = 12000;
+const REPORT_LOOKUP_TIMEOUT_MS = 7000;
+const REPORT_LOOKUP_RETRY_MS = 500;
+const JSONP_TIMEOUT_MS = 5000;
 
 @Injectable({ providedIn: 'root' })
 export class HealthDeclarationReportService {
@@ -68,12 +68,14 @@ export class HealthDeclarationReportService {
       throw new Error('Report has no people.');
     }
 
+    this.storeReportPayload(payload);
     await this.postToAppsScript(payload);
     if (this.lookupEndpointUrl()) {
       await this.verifyRemoteReport(payload.reportToken);
     } else {
       this.storeReportPayload(payload);
     }
+
     return payload;
   }
 
@@ -106,36 +108,43 @@ export class HealthDeclarationReportService {
 
   private storeReportPayload(payload: HealthDeclarationReportPayload): void {
     const json = JSON.stringify(payload);
+    const key = `${REPORT_STORAGE_PREFIX}${payload.reportToken}`;
 
-    try {
-      this.sessionStorage()?.setItem(`${REPORT_STORAGE_PREFIX}${payload.reportToken}`, json);
-    } catch {
-      // Session storage can be unavailable in private browsing or tests.
+    for (const storage of this.availableReportStorages()) {
+      try {
+        storage.setItem(key, json);
+      } catch {
+        // Browser storage can be unavailable in private browsing or tests.
+      }
     }
   }
 
   private readReportPayload(token: string): HealthDeclarationReportPayload | null {
-    const storage = this.sessionStorage();
-    if (!storage) {
+    const storages = this.availableReportStorages();
+    if (storages.length === 0) {
       return null;
     }
 
     const key = `${REPORT_STORAGE_PREFIX}${token}`;
-    try {
-      const stored = storage.getItem(key);
-      if (!stored) {
-        return null;
-      }
+    for (const storage of storages) {
+      try {
+        const stored = storage.getItem(key);
+        if (!stored) {
+          continue;
+        }
 
-      const parsed = JSON.parse(stored) as Partial<HealthDeclarationReportPayload> | null;
-      if (!parsed || typeof parsed !== 'object' || parsed.reportToken !== token) {
-        return null;
-      }
+        const parsed = JSON.parse(stored) as Partial<HealthDeclarationReportPayload> | null;
+        if (!parsed || typeof parsed !== 'object' || parsed.reportToken !== token) {
+          continue;
+        }
 
-      return parsed as HealthDeclarationReportPayload;
-    } catch {
-      return null;
+        return parsed as HealthDeclarationReportPayload;
+      } catch {
+        continue;
+      }
     }
+
+    return null;
   }
 
   private sessionStorage(): Storage | undefined {
@@ -144,6 +153,20 @@ export class HealthDeclarationReportService {
     } catch {
       return undefined;
     }
+  }
+
+  private localStorage(): Storage | undefined {
+    try {
+      return globalThis.localStorage;
+    } catch {
+      return undefined;
+    }
+  }
+
+  private availableReportStorages(): Storage[] {
+    return [this.sessionStorage(), this.localStorage()].filter(
+      (storage): storage is Storage => !!storage,
+    );
   }
 
   private async verifyRemoteReport(token: string): Promise<void> {

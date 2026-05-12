@@ -36,7 +36,4 @@ try {
   // Missing .env is allowed; Angular receives empty defaults.
 }
 
-writeFileSync(
-  outputPath,
-  `export const appEnv = ${JSON.stringify(env, null, 2)} as const;\n`,
-);
+writeFileSync(outputPath, `export const appEnv = ${JSON.stringify(env, null, 2)} as const;\n`);

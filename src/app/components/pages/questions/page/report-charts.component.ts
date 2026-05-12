@@ -10,7 +10,7 @@ import {
   ViewChild,
   inject,
 } from '@angular/core';
-import Chart from 'chart.js/auto';
+import type Chart from 'chart.js/auto';
 import type { ChartConfiguration, ChartOptions } from 'chart.js';
 
 import type {
@@ -196,16 +196,17 @@ export class ReportChartsComponent implements AfterViewInit, OnChanges, OnDestro
 
   private readonly i18n = inject(TranslationService);
   private readonly charts: Chart[] = [];
+  private chartConstructor?: typeof Chart;
   private viewReady = false;
 
   ngAfterViewInit(): void {
     this.viewReady = true;
-    this.renderCharts();
+    void this.renderCharts();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (this.viewReady && changes['dashboard']) {
-      queueMicrotask(() => this.renderCharts());
+      queueMicrotask(() => void this.renderCharts());
     }
   }
 
@@ -213,18 +214,27 @@ export class ReportChartsComponent implements AfterViewInit, OnChanges, OnDestro
     this.destroyCharts();
   }
 
-  private renderCharts(): void {
+  private async renderCharts(): Promise<void> {
     if (!this.categoryCanvas || !this.scoreCanvas || !this.driversCanvas || !this.costCanvas) {
       return;
     }
 
+    const ChartConstructor = await this.loadChartConstructor();
     this.destroyCharts();
     this.charts.push(
-      new Chart(this.categoryCanvas.nativeElement, this.categoryConfig()),
-      new Chart(this.scoreCanvas.nativeElement, this.scoreConfig()),
-      new Chart(this.driversCanvas.nativeElement, this.driversConfig()),
-      new Chart(this.costCanvas.nativeElement, this.costConfig()),
+      new ChartConstructor(this.categoryCanvas.nativeElement, this.categoryConfig()),
+      new ChartConstructor(this.scoreCanvas.nativeElement, this.scoreConfig()),
+      new ChartConstructor(this.driversCanvas.nativeElement, this.driversConfig()),
+      new ChartConstructor(this.costCanvas.nativeElement, this.costConfig()),
     );
+  }
+
+  private async loadChartConstructor(): Promise<typeof Chart> {
+    if (!this.chartConstructor) {
+      this.chartConstructor = (await import('chart.js/auto')).default;
+    }
+
+    return this.chartConstructor;
   }
 
   private destroyCharts(): void {
